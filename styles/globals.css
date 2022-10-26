@@ -13,4 +13,7 @@
     .opcoes {
         @apply flex items-center justify-start cursor-pointer mx-6 w-[100%]
     }
+    .btnAddChamado {
+        @apply text-lg text-white font-semibold mb-4 mr-[20px] px-10 py-4 rounded-[24px] bg-blue-600 hover:bg-blue-700 active:scale-95 transition duration-200 
+    }
 }

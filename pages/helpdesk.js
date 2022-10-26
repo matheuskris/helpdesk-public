@@ -8,6 +8,10 @@ function Helpdesk() {
     router.push("/");
   }
 
+  function criarChamado() {
+    router.push('criarchamado')
+  }
+
   return (
     <div className="h-screen w-full relative">
 
@@ -69,10 +73,24 @@ function Helpdesk() {
 
 
 
+      {/* Titulo tabela e botão  */}
+      <div className='flex justify-between items-center'>
+        <h1 className=" text-lg font-semibold ml-[136px] pl-16 mb-2">Painel de Controle</h1>
+        <button onClick={criarChamado} className="btnAddChamado">Adicionar um chamado</button>
+      </div>
+
       {/* Tabela */}
       <div className="w-[calc(100% - 136px)] h-[70%] mx-auto flex justify-center items-center ml-[136px]">
-        <table className="w-[100%] h-[100%] bg-red-400 px-10 py-12">
-            
+        <table className="w-[100%] h-[100%] bg-red-400 px-10 py-12 rounded-3xl">    
+            <thead>
+              <tr>
+                <th>Número do Chamado</th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Prioridade</th>
+                <th>Responsável</th>
+              </tr>
+            </thead>
         </table>
       </div>
 
