@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer components {
+    .input {
+        @apply p-2 bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none
+    }
+}
