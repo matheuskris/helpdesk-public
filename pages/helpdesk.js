@@ -64,15 +64,15 @@ function Helpdesk() {
       Prioridade: 'B',
       Responsável: 'Flávio',
     },
-    {
-      numeroChamado: 7,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: 'Reposição de teclado',
-      Descrição: 'Teclado quebrou',
-      Prioridade: 'B',
-      Responsável: 'Flávio',
-    },
+    // {
+    //   numeroChamado: 7,
+    //   dataInicial: data(),
+    //   DataTermino: data(),
+    //   Título: 'Reposição de teclado',
+    //   Descrição: 'Teclado quebrou',
+    //   Prioridade: 'B',
+    //   Responsável: 'Flávio',
+    // },
   ]
 
   function logout() {
@@ -104,7 +104,7 @@ function Helpdesk() {
         </div>
 
         {/* Opções */}
-        <div className="w-[100%] lg:mt-[700px] space-y-2">
+        <div className="w-[100%] lg:mt-[500px] xl:mt[700px] space-y-2">
           <div className="opcoes">
             <Image src="/phone.svg" width={18} height={18} alt="Ícone Telefone" />
             <p className="mx-1">Contato</p>
@@ -128,31 +128,15 @@ function Helpdesk() {
       </div>
       {/* Final Aside */}
 
-      {/* nav */}
-      <div className="flex items-center justify-end lg:w-[calc(100% - 136px)] h-[120px] lg:ml-[136px] space-x-16 px-16">
-        <p className="cursor-pointer font-bold text-black text-lg mr-[-60px]">
-            Equipe Suporte:
-        </p>
-        <select className="cursor-pointer text-black text-lg outline-none">
-            <option value="Flávio" selected>Flávio</option>
-            <option value="Patricia">Patricia</option>
-            <option value="Monica">Monica</option>
-        </select>
-        <p className="cursor-pointer text-black text-lg">Configurações</p>
-      </div>
-      {/* Final Nav */}
-
-
-
       {/* Titulo tabela e botão  */}
-      <div className='flex justify-between items-center'>
+      <div className='flex justify-between items-center pt-[50px]'>
         <h1 className=" text-3xl font-semibold ml-[136px] pl-16 mb-2">Painel de Controle</h1>
-        <button onClick={criarChamado} className="btnAddChamado">Adicionar um chamado</button>
+        <button onClick={criarChamado} className="btnAddChamado">Abrir um chamado</button>
       </div>
 
       {/* Tabela */}
-      <div className="w-[calc(100% - 136px)] h-[70%] mx-auto flex justify-center items-center ml-[136px]">
-        <table className="w-[100%] h-[100%] bg-white rounded-3xl border-collapse mx-[60px] my-0 text-lg ">    
+      <div className=" mx-auto flex justify-center items-center ml-[136px]">
+        <table className=" bg-white lg:w-[1300px] lg:h-[600px] xl:w- xl:h-  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">    
             <thead>
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th className="th">ID Chamado</th>
@@ -164,7 +148,7 @@ function Helpdesk() {
                 <th className="th">Responsável</th>
               </tr>
             </thead>
-            <tbody> 
+            <tbody className="overflow-y-scroll"> 
               {chamados.map((chamado) => (
                 <tr key={chamado.id} className='border-b border-[#dddddd] even:bg-gray-200'>
                   <td className="td">{chamado.numeroChamado}</td>
@@ -178,10 +162,6 @@ function Helpdesk() {
               ))}
             </tbody>
         </table>
-      </div>
-
-      <div className="w-full mx-auto">
-        <p className="font-bold">1, 2, 3...</p>
       </div>
 
     </div>
