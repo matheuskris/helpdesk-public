@@ -7,4 +7,10 @@
     .input {
         @apply p-2 bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none
     }
+    .btnLogin {
+        @apply px-6 py-4 mt-10 text-black font-bold bg-gray-200 rounded-xl hover:bg-gray-400 transition duration-200 active:scale-95
+    }
+    .opcoes {
+        @apply flex items-center justify-start cursor-pointer mx-6 w-[100%]
+    }
 }

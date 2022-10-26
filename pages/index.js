@@ -1,6 +1,15 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export default function Login() {
+  const router = useRouter();
+  
+
+  function handleLogin(e) {
+    e.preventDefault();
+    router.push('/helpdesk')
+  }
+
   return (
     // Containers
     <div className="h-screen w-[100%] flex justify-center items-center relative bg-[#7a7a7a]">
@@ -19,7 +28,7 @@ export default function Login() {
         <form className="flex flex-col space-y-10 mt-8" action="">
           <input className="input" placeholder="Usuário" type="text" />
           <input className="input" placeholder="Senha" type="text" />
-          <button className="px-6 py-4 mt-10 text-black font-bold bg-gray-200 rounded-xl">Login</button>
+          <button onClick={handleLogin} className="btnLogin">Login</button>
         </form>
       </div>
     </div>
