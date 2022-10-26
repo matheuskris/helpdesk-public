@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
   signInAuthWithEmailAndPassword,
-  createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "../src/utils/firebase.utils";
 
@@ -23,25 +22,11 @@ function Login() {
     }
   }, []);
 
-  // function createUser() {
-  //   try {
-  //     const userCredential = createAuthUserWithEmailAndPassword(
-  //       credential.email,
-  //       credential.password
-  //     );
-  //     const { user } = userCredential;
-  //     console.log(user);
-  //     createUserDocumentFromAuth(user);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
-
   function handleChange(event) {
     const { value } = event.target;
-    const inputName = event.target.name;
+    const { name } = event.target;
 
-    setCredential({ ...credential, [inputName]: value });
+    setCredential({ ...credential, [name]: value });
   }
 
   async function handleLogin(e) {
@@ -67,7 +52,7 @@ function Login() {
   return (
     // Containers
     <div className="h-screen w-[100%] flex justify-center items-center relative bg-[#7a7a7a]">
-      <div className="md:w-[572px] md:mt-[-150px] md:px-24 md:py-16 md:h-[505px] rounded-[33px] bg-[#bebebe]">
+      <div className="md:w-[572px] md:mt-[-100px] md:px-24 md:py-16 md:h-[505px] rounded-[33px] bg-[#bebebe]">
         {/* SVG e HelpDesk */}
         <div className="flex items-baseline justify-start space-x-2">
           <Image width={44} height={33} src="/Vector Help Desk.svg" alt="" />

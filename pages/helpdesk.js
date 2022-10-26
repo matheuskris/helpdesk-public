@@ -1,8 +1,19 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 function Helpdesk() {
   const router = useRouter();
+
+
+  // checking if the user is authenticated if not, pushing to login page
+  useEffect(() => {
+    if(localStorage.getItem('user')){
+      return
+    } else {
+      router.push('/')
+    }
+  })
 
   // just an example of what the date should look like
   function data() {
@@ -104,7 +115,7 @@ function Helpdesk() {
         </div>
 
         {/* Opções */}
-        <div className="w-[100%] lg:mt-[575px] 2xl:mt-[680px] space-y-2">
+        <div className="w-[100%] lg:mt-[575px] 2xl:mt-[580px] space-y-2">
           <div className="opcoes">
             <Image src="/phone.svg" width={18} height={18} alt="Ícone Telefone" />
             <p className="mx-1">Contato</p>
