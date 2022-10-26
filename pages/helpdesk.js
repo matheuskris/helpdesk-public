@@ -104,7 +104,7 @@ function Helpdesk() {
         </div>
 
         {/* Opções */}
-        <div className="w-[100%] lg:mt-[500px] xl:mt[700px] space-y-2">
+        <div className="w-[100%] lg:mt-[575px] 2xl:mt[680px] space-y-2">
           <div className="opcoes">
             <Image src="/phone.svg" width={18} height={18} alt="Ícone Telefone" />
             <p className="mx-1">Contato</p>
@@ -136,7 +136,7 @@ function Helpdesk() {
 
       {/* Tabela */}
       <div className=" mx-auto flex justify-center items-center ml-[136px]">
-        <table className=" bg-white lg:w-[1300px] lg:h-[600px] xl:w- xl:h-  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">    
+        <table className=" bg-white lg:w-[1300px] lg:h-[600px] 2xl:w-[1650px] xl:h-  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">    
             <thead>
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th className="th">ID Chamado</th>
