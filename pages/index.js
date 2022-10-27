@@ -6,6 +6,8 @@ import {
   signInAuthWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from "../src/utils/firebase.utils";
+import Loading from '../src/components/Loading';
+
 
 export default function Checking() {
   const [isUserLogged, setIsUserLogged] = useState(true);
@@ -30,6 +32,7 @@ function Login() {
   });
   const [logInError, setlogInError] = useState("");
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -46,6 +49,7 @@ function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
+    setIsLoading(true)
     if (!credential.email || !credential.password) {
       setlogInError("insira dados válidos");
       setCredential({
@@ -59,12 +63,11 @@ function Login() {
       const userCredential = await signInAuthWithEmailAndPassword(
         credential.email,
         credential.password
-      );
+        );
       const { user } = userCredential;
       console.log(user);
 
       localStorage.setItem("user", user);
-
       router.push("/helpdesk");
     } catch (error) {
       switch (error.code) {
@@ -80,6 +83,8 @@ function Login() {
           setlogInError(
             `Ocorreu um erro não esperado, tente novamente mais tarde`
           );
+          setIsLoading(false);
+
       }
     }
     setCredential({
@@ -127,6 +132,7 @@ function Login() {
           <button onClick={handleLogin} className="btnLogin">
             Login
           </button>
+          {isLoading ? <Loading /> : ''}
         </form>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addObjectToCollection } from "../src/utils/firebase.utils";
 
 function CriarChamado() {
@@ -13,6 +13,14 @@ function CriarChamado() {
   });
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      return;
+    } else {
+      router.push("/");
+    }
+  });
 
   function handleChange(e) {
     const { value } = e.target;
