@@ -81,7 +81,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
         onSubmit={handleRegister}
         className="w-[100%] h-[100%] mx-auto flex flex-col"
       >
-        <h1 className="text-black text-2xl font-semibold mx-auto mt-10 mb-8 border-b border-gray-400">
+        <h1 className="text-black text-2xl font-semibold mx-auto mt-10 mb-8 pb-1 border-b border-gray-400">
           Detalhes do Chamado
         </h1>
         <input

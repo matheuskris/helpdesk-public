@@ -11,9 +11,7 @@ import Loading from '../src/components/Loading';
 
 export default function Checking() {
   const [isUserLogged, setIsUserLogged] = useState(true);
-
-  console.log(isUserLogged);
-
+  
   useEffect(() => {
     if (localStorage.getItem("user")) {
       setIsUserLogged(true);
@@ -65,7 +63,6 @@ function Login() {
         credential.password
         );
       const { user } = userCredential;
-      console.log(user);
 
       localStorage.setItem("user", user);
       router.push("/helpdesk");

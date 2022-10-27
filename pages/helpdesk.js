@@ -3,13 +3,16 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getObjectsOfCollection } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
+import EditCallModal from "../src/components/EditCallModal";
 
 function Helpdesk() {
   const router = useRouter();
-
   const [chamados, setChamados] = useState([]);
   const [isModalOpen, setModal] = useState(false);
+  const [isEditModalOpen, setEditModal] = useState(false);
+  const [closedCalls, setClosedCalls] = useState([]);
 
+  // open modal
   function handleOpenModal() {
     setModal(true);
   }
@@ -41,10 +44,26 @@ function Helpdesk() {
     router.push("/");
   }
 
+  // handleCloseCall
+  function handleCloseCall(id) {
+    const chosenCall = chamados.filter(chamado => chamado.id === id)
+    setClosedCalls([...closedCalls, chosenCall])
+  }
+
+  // // verifying if the call is closed
+  // function isThisCallClosed(id) {
+  //   const chosenCall = chamados.filter(chamado => chamado.id === id)
+  //   if (closedCalls.includes(chosenCall)) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
-      <div className="lg:absolute lg:w-[136px] lg:h-full bg-[#c4c4c4]">
+      <div className="lg:absolute fixed lg:w-[136px] lg:h-full bg-[#c4c4c4]">
         {/* Titulo e SVG Menu */}
         <div className="flex items-center justify-center">
           <h1 className="text-lg font-semibold text-white py-4 px-2">
@@ -134,12 +153,12 @@ function Helpdesk() {
                 <td className="td">{chamado.priority}</td>
                 <td className="td">{chamado.inCharge}</td>
                 <td className="td">
-                  <button className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
+                  <button onClick={(id, title, description, priority, inCharge) => setEditModal(true)} className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
                     Editar
                   </button>
                 </td>
                 <td className="td">
-                  <button className="p-2 rounded-lg font-semibold cursor-pointer bg-red-500">
+                  <button onClick={() => handleCloseCall(chamado.id)} className="p-2 rounded-lg font-semibold cursor-pointer bg-red-500">
                     Finalizar
                   </button>
                 </td>
@@ -151,6 +170,7 @@ function Helpdesk() {
 
       {/* === Configuração do Modal =====  */}
       <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+      <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
     </div>
   );
 }
