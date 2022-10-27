@@ -1,78 +1,17 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getObjectsOfCollection } from '../src/utils/firebase.utils';
-import Modal from 'react-modal';
-
-Modal.setAppElement('#__next')
+import { getObjectsOfCollection } from "../src/utils/firebase.utils";
+import CreateCallModal from "../src/components/CreateCallModal";
 
 function Helpdesk() {
   const router = useRouter();
-  const [infoCall, setInfoCall] = useState({
-    id: "",
-    start: "",
-    title: "",
-    description: "",
-    priority: "",
-    inCharge: "",
-  });
-  const [isRegisterFull, setIsRegisterFull] = useState(true);
-  const [chamados, setChamados] = useState([]);
-  const [modalIsOpen, setModal] = useState(false)
 
-  // ====== Funções do Modal =========
+  const [chamados, setChamados] = useState([]);
+  const [isModalOpen, setModal] = useState(false);
+
   function handleOpenModal() {
     setModal(true);
-  }
-  function handleCloseModal() {
-    setModal(false)
-  }
-  // Estilo do Modal
-  const customStyle = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      borderRadius: '24px',
-    }
-  }
-  // adding new call to firebase thru the modal
-  async function handleRegister(e) {
-    e.preventDefault();
-    data = new Date();
-    const objectToSend = { ...infoCall, start:`${data.getDate()}/${
-      data.getMonth() + 1
-    }/${data.getFullYear()} às ${data.getHours()}:${data.getMinutes()}` };
-
-    console.log(objectToSend)
-    for (const prop in objectToSend) {
-      if (!objectToSend[prop]) {
-        setIsRegisterFull(false);
-        return;
-      }
-    }
-
-    await addObjectToCollection("calls", objectToSend);
-    setInfoCall({
-      id: "",
-      start: "",
-      title: "",
-      description: "",
-      priority: "",
-      inCharge: "",
-    });
-    window.location.reload();
-  }
-
-
-  // Normal handle change
-  function handleChange(e) {
-    const { value } = e.target;
-    const { name } = e.target;
-    setInfoCall({ ...infoCall, [name]: value });
   }
 
   // checking if the user is authenticated if not, pushing to login page
@@ -86,17 +25,8 @@ function Helpdesk() {
 
   // fetching calls from firebase
   useEffect(() => {
-    getObjectsOfCollection('calls')
-      .then((calls) => setChamados(calls))
-
-  }, [])
-
-  // Test data
-  useEffect(()=> {
-    const datahoje =  new Date()
-    console.log(datahoje.toDateString())
-    console.log("oi gente")
-  },[chamados])
+    getObjectsOfCollection("calls").then((calls) => setChamados(calls));
+  }, []);
 
   // just an example of what the date should look like
   function getBeatyDate(date) {
@@ -172,7 +102,6 @@ function Helpdesk() {
         <button onClick={handleOpenModal} className="btnAddChamado">
           Abrir um chamado
         </button>
-        
       </div>
 
       {/* Tabela */}
@@ -204,79 +133,24 @@ function Helpdesk() {
                 <td className="td">{chamado.description}</td>
                 <td className="td">{chamado.priority}</td>
                 <td className="td">{chamado.inCharge}</td>
-                <td className="td"><button className='p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300'>Editar</button></td>
-                <td className="td"><button className="p-2 rounded-lg font-semibold cursor-pointer bg-red-500">Finalizar</button></td>
+                <td className="td">
+                  <button className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
+                    Editar
+                  </button>
+                </td>
+                <td className="td">
+                  <button className="p-2 rounded-lg font-semibold cursor-pointer bg-red-500">
+                    Finalizar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-
       {/* === Configuração do Modal =====  */}
-      <Modal
-          isOpen={modalIsOpen}
-          onRequestClose={handleCloseModal}
-          style={customStyle}
-        >
-          <form
-        onSubmit={handleRegister}
-        className="w-[100%] h-[100%] mx-auto flex flex-col"
-      >
-        <h1 className="text-black text-2xl mx-auto mt-10 mb-8 border-b border-gray-400">
-          Detalhes do Chamado
-        </h1>
-        <input
-          onChange={handleChange}
-          name="id"
-          value={infoCall.id}
-          placeholder="ID"
-          className="inputCadastro"
-          type="number"
-        />
-        <input
-          onChange={handleChange}
-          name="title"
-          value={infoCall.title}
-          placeholder="Título"
-          className="inputCadastro"
-          type="text"
-        />
-        <input
-          onChange={handleChange}
-          name="description"
-          value={infoCall.description}
-          placeholder="Descrição"
-          className="inputCadastro"
-          type="text"
-        />
-        <select
-          onChange={handleChange}
-          name="priority"
-          value={infoCall.priority}
-          className="p-4 outline-none inputCadastro"
-        >
-          <option defaultValue={true}>Prioridade:</option>
-          <option value="Alta">Alta</option>
-          <option value="Média">Média</option>
-          <option value="Baixa">Baixa</option>
-        </select>
-        <select
-          onChange={handleChange}
-          name="inCharge"
-          value={infoCall.inCharge}
-          className="p-4 outline-none inputCadastro"
-        >
-          <option defaultValue={true}>Responsável:</option>
-          <option value="Flávio">Flávio</option>
-          <option value="Patrícia">Patrícia</option>
-          <option value="Mônica">Mônica</option>
-        </select>
-        <button className="btnCadastrar">Cadastrar</button>
-        </form>
-      </Modal>
-
-      
+      <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
     </div>
   );
 }
