@@ -83,9 +83,8 @@ function Login() {
           setlogInError(
             `Ocorreu um erro não esperado, tente novamente mais tarde`
           );
-          setIsLoading(false);
-
       }
+      setIsLoading(false);
     }
     setCredential({
       email: "",
@@ -129,10 +128,9 @@ function Login() {
           ) : (
             ""
           )}
-          <button onClick={handleLogin} className="btnLogin">
-            Login
+          <button disabled={isLoading} onClick={handleLogin} className="btnLogin">
+          {isLoading ? <Loading /> : 'Login'}
           </button>
-          {isLoading ? <Loading /> : ''}
         </form>
       </div>
     </div>

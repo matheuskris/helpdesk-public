@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getObjectsOfCollection } from '../src/utils/firebase.utils';
 
 function Helpdesk() {
   const router = useRouter();
+  const [chamados, setChamados] = useState([]);
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -14,81 +16,25 @@ function Helpdesk() {
     }
   });
 
+  // fetching calls from firebase
+  useEffect(() => {
+    getObjectsOfCollection('calls')
+      .then((calls) => setChamados(calls))
+
+  }, [])
+
+  useEffect(()=> {
+    const datahoje =  new Date()
+    console.log(datahoje.toDateString())
+    console.log("oi gente")
+  },[chamados])
+
   // just an example of what the date should look like
-  function data() {
-    const data = new Date();
-
-    return `${data.getDate()}/${
-      data.getMonth() + 1
-    }/${data.getFullYear()} às ${data.getHours()}:${data.getMinutes()}`;
+  function getBeatyDate(date) {
+    return `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()} às ${date.getHours()}:${date.getMinutes()}`;
   }
-
-  // dum array
-  const chamados = [
-    {
-      numeroChamado: 1,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "Computador lento",
-      Descrição: "Lento demais",
-      Prioridade: "A",
-      Responsável: "Patricia",
-    },
-    {
-      numeroChamado: 2,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "Computador não liga",
-      Descrição: "não liga",
-      Prioridade: "C",
-      Responsável: "Flávio",
-    },
-    {
-      numeroChamado: 3,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "Não consigo cadastrar compra",
-      Descrição: "ERP deu pau",
-      Prioridade: "B",
-      Responsável: "Monica",
-    },
-    {
-      numeroChamado: 4,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "internet caiu",
-      Descrição: "não fui eu",
-      Prioridade: "A",
-      Responsável: "Patricia",
-    },
-    {
-      numeroChamado: 5,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "internet caiu de novo",
-      Descrição: "não fui eu",
-      Prioridade: "C",
-      Responsável: "Monica",
-    },
-    {
-      numeroChamado: 6,
-      dataInicial: data(),
-      DataTermino: data(),
-      Título: "Reposição de teclado",
-      Descrição: "Teclado quebrou",
-      Prioridade: "B",
-      Responsável: "Flávio",
-    },
-    // {
-    //   numeroChamado: 7,
-    //   dataInicial: data(),
-    //   DataTermino: data(),
-    //   Título: 'Reposição de teclado',
-    //   Descrição: 'Teclado quebrou',
-    //   Prioridade: 'B',
-    //   Responsável: 'Flávio',
-    // },
-  ];
 
   // Logaut logic
   function logout() {
@@ -166,7 +112,7 @@ function Helpdesk() {
 
       {/* Tabela */}
       <div className=" mx-auto flex justify-center items-center ml-[136px]">
-        <table className=" bg-white lg:w-[1300px] lg:h-[600px] 2xl:w-[1650px]  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">
+        <table className=" bg-white  h-auto 2xl:w-[1650px]  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">
           <thead>
             <tr className="bg-[#c4c4c4] text-white text-left">
               <th className="th">ID Chamado</th>
@@ -176,6 +122,8 @@ function Helpdesk() {
               <th className="th">Descrição</th>
               <th className="th">Prioridade</th>
               <th className="th">Responsável</th>
+              <th className="th"></th>
+              <th className="th"></th>
             </tr>
           </thead>
           <tbody className="overflow-y-scroll">
@@ -184,13 +132,15 @@ function Helpdesk() {
                 key={chamado.id}
                 className="border-b border-[#dddddd] even:bg-gray-200"
               >
-                <td className="td">{chamado.numeroChamado}</td>
-                <td className="td">{chamado.dataInicial}</td>
-                <td className="td">{chamado.DataTermino}</td>
-                <td className="td">{chamado.Título}</td>
-                <td className="td">{chamado.Descrição}</td>
-                <td className="td">{chamado.Prioridade}</td>
-                <td className="td">{chamado.Responsável}</td>
+                <td className="td">{chamado.id}</td>
+                <td className="td">26/10/2022</td>
+                <td className="td">26/10/2022</td>
+                <td className="td">{chamado.title}</td>
+                <td className="td">{chamado.description}</td>
+                <td className="td">{chamado.priority}</td>
+                <td className="td">{chamado.inCharge}</td>
+                <td className="td"><button className='p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300'>Editar</button></td>
+                <td className="td"><button className="p-2 rounded-lg font-semibold cursor-pointer bg-red-600">Finalizar</button></td>
               </tr>
             ))}
           </tbody>

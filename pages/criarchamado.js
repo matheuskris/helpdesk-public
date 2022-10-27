@@ -30,16 +30,20 @@ function CriarChamado() {
 
   async function handleRegister(e) {
     e.preventDefault();
-    setInfoCall({ ...infoCall, start: new Date() });
+    data = new Date();
+    const objectToSend = { ...infoCall, start:`${data.getDate()}/${
+      data.getMonth() + 1
+    }/${data.getFullYear()} às ${data.getHours()}:${data.getMinutes()}` };
 
-    for (const prop in infoCall) {
-      if (!infoCall[prop]) {
+    console.log(objectToSend)
+    for (const prop in objectToSend) {
+      if (!objectToSend[prop]) {
         setIsRegisterFull(false);
         return;
       }
     }
 
-    await addObjectToCollection("calls", infoCall);
+    await addObjectToCollection("calls", objectToSend);
     setInfoCall({
       id: "",
       start: "",
