@@ -28,6 +28,7 @@ function Login() {
     email: "",
     password: "",
   });
+  const [logInError, setlogInError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +46,14 @@ function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
-    if (!credential.email || !credential.password) return;
+    if (!credential.email || !credential.password) {
+      setlogInError("insira dados válidos");
+      setCredential({
+        email: "",
+        password: "",
+      });
+      return;
+    }
 
     try {
       const userCredential = await signInAuthWithEmailAndPassword(
@@ -59,14 +67,31 @@ function Login() {
 
       router.push("/helpdesk");
     } catch (error) {
-      alert("Senha ou email incorretos");
+      switch (error.code) {
+        case "auth/wrong-password":
+          setlogInError("Senha ou email incorretos");
+          break;
+        case "auth/too-many-requests":
+          setlogInError(
+            "muitas tentativas erradas, tente novamente mais tarde"
+          );
+          break;
+        default:
+          setlogInError(
+            `Ocorreu um erro não esperado, tente novamente mais tarde`
+          );
+      }
     }
+    setCredential({
+      email: "",
+      password: "",
+    });
   }
-
+  // h-[505px]
   return (
     // Containers
     <div className="h-screen w-[100%] flex justify-center items-center relative bg-[#7a7a7a]">
-      <div className="md:w-[572px] md:mt-[-100px] md:px-24 md:py-16 md:h-[505px] rounded-[33px] bg-[#bebebe]">
+      <div className="w-[572px] px-24 py-16 rounded-[33px] bg-[#bebebe]">
         {/* SVG e HelpDesk */}
         <div className="flex items-baseline justify-start space-x-2">
           <Image width={44} height={33} src="/Vector Help Desk.svg" alt="" />
@@ -94,6 +119,11 @@ function Login() {
             onChange={handleChange}
             value={credential.password}
           />
+          {logInError ? (
+            <p className="text-red-600 font-bold">{logInError}</p>
+          ) : (
+            ""
+          )}
           <button onClick={handleLogin} className="btnLogin">
             Login
           </button>
