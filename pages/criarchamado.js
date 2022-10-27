@@ -6,7 +6,6 @@ function CriarChamado() {
   const [infoCall, setInfoCall] = useState({
     id: "",
     start: "",
-    end: "",
     title: "",
     description: "",
     priority: "",
@@ -23,10 +22,10 @@ function CriarChamado() {
 
   async function handleRegister(e) {
     e.preventDefault();
-    console.log(infoCall);
+    setInfoCall({ ...infoCall, start: new Date() });
 
     for (const prop in infoCall) {
-      if (!prop) {
+      if (!infoCall[prop]) {
         setIsRegisterFull(false);
         return;
       }
@@ -36,7 +35,6 @@ function CriarChamado() {
     setInfoCall({
       id: "",
       start: "",
-      end: "",
       title: "",
       description: "",
       priority: "",
@@ -61,22 +59,6 @@ function CriarChamado() {
           placeholder="ID"
           className="inputCadastro"
           type="number"
-        />
-        <input
-          onChange={handleChange}
-          name="start"
-          value={infoCall.start}
-          placeholder="Ínicio"
-          className="inputCadastro"
-          type="text"
-        />
-        <input
-          onChange={handleChange}
-          name="end"
-          value={infoCall.end}
-          placeholder="Fim"
-          className="inputCadastro"
-          type="text"
         />
         <input
           onChange={handleChange}
@@ -108,9 +90,8 @@ function CriarChamado() {
           value={infoCall.inCharge}
           className="p-4 outline-none"
         >
-          <option value="Flávio" defaultValue={true}>
-            Flávio
-          </option>
+          <option defaultValue={true}>Responsável</option>
+          <option value="Flávio">Flávio</option>
           <option value="Patrícia">Patrícia</option>
           <option value="Mônica">Mônica</option>
         </select>
