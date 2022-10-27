@@ -81,7 +81,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
         onSubmit={handleRegister}
         className="w-[100%] h-[100%] mx-auto flex flex-col"
       >
-        <h1 className="text-black text-2xl mx-auto mt-10 mb-8 border-b border-gray-400">
+        <h1 className="text-black text-2xl font-semibold mx-auto mt-10 mb-8 border-b border-gray-400">
           Detalhes do Chamado
         </h1>
         <input
@@ -130,7 +130,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
           <option value="Patrícia">Patrícia</option>
           <option value="Mônica">Mônica</option>
         </select>
-        <button className=" bg-slate-400 btnCadastrar">Cadastrar</button>
+        <button className=" bg-blue-600 btnCadastrar">Cadastrar</button>
       </form>
       {isRegisterFull ? (
         ""
