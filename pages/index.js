@@ -7,13 +7,27 @@ import {
   createUserDocumentFromAuth,
 } from "../src/utils/firebase.utils";
 
-const initialCredentials = {
-  email: "",
-  password: "",
-};
+export default function Checking() {
+  const [isUserLogged, setIsUserLogged] = useState(true);
+
+  console.log(isUserLogged);
+
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      setIsUserLogged(true);
+    } else {
+      setIsUserLogged(false);
+    }
+  }, []);
+
+  return <>{isUserLogged ? <Helpdesk /> : <Login />}</>;
+}
 
 function Login() {
-  const [credential, setCredential] = useState(initialCredentials);
+  const [credential, setCredential] = useState({
+    email: "",
+    password: "",
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -45,7 +59,7 @@ function Login() {
 
       router.push("/helpdesk");
     } catch (error) {
-      console.log(error);
+      alert("Senha ou email incorretos");
     }
   }
 
@@ -87,20 +101,4 @@ function Login() {
       </div>
     </div>
   );
-}
-
-export default function () {
-  const [isUserLogged, setIsUserLogged] = useState(true);
-
-  console.log(isUserLogged);
-
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      setIsUserLogged(true);
-    } else {
-      setIsUserLogged(false);
-    }
-  }, []);
-
-  return <>{isUserLogged ? <Helpdesk /> : <Login />}</>;
 }

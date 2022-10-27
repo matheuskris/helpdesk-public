@@ -20,6 +20,7 @@ function Helpdesk() {
     return `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()} às ${new Date().getHours()}:${new Date().getMinutes()}`
   }
 
+  // dum array
   const chamados = [
     {
       numeroChamado: 1,
@@ -86,11 +87,14 @@ function Helpdesk() {
     // },
   ]
 
+  // Logaut logic 
   function logout() {
+    localStorage.removeItem('user')
     router.push("/");
   }
 
-  function criarChamado() {
+  //Button Create Call
+  function goToPageCreateCall() {
     router.push('criarchamado')
   }
 
@@ -142,7 +146,7 @@ function Helpdesk() {
       {/* Titulo tabela e botão  */}
       <div className='flex justify-between items-center pt-[50px]'>
         <h1 className=" text-3xl font-semibold ml-[136px] pl-16 mb-2">Painel de Controle</h1>
-        <button onClick={criarChamado} className="btnAddChamado">Abrir um chamado</button>
+        <button onClick={goToPageCreateCall} className="btnAddChamado">Abrir um chamado</button>
       </div>
 
       {/* Tabela */}
