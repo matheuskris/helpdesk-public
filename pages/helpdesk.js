@@ -4,13 +4,18 @@ import { useEffect, useState } from "react";
 import { getObjectsOfCollection } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
+import DescriptionModal from "../src/components/DescriptionModal";
+import { useRecoilState } from 'recoil';
+import { DescState } from "../atoms/DescAtom";
 
 function Helpdesk() {
   const router = useRouter();
   const [chamados, setChamados] = useState([]);
   const [isModalOpen, setModal] = useState(false);
   const [isEditModalOpen, setEditModal] = useState(false);
+  const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
+  const [description, setdesc] = useRecoilState(DescState)
 
   // open modal
   function handleOpenModal() {
@@ -50,20 +55,17 @@ function Helpdesk() {
     setClosedCalls([...closedCalls, chosenCall])
   }
 
-  // // verifying if the call is closed
-  // function isThisCallClosed(id) {
-  //   const chosenCall = chamados.filter(chamado => chamado.id === id)
-  //   if (closedCalls.includes(chosenCall)) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
+  // opening the modal and setting the description to get in the modal
+  function checkDescription (desc) {
+    setDescriptionModal(true)
+    setdesc(desc)
+  }
+
 
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
-      <div className="lg:absolute fixed lg:w-[136px] lg:h-full bg-[#c4c4c4]">
+      <div className=" fixed sm:w-[60px] lg:w-[136px] lg:h-full bg-[#c4c4c4]">
         {/* Titulo e SVG Menu */}
         <div className="flex items-center justify-center">
           <h1 className="text-lg font-semibold text-white py-4 px-2">
@@ -128,32 +130,32 @@ function Helpdesk() {
         <table className=" bg-white  h-auto 2xl:w-[1650px]  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">
           <thead>
             <tr className="bg-[#c4c4c4] text-white text-left">
-              <th className="th">ID Chamado</th>
-              <th className="th">Data Inicial</th>
-              <th className="th">Data Término</th>
-              <th className="th">Título</th>
-              <th className="th">Descrição</th>
-              <th className="th">Prioridade</th>
-              <th className="th">Responsável</th>
-              <th className="th"></th>
-              <th className="th"></th>
+              <th className="th w-10">ID</th>
+              <th className="th w-10">Data Inicial</th>
+              <th className="th w-10">Data Término</th>
+              <th className="th w-10">Título</th>
+              <th className="th w-16">Descrição</th>
+              <th className="th w-10">Prioridade</th>
+              <th className="th w-10">Responsável</th>
+              <th className="th w-10"></th>
+              <th className="th w-10"></th>
             </tr>
           </thead>
           <tbody>
             {chamados.map((chamado) => (
               <tr
                 key={chamado.id}
-                className="border-b border-[#dddddd] even:bg-gray-200"
+                className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
               >
                 <td className="td">{chamado.id}</td>
                 <td className="td">26/10/2022</td>
                 <td className="td">26/10/2022</td>
                 <td className="td">{chamado.title}</td>
-                <td className="td">{chamado.description}</td>
+                <td onClick={() => checkDescription(chamado.description)} className="td cursor-pointer whitespace-nowrap truncate">{chamado.description}</td>
                 <td className="td">{chamado.priority}</td>
                 <td className="td">{chamado.inCharge}</td>
                 <td className="td">
-                  <button onClick={(id, title, description, priority, inCharge) => setEditModal(true)} className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
+                  <button onClick={() => setEditModal(true)} className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
                     Editar
                   </button>
                 </td>
@@ -171,6 +173,7 @@ function Helpdesk() {
       {/* === Configuração do Modal =====  */}
       <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
       <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
+      <DescriptionModal isDescriptionModalOpen={isDescriptionModalOpen} setDescriptionModal={setDescriptionModal} />
     </div>
   );
 }
