@@ -1,9 +1,7 @@
 import { useState } from "react";
 import Modal from "react-modal";
 
-
 Modal.setAppElement("#__next");
-
 
 function EditCallModal({ isEditModalOpen, setEditModal }) {
     const [infoCall, setInfoCall] = useState({
@@ -16,7 +14,8 @@ function EditCallModal({ isEditModalOpen, setEditModal }) {
       });
     const [isRegisterFull, setIsRegisterFull] = useState(true);
 
-    // Modal´s style
+    
+    // Modal's style
     const customStyle = {
         content: {
           top: "50%",
@@ -32,7 +31,7 @@ function EditCallModal({ isEditModalOpen, setEditModal }) {
     // Close Modal
     function handleCloseModal() {
         setEditModal(false);
-      }
+    }
 
     // just handlechange
     function handleChange(e) {

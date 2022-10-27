@@ -155,12 +155,12 @@ function Helpdesk() {
                 <td className="td">{chamado.priority}</td>
                 <td className="td">{chamado.inCharge}</td>
                 <td className="td">
-                  <button onClick={() => setEditModal(true)} className="p-2 rounded-lg font-semibold cursor-pointer bg-yellow-300">
+                  <button onClick={() => setEditModal(true)} className="btnEdit">
                     Editar
                   </button>
                 </td>
                 <td className="td">
-                  <button onClick={() => handleCloseCall(chamado.id)} className="p-2 rounded-lg font-semibold cursor-pointer bg-red-500">
+                  <button onClick={() => handleCloseCall(chamado.id)} className="btnCloseCall">
                     Finalizar
                   </button>
                 </td>
