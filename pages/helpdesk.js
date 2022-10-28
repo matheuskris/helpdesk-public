@@ -14,6 +14,7 @@ function Helpdesk() {
   const [isEditModalOpen, setEditModal] = useState(false);
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
+  const [description, setDescription] = useState('');
 
 
   // open modal
@@ -50,7 +51,7 @@ function Helpdesk() {
   // opening the modal and setting the description to get in the modal
   function checkDescription(desc) {
     setDescriptionModal(true);
-    setdesc(desc);
+    setDescription(desc);
   }
 
   return (
@@ -183,7 +184,8 @@ function Helpdesk() {
           setDescriptionModal={setDescriptionModal}
         />
       </div>
-=======
+
+
       {/* === Configuração do Modal =====  */}
       <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
       <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
