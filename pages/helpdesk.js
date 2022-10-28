@@ -56,7 +56,7 @@ function Helpdesk() {
         if (xP < yP) {
           return -1;
         }
-        if (x > y) {
+        if (xP > yP) {
           return 1;
         }
         return 0;
@@ -265,7 +265,7 @@ function Helpdesk() {
                 >
                   Título
                 </th>
-                <th className="th">Descrição</th>
+                <th className="th w-[150px]">Descrição</th>
                 <th className="th">Follow up</th>
                 <th
                   className="th"
