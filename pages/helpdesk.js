@@ -15,11 +15,6 @@ function Helpdesk() {
   const [closedCalls, setClosedCalls] = useState([]);
   const [description, setDescription] = useState("");
 
-  // open modal
-  function handleOpenModal() {
-    setModal(true);
-  }
-
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -28,6 +23,11 @@ function Helpdesk() {
       router.push("/");
     }
   });
+
+  // open modal
+  function handleOpenModal() {
+    setModal(true);
+  }
 
   // fetching calls from firebase
   useEffect(() => {
@@ -40,10 +40,6 @@ function Helpdesk() {
     };
     callsListener(transformObjectToArray);
   }, []);
-
-  // useEffect(() => {
-  //   getObjectsOfCollection("calls").then((calls) => setChamados(calls));
-  // }, []);
 
   // Logaut logic
   function logout() {
@@ -61,6 +57,10 @@ function Helpdesk() {
   function checkDescription(desc) {
     setDescriptionModal(true);
     setDescription(desc);
+  }
+
+  function handleDetails({ id }) {
+    alert(`chamado n: ${id}`);
   }
 
   return (
@@ -157,8 +157,26 @@ function Helpdesk() {
                   >
                     {chamado.description}
                   </td>
-                  <td className="td"><button className="btnDetails">Detalhes</button></td>
-                  <td className="td">{chamado.priority}</td>
+                  <td className="td">
+                    <button
+                      onClick={() => handleDetails(chamado)}
+                      className="btnDetails"
+                    >
+                      Detalhes
+                    </button>
+                  </td>
+                  <td className="td flex justify-around items-center">
+                    {chamado.priority}{" "}
+                    {chamado.priority === "Alta" && (
+                      <img src="/High Priority.png" alt="Alta" />
+                    )}
+                    {chamado.priority === "Média" && (
+                      <img src="/Medium Priority.png" alt="Média" />
+                    )}
+                    {chamado.priority === "Baixa" && (
+                      <img src="/Low Priority.png" alt="Baixa" />
+                    )}
+                  </td>
                   <td className="td">{chamado.inCharge}</td>
                   <td className="td">
                     <button
@@ -191,7 +209,7 @@ function Helpdesk() {
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
           setDescriptionModal={setDescriptionModal}
-          description={description} 
+          description={description}
         />
       </div>
     </div>
