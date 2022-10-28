@@ -51,6 +51,14 @@ export const writeNewCall = async (call) => {
   }
 };
 
+export const editExistingCall = async (call) => {
+  try {
+    await set(ref(RTdatabase, "calls/" + call.id), call);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const callsRef = ref(RTdatabase, "calls/");
 
 export const callsListener = (callback) => {
@@ -71,32 +79,32 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
-// OLD DATABASE
-export const addObjectToCollection = async (collectionKey, objectToAdd) => {
-  const collectionRef = collection(db, collectionKey);
-  const batch = writeBatch(db);
+// // OLD DATABASE
+// export const addObjectToCollection = async (collectionKey, objectToAdd) => {
+//   const collectionRef = collection(db, collectionKey);
+//   const batch = writeBatch(db);
 
-  const docRef = doc(collectionRef, objectToAdd.title.toLowerCase());
-  batch.set(docRef, objectToAdd);
+//   const docRef = doc(collectionRef, objectToAdd.title.toLowerCase());
+//   batch.set(docRef, objectToAdd);
 
-  try {
-    await batch.commit();
-    console.log("done");
-  } catch (error) {
-    console.log("theres a error", error);
-  }
-};
+//   try {
+//     await batch.commit();
+//     console.log("done");
+//   } catch (error) {
+//     console.log("theres a error", error);
+//   }
+// };
 
-// collectionkey dos chamados é "calls"
-export const getObjectsOfCollection = async (collectionKey) => {
-  const collectionRef = collection(db, collectionKey);
-  const q = query(collectionRef);
+// // collectionkey dos chamados é "calls"
+// export const getObjectsOfCollection = async (collectionKey) => {
+//   const collectionRef = collection(db, collectionKey);
+//   const q = query(collectionRef);
 
-  const querySnapshot = await getDocs(q);
-  const data = querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
+//   const querySnapshot = await getDocs(q);
+//   const data = querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
 
-  return data;
-};
+//   return data;
+// };
 
 // export const createUserDocumentFromAuth = async (userAuth, addicionalInfo) => {
 //     if (!userAuth) return;

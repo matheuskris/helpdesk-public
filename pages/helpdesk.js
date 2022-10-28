@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { callsListener } from "../src/utils/firebase.utils";
+import { callsListener, writeNewCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -10,12 +10,56 @@ import FollowUpModal from "../src/components/FollowUpModal";
 function Helpdesk() {
   const router = useRouter();
   const [chamados, setChamados] = useState([]);
+
   const [isModalOpen, setModal] = useState(false);
+
   const [isEditModalOpen, setEditModal] = useState(false);
+  const [callToEdit, setCallToEdit] = useState();
+
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
-  const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
-  const [closedCalls, setClosedCalls] = useState([]);
   const [description, setDescription] = useState("");
+  const [filterOrderBy, setFilterOrderBy] = useState("priority");
+
+  const filteredCalls = chamados.sort(function (a, b) {
+    switch (filterOrderBy) {
+      case "start":
+        return a.start.hour - b.start.hour;
+      case "id":
+        return a.id - b.id;
+      case "inCharge":
+        let xIC = a.title.toLowerCase();
+        let yIC = b.title.toLowerCase();
+        if (xIC < yIC) {
+          return -1;
+        }
+        if (xt > yt) {
+          return 1;
+        }
+        return 0;
+      case "title":
+        let xt = a.title.toLowerCase();
+        let yt = b.title.toLowerCase();
+        if (xt < yt) {
+          return -1;
+        }
+        if (xt > yt) {
+          return 1;
+        }
+        return 0;
+      case "priority":
+        let x = a.priority.toLowerCase();
+        let y = b.priority.toLowerCase();
+        if (x < y) {
+          return -1;
+        }
+        if (x > y) {
+          return 1;
+        }
+        return 0;
+    }
+  });
+
+  console.log(filteredCalls);
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -50,9 +94,24 @@ function Helpdesk() {
   }
 
   // handleCloseCall
-  function handleCloseCall(id) {
-    const chosenCall = chamados.filter((chamado) => chamado.id === id);
-    setClosedCalls([...closedCalls, chosenCall]);
+  function getBeatyDate() {
+    const date = new Date();
+
+    return {
+      day: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+      hour: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+    };
+  }
+
+  function handleCloseCall(callToClose) {
+    const newDate = getBeatyDate();
+
+    writeNewCall({ ...callToClose, finished: newDate });
+  }
+
+  // open modal
+  function handleOpenModal() {
+    setModal(true);
   }
 
   // opening the modal and setting the description to get in the modal
@@ -61,8 +120,9 @@ function Helpdesk() {
     setDescription(desc);
   }
 
-  function handleDetails({ id }) {
-    setFollowUpModal(true);
+  function handleEditModal(chamado) {
+    setEditModal(true);
+    setCallToEdit(chamado);
   }
 
   return (
@@ -145,7 +205,7 @@ function Helpdesk() {
               </tr>
             </thead>
             <tbody>
-              {chamados.map((chamado) => (
+              {filteredCalls.map((chamado) => (
                 <tr
                   key={chamado.id}
                   className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
@@ -170,19 +230,34 @@ function Helpdesk() {
                   <td className="td flex justify-around items-center">
                     {chamado.priority}{" "}
                     {chamado.priority === "Alta" && (
-                      <Image width={30} height={30} src="/High Priority.png" alt="Alta" />
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/High Priority.png"
+                        alt="Alta"
+                      />
                     )}
                     {chamado.priority === "Média" && (
-                      <Image width={30} height={30} src="/Medium Priority.png" alt="Média" />
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/Medium Priority.png"
+                        alt="Média"
+                      />
                     )}
                     {chamado.priority === "Baixa" && (
-                      <Image width={30} height={30} src="/Low Priority.png" alt="Baixa" />
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/Low Priority.png"
+                        alt="Baixa"
+                      />
                     )}
                   </td>
                   <td className="td">{chamado.inCharge}</td>
                   <td className="td">
                     <button
-                      onClick={() => setEditModal(true)}
+                      onClick={() => handleEditModal(chamado)}
                       className="btnEdit"
                     >
                       Editar
@@ -190,7 +265,7 @@ function Helpdesk() {
                   </td>
                   <td className="td">
                     <button
-                      onClick={() => handleCloseCall(chamado.id)}
+                      onClick={() => handleCloseCall(chamado)}
                       className="btnCloseCall"
                     >
                       Finalizar
@@ -208,7 +283,7 @@ function Helpdesk() {
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
         />
-        <FollowUpModal 
+        <FollowUpModal
           isFollowUpModalOpen={isFollowUpModalOpen}
           setFollowUpModal={setFollowUpModal}
         />
