@@ -5,6 +5,7 @@ import { callsListener } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
+import FollowUpModal from "../src/components/FollowUpModal";
 
 function Helpdesk() {
   const router = useRouter();
@@ -12,6 +13,7 @@ function Helpdesk() {
   const [isModalOpen, setModal] = useState(false);
   const [isEditModalOpen, setEditModal] = useState(false);
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
+  const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
   const [description, setDescription] = useState("");
 
@@ -60,7 +62,7 @@ function Helpdesk() {
   }
 
   function handleDetails({ id }) {
-    alert(`chamado n: ${id}`);
+    setFollowUpModal(true);
   }
 
   return (
@@ -205,6 +207,10 @@ function Helpdesk() {
         <EditCallModal
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
+        />
+        <FollowUpModal 
+          isFollowUpModalOpen={isFollowUpModalOpen}
+          setFollowUpModal={setFollowUpModal}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
