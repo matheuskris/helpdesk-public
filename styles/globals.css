@@ -17,7 +17,7 @@
         @apply text-lg text-white font-semibold mb-6 mr-[60px] px-6 py-3 rounded-[24px] bg-blue-600 hover:bg-blue-700 active:scale-95 transition duration-200 
     }
     .th {
-       @apply font-bold px-6 py-6  2xl:text-base
+       @apply font-bold px-6 py-6  2xl:text-lg
     }
     .td {
         @apply font-semibold px-6 py-6 2xl:text-base
@@ -33,5 +33,8 @@
     }
     .btnCloseCall {
         @apply p-2 rounded-lg font-semibold cursor-pointer bg-red-500 hover:bg-red-700 active:scale-95 transition duration-100
+    }
+    .btnDetails {
+        @apply bg-green-600 text-white px-3 py-2 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg
     }
 }

@@ -133,9 +133,9 @@ function Helpdesk() {
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th className="th ">ID</th>
                 <th className="th ">Data Inicial</th>
-                <th className="th ">Data Término</th>
                 <th className="th ">Título</th>
                 <th className="th ">Descrição</th>
+                <th className="th">Follow up</th>
                 <th className="th ">Prioridade</th>
                 <th className="th ">Responsável</th>
                 <th className="th "></th>
@@ -150,7 +150,6 @@ function Helpdesk() {
                 >
                   <td className="td">{chamado.id}</td>
                   <td className="td">{chamado.start.day}</td>
-                  <td className="td"> - </td>
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
@@ -158,6 +157,7 @@ function Helpdesk() {
                   >
                     {chamado.description}
                   </td>
+                  <td className="td"><button className="btnDetails">Detalhes</button></td>
                   <td className="td">{chamado.priority}</td>
                   <td className="td">{chamado.inCharge}</td>
                   <td className="td">
@@ -191,20 +191,9 @@ function Helpdesk() {
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
           setDescriptionModal={setDescriptionModal}
+          description={description} 
         />
       </div>
-
-      {/* === Configuração do Modal =====  */}
-      <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
-      <EditCallModal
-        isEditModalOpen={isEditModalOpen}
-        setEditModal={setEditModal}
-      />
-      <DescriptionModal
-        description={description}
-        isDescriptionModalOpen={isDescriptionModalOpen}
-        setDescriptionModal={setDescriptionModal}
-      />
     </div>
   );
 }
