@@ -2,7 +2,6 @@ import Head from 'next/head';
 import "../styles/globals.css";
 import ProgressBar from '@badrap/bar-of-progress';
 import Router from 'next/router';
-import { RecoilRoot } from 'recoil';
 
 
 const progress = new ProgressBar({
@@ -24,9 +23,7 @@ function MyApp({ Component, pageProps }) {
           <meta name="description" content="" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <RecoilRoot>
           <Component {...pageProps} />
-        </RecoilRoot>
       </div>
     )
 }
