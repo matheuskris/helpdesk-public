@@ -19,14 +19,15 @@ function Helpdesk() {
 
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
+  const [filterOrderBy, setFilterOrderBy ] = useState("id")
 
   // FOLLOW UP STATE
-  const [followUpText, setFollowUpText] = useState('');
+  const [followUpChamado, setFollowUpChamado] = useState({});
 
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
       case "start":
-        return a.start.hour - b.start.hour;
+        return a.start?.hour - b.start?.hour;
       case "id":
         return a.id - b.id;
       case "inCharge":
@@ -138,9 +139,11 @@ function Helpdesk() {
   }
 
   // FOLLOW UP FUNCTION
-  function handleDetails( { id, details } ) {
-    setFollowUpText(details || '')
-    setFollowUpModal(true)
+  function handleShowFollowUp( chamado ) {
+    setFollowUpModal(true);
+    if(chamado.followUp){
+      setFollowUpChamado(chamado)
+    }
   }
 
   return (
@@ -264,7 +267,7 @@ function Helpdesk() {
                   className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
                 >
                   <td className="td">{chamado.id}</td>
-                  <td className="td">{chamado.start.day}</td>
+                  <td className="td">{chamado.start?.day}</td>
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
@@ -274,7 +277,7 @@ function Helpdesk() {
                   </td>
                   <td className="td">
                     <button
-                      onClick={() => handleDetails(chamado)}
+                      onClick={() => handleShowFollowUp(chamado)}
                       className="btnDetails"
                     >
                       Detalhes
@@ -344,8 +347,8 @@ function Helpdesk() {
         <FollowUpModal
           isFollowUpModalOpen={isFollowUpModalOpen}
           setFollowUpModal={setFollowUpModal}
-          followUpText={followUpText}
-          setFollowUpText={setFollowUpText}
+          followUpChamado={followUpChamado}
+          setFollowUpChamado={setFollowUpChamado}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}

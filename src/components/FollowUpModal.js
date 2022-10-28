@@ -1,10 +1,10 @@
 import { useState } from "react";
 import Modal from "react-modal";
+import { writeNewCall }from"../utils/firebase.utils"
 
 Modal.setAppElement("#__next");
 
-function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpText, setFollowUpText }) {
-  const [followUp, setFollowUp] = useState(followUpText);
+function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpChamado, setFollowUpChamado }) {
   const customStyle = {
     content: {
       top: "50%",
@@ -22,16 +22,19 @@ function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpText, se
     },
   };
 
-  function handleOpenModal() {
-    setFollowUpModal(true);
-  }
-
   function handleCloseModal() {
     setFollowUpModal(false);
   }
 
-  function handleSaveFollowUp() {
+  function handleChange(e) {
+    const { value } = e.target;
+    const { name } = e.target;
+    setFollowUpChamado({ ...followUpChamado, [name]: value });
+  }
 
+  function handleSaveFollowUp() {
+    writeNewCall({...followUpChamado, followUp: followUpChamado.followUp})
+    setFollowUpModal(false);
   }
 
   return (
@@ -46,11 +49,12 @@ function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpText, se
           <textarea
             rows={"16"}
             cols={"120"}
+            name="followUp"
             placeholder="Escreva aqui o acompanhamento"
             className="p-4 w-[100%]text-base"
-          >
-            {followUp}
-          </textarea>
+            value={followUpChamado.followUp}
+            onChange={handleChange}
+          />
         </div>
         <button
           onClick={handleSaveFollowUp}
