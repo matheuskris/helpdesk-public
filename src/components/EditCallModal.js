@@ -75,6 +75,14 @@ function EditCallModal({
           />
           <input
             onChange={handleChange}
+            name="client"
+            value={callToEdit.client}
+            placeholder="ID"
+            className="inputCadastro"
+            type="text"
+          />
+          <input
+            onChange={handleChange}
             name="title"
             value={callToEdit.title}
             placeholder="Título"

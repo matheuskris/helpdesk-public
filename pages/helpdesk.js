@@ -19,7 +19,7 @@ function Helpdesk() {
 
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
-  const [filterOrderBy, setFilterOrderBy ] = useState("id")
+  const [filterOrderBy, setFilterOrderBy] = useState("id")
 
   // FOLLOW UP STATE
   const [followUpChamado, setFollowUpChamado] = useState({});
@@ -31,8 +31,8 @@ function Helpdesk() {
       case "id":
         return a.id - b.id;
       case "inCharge":
-        let xIC = a.inCharge.toLowerCase();
-        let yIC = b.inCharge.toLowerCase();
+        let xIC = a.inCharge?.toLowerCase();
+        let yIC = b.inCharge?.toLowerCase();
         if (xIC < yIC) {
           return -1;
         }
@@ -41,8 +41,8 @@ function Helpdesk() {
         }
         return 0;
       case "title":
-        let xt = a.title.toLowerCase();
-        let yt = b.title.toLowerCase();
+        let xt = a.title?.toLowerCase();
+        let yt = b.title?.toLowerCase();
         if (xt < yt) {
           return -1;
         }
@@ -51,19 +51,29 @@ function Helpdesk() {
         }
         return 0;
       case "priority":
-        let x = a.priority.toLowerCase();
-        let y = b.priority.toLowerCase();
-        if (x < y) {
+        let xP = a.priority?.toLowerCase();
+        let yP = b.priority?.toLowerCase();
+        if (xP < yP) {
           return -1;
         }
         if (x > y) {
           return 1;
         }
         return 0;
+      case "client":
+        let xC = a.client?.toLowerCase();
+        let yC = b.client?.toLowerCase();
+        if (xC < yC) {
+          return -1;
+        }
+        if (xC > yC) {
+          return 1;
+        }
+        return 0;
     }
   });
 
-  const filteredCalls = orderedCalls.filter((call) => !call.isClosed);
+  let filteredCalls = orderedCalls.filter((call) => !call.isClosed);
 
   // não está funcionando, resolver depois
   function handleFilter(filterId) {
@@ -106,7 +116,7 @@ function Helpdesk() {
     router.push("/");
   }
 
-  // handleCloseCall
+  // handle Get Beautifull Data
   function getBeatyDate() {
     const date = new Date();
 
@@ -116,6 +126,7 @@ function Helpdesk() {
     };
   }
 
+  // Close Call
   function handleCloseCall(callToClose) {
     const newDate = getBeatyDate();
 
@@ -133,6 +144,7 @@ function Helpdesk() {
     setDescription(desc);
   }
 
+  // Edit Modal
   function handleEditModal(chamado) {
     setEditModal(true);
     setCallToEdit(chamado);
@@ -144,6 +156,10 @@ function Helpdesk() {
     if(chamado.followUp){
       setFollowUpChamado(chamado)
     }
+  }
+
+  function handleShowClosedCalls() {
+    return filteredCalls.filter(call => call.isClosed)
   }
 
   return (
@@ -204,14 +220,17 @@ function Helpdesk() {
           <h1 className="pl-10 text-3xl font-semibold mb-2">
             Painel de Controle
           </h1>
-          <button onClick={handleOpenModal} className="btnAddChamado">
-            Abrir um chamado
-          </button>
+          <div className="">
+            <button onClick={handleShowClosedCalls} className="btnShowClosedCalls">Visualizar Chamados Fechados</button>
+            <button onClick={handleOpenModal} className="btnAddChamado">
+              Abrir um chamado
+            </button>
+          </div>
         </div>
 
         {/* Tabela */}
-        <div className="rounded-[30px] overflow-hidden">
-          <table className=" bg-white h-auto w-full border-collapse text-lg ">
+        <div className="rounded-[30px] overflow-hidden w-[95%] mx-auto">
+          <table className=" bg-white h-auto w-[100%] overflow-x-scroll border-collapse text-lg ">
             <thead>
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th
@@ -221,6 +240,14 @@ function Helpdesk() {
                   }}
                 >
                   ID
+                </th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("client");
+                  }}
+                >
+                  Cliente
                 </th>
                 <th
                   className="th"
@@ -267,6 +294,7 @@ function Helpdesk() {
                   className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
                 >
                   <td className="td">{chamado.id}</td>
+                  <td className="td">{chamado?.client}</td>
                   <td className="td">{chamado.start?.day}</td>
                   <td className="td">{chamado.title}</td>
                   <td

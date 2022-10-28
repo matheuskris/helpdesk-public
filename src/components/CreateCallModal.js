@@ -102,6 +102,14 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
         />
         <input
           onChange={handleChange}
+          name="client"
+          value={infoCall.client}
+          placeholder="Cliente"
+          className="inputCadastro"
+          type="text"
+        />
+        <input
+          onChange={handleChange}
           name="title"
           value={infoCall.title}
           placeholder="Título"
