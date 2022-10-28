@@ -6,6 +6,7 @@ import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 
+
 function Helpdesk() {
   const router = useRouter();
   const [chamados, setChamados] = useState([]);
@@ -13,7 +14,7 @@ function Helpdesk() {
   const [isEditModalOpen, setEditModal] = useState(false);
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
-  const [description, setdesc] = useState('')
+
 
   // open modal
   function handleOpenModal() {
@@ -34,13 +35,6 @@ function Helpdesk() {
     getObjectsOfCollection("calls").then((calls) => setChamados(calls));
   }, []);
 
-  // just an example of what the date should look like
-  function getBeatyDate(date) {
-    return `${date.getDate()}/${
-      date.getMonth() + 1
-    }/${date.getFullYear()} às ${date.getHours()}:${date.getMinutes()}`;
-  }
-
   // Logaut logic
   function logout() {
     localStorage.removeItem("user");
@@ -49,26 +43,23 @@ function Helpdesk() {
 
   // handleCloseCall
   function handleCloseCall(id) {
-    const chosenCall = chamados.filter(chamado => chamado.id === id)
-    setClosedCalls([...closedCalls, chosenCall])
+    const chosenCall = chamados.filter((chamado) => chamado.id === id);
+    setClosedCalls([...closedCalls, chosenCall]);
   }
 
   // opening the modal and setting the description to get in the modal
-  function checkDescription (desc) {
-    setDescriptionModal(true)
-    setdesc(desc)
+  function checkDescription(desc) {
+    setDescriptionModal(true);
+    setdesc(desc);
   }
-
 
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
-      <div className=" fixed sm:w-[60px] lg:w-[136px] lg:h-full bg-[#c4c4c4]">
+      <div className="flex-col flex fixed w-[13%] h-full bg-[#c4c4c4]">
         {/* Titulo e SVG Menu */}
-        <div className="flex items-center justify-center">
-          <h1 className="text-lg font-semibold text-white py-4 px-2">
-            Help Desk
-          </h1>
+        <div className="flex items-center justify-between mt-4 mx-4">
+          <h1 className="text-lg font-semibold text-white">Help Desk</h1>
           <Image
             className="cursor-pointer"
             width={24}
@@ -79,7 +70,7 @@ function Helpdesk() {
         </div>
 
         {/* Opções */}
-        <div className="w-[100%] lg:mt-[575px] 2xl:mt-[580px] space-y-2">
+        <div className="flex flex-col gap-2 w-[100%] mt-auto mb-4">
           <div className="opcoes">
             <Image
               src="/phone.svg"
@@ -113,61 +104,86 @@ function Helpdesk() {
       </div>
       {/* Final Aside */}
 
-      {/* Titulo tabela e botão  */}
-      <div className="flex justify-between items-center pt-[50px]">
-        <h1 className=" text-3xl font-semibold ml-[136px] pl-16 mb-2">
-          Painel de Controle
-        </h1>
-        <button onClick={handleOpenModal} className="btnAddChamado">
-          Abrir um chamado
-        </button>
-      </div>
+      {/* Content */}
+      <div className="ml-[13%] px-6 ">
+        {/* Titulo tabela e botão  */}
+        <div className="flex justify-between items-center pt-[50px]">
+          <h1 className="pl-10 text-3xl font-semibold mb-2">
+            Painel de Controle
+          </h1>
+          <button onClick={handleOpenModal} className="btnAddChamado">
+            Abrir um chamado
+          </button>
+        </div>
 
-      {/* Tabela */}
-      <div className=" mx-auto flex justify-center items-center ml-[136px]">
-        <table className=" bg-white  h-auto 2xl:w-[1650px]  rounded-3xl border-collapse mx-[60px] my-0 text-lg ">
-          <thead>
-            <tr className="bg-[#c4c4c4] text-white text-left">
-              <th className="th w-10">ID</th>
-              <th className="th w-10">Data Inicial</th>
-              <th className="th w-10">Data Término</th>
-              <th className="th w-10">Título</th>
-              <th className="th w-16">Descrição</th>
-              <th className="th w-10">Prioridade</th>
-              <th className="th w-10">Responsável</th>
-              <th className="th w-10"></th>
-              <th className="th w-10"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {chamados.map((chamado) => (
-              <tr
-                key={chamado.id}
-                className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
-              >
-                <td className="td">{chamado.id}</td>
-                <td className="td">26/10/2022</td>
-                <td className="td">26/10/2022</td>
-                <td className="td">{chamado.title}</td>
-                <td onClick={() => checkDescription(chamado.description)} className="td cursor-pointer whitespace-nowrap truncate">{chamado.description}</td>
-                <td className="td">{chamado.priority}</td>
-                <td className="td">{chamado.inCharge}</td>
-                <td className="td">
-                  <button onClick={() => setEditModal(true)} className="btnEdit">
-                    Editar
-                  </button>
-                </td>
-                <td className="td">
-                  <button onClick={() => handleCloseCall(chamado.id)} className="btnCloseCall">
-                    Finalizar
-                  </button>
-                </td>
+        {/* Tabela */}
+        <div className="rounded-[30px] overflow-hidden">
+          <table className=" bg-white h-auto w-full border-collapse text-lg ">
+            <thead>
+              <tr className="bg-[#c4c4c4] text-white text-left">
+                <th className="th ">ID</th>
+                <th className="th ">Data Inicial</th>
+                <th className="th ">Data Término</th>
+                <th className="th ">Título</th>
+                <th className="th ">Descrição</th>
+                <th className="th ">Prioridade</th>
+                <th className="th ">Responsável</th>
+                <th className="th "></th>
+                <th className="th "></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {chamados.map((chamado) => (
+                <tr
+                  key={chamado.id}
+                  className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
+                >
+                  <td className="td">{chamado.id}</td>
+                  <td className="td">{chamado.start.day}</td>
+                  <td className="td"> - </td>
+                  <td className="td">{chamado.title}</td>
+                  <td
+                    onClick={() => checkDescription(chamado.description)}
+                    className="td cursor-pointer whitespace-nowrap truncate"
+                  >
+                    {chamado.description}
+                  </td>
+                  <td className="td">{chamado.priority}</td>
+                  <td className="td">{chamado.inCharge}</td>
+                  <td className="td">
+                    <button
+                      onClick={() => setEditModal(true)}
+                      className="btnEdit"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                  <td className="td">
+                    <button
+                      onClick={() => handleCloseCall(chamado.id)}
+                      className="btnCloseCall"
+                    >
+                      Finalizar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
+        {/* === Configuração do Modal =====  */}
+        <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+        <EditCallModal
+          isEditModalOpen={isEditModalOpen}
+          setEditModal={setEditModal}
+        />
+        <DescriptionModal
+          isDescriptionModalOpen={isDescriptionModalOpen}
+          setDescriptionModal={setDescriptionModal}
+        />
+      </div>
+=======
       {/* === Configuração do Modal =====  */}
       <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
       <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
