@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getObjectsOfCollection } from "../src/utils/firebase.utils";
+import { callsListener } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
-
 
 function Helpdesk() {
   const router = useRouter();
@@ -14,8 +13,7 @@ function Helpdesk() {
   const [isEditModalOpen, setEditModal] = useState(false);
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
-  const [description, setDescription] = useState('');
-
+  const [description, setDescription] = useState("");
 
   // open modal
   function handleOpenModal() {
@@ -33,8 +31,19 @@ function Helpdesk() {
 
   // fetching calls from firebase
   useEffect(() => {
-    getObjectsOfCollection("calls").then((calls) => setChamados(calls));
+    const transformObjectToArray = (object) => {
+      const newArray = [];
+      for (const prop in object) {
+        newArray.push(object[prop]);
+      }
+      setChamados(newArray);
+    };
+    callsListener(transformObjectToArray);
   }, []);
+
+  // useEffect(() => {
+  //   getObjectsOfCollection("calls").then((calls) => setChamados(calls));
+  // }, []);
 
   // Logaut logic
   function logout() {
@@ -185,11 +194,17 @@ function Helpdesk() {
         />
       </div>
 
-
       {/* === Configuração do Modal =====  */}
       <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
-      <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
-      <DescriptionModal description={description} isDescriptionModalOpen={isDescriptionModalOpen} setDescriptionModal={setDescriptionModal} />
+      <EditCallModal
+        isEditModalOpen={isEditModalOpen}
+        setEditModal={setEditModal}
+      />
+      <DescriptionModal
+        description={description}
+        isDescriptionModalOpen={isDescriptionModalOpen}
+        setDescriptionModal={setDescriptionModal}
+      />
     </div>
   );
 }

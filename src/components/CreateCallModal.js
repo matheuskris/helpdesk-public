@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addObjectToCollection } from "../utils/firebase.utils";
+import { writeNewCall } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
 Modal.setAppElement("#__next");
@@ -60,7 +60,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       }
     }
 
-    await addObjectToCollection("calls", objectToSend);
+    await writeNewCall(objectToSend);
     setInfoCall({
       id: "",
       start: "",
@@ -69,7 +69,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       priority: "",
       inCharge: "",
     });
-    window.location.reload();
+    setModal(false);
   }
 
   // Normal handle change
