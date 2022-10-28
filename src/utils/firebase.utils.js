@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -14,6 +14,8 @@ import {
   writeBatch,
   query,
 } from "firebase/firestore/lite";
+
+import { getDatabase, ref, set, onValue } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -37,6 +39,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
 
+//=========== R E A L === T I M E === D A T A B A S E =======
+
+const RTdatabase = getDatabase(app);
+
+export const writeNewCall = async (call) => {
+  try {
+    await set(ref(RTdatabase, "calls/" + call.id), call);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const callsRef = ref(RTdatabase, "calls/");
+
+export const callsListener = (callback) => {
+  return onValue(callsRef, (callsSnapshot) => {
+    const data = callsSnapshot.val();
+    callback(data);
+  });
+};
+
+// USER AUTH STUFF
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
   return await createUserWithEmailAndPassword(auth, email, password);
@@ -47,6 +71,7 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
+// OLD DATABASE
 export const addObjectToCollection = async (collectionKey, objectToAdd) => {
   const collectionRef = collection(db, collectionKey);
   const batch = writeBatch(db);
