@@ -12,6 +12,7 @@ function Helpdesk() {
   const [chamados, setChamados] = useState([]);
 
   const [isModalOpen, setModal] = useState(false);
+  const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
 
   const [isEditModalOpen, setEditModal] = useState(false);
   const [callToEdit, setCallToEdit] = useState();
@@ -19,6 +20,9 @@ function Helpdesk() {
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
   const [filterOrderBy, setFilterOrderBy] = useState("priority");
+
+  // FOLLOW UP STATE
+  const [followUpText, setFollowUpText] = useState('');
 
   const filteredCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
@@ -123,6 +127,12 @@ function Helpdesk() {
   function handleEditModal(chamado) {
     setEditModal(true);
     setCallToEdit(chamado);
+  }
+
+  // FOLLOW UP FUNCTION
+  function handleDetails( { id, details } ) {
+    setFollowUpText(details || '')
+    setFollowUpModal(true)
   }
 
   return (
@@ -278,14 +288,21 @@ function Helpdesk() {
         </div>
 
         {/* === Configuração do Modal =====  */}
-        <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+        <CreateCallModal 
+          isModalOpen={isModalOpen} 
+          setModal={setModal} 
+        />
         <EditCallModal
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
+          callToEdit={callToEdit}
+          setCallToEdit={setCallToEdit}
         />
         <FollowUpModal
           isFollowUpModalOpen={isFollowUpModalOpen}
           setFollowUpModal={setFollowUpModal}
+          followUpText={followUpText}
+          setFollowUpText={setFollowUpText}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
