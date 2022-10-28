@@ -5,7 +5,6 @@ import { callsListener, writeNewCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
-import FollowUpModal from "../src/components/FollowUpModal";
 
 function Helpdesk() {
   const router = useRouter();
@@ -18,21 +17,22 @@ function Helpdesk() {
 
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
-  const [filterOrderBy, setFilterOrderBy] = useState("priority");
 
-  const filteredCalls = chamados.sort(function (a, b) {
+  const [filterOrderBy, setFilterOrderBy] = useState("start");
+
+  const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
       case "start":
         return a.start.hour - b.start.hour;
       case "id":
         return a.id - b.id;
       case "inCharge":
-        let xIC = a.title.toLowerCase();
-        let yIC = b.title.toLowerCase();
+        let xIC = a.inCharge.toLowerCase();
+        let yIC = b.inCharge.toLowerCase();
         if (xIC < yIC) {
           return -1;
         }
-        if (xt > yt) {
+        if (xIC > yIC) {
           return 1;
         }
         return 0;
@@ -59,7 +59,16 @@ function Helpdesk() {
     }
   });
 
-  console.log(filteredCalls);
+  const filteredCalls = orderedCalls.filter((call) => !call.isClosed);
+
+  // não está funcionando, resolver depois
+  function handleFilter(filterId) {
+    if (filterOrderBy === filterId) {
+      filteredCalls.reverse();
+    } else {
+      setFilterOrderBy(filterId);
+    }
+  }
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -106,7 +115,7 @@ function Helpdesk() {
   function handleCloseCall(callToClose) {
     const newDate = getBeatyDate();
 
-    writeNewCall({ ...callToClose, finished: newDate });
+    writeNewCall({ ...callToClose, finished: newDate, isClosed: true });
   }
 
   // open modal
@@ -193,15 +202,50 @@ function Helpdesk() {
           <table className=" bg-white h-auto w-full border-collapse text-lg ">
             <thead>
               <tr className="bg-[#c4c4c4] text-white text-left">
-                <th className="th ">ID</th>
-                <th className="th ">Data Inicial</th>
-                <th className="th ">Título</th>
-                <th className="th ">Descrição</th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("id");
+                  }}
+                >
+                  ID
+                </th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("start");
+                  }}
+                >
+                  Data Inicial
+                </th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("title");
+                  }}
+                >
+                  Título
+                </th>
+                <th className="th">Descrição</th>
                 <th className="th">Follow up</th>
-                <th className="th ">Prioridade</th>
-                <th className="th ">Responsável</th>
-                <th className="th "></th>
-                <th className="th "></th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("priority");
+                  }}
+                >
+                  Prioridade
+                </th>
+                <th
+                  className="th"
+                  onClick={() => {
+                    handleFilter("inCharge");
+                  }}
+                >
+                  Responsável
+                </th>
+                <th className="th"></th>
+                <th className="th"></th>
               </tr>
             </thead>
             <tbody>
@@ -282,10 +326,8 @@ function Helpdesk() {
         <EditCallModal
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
-        />
-        <FollowUpModal
-          isFollowUpModalOpen={isFollowUpModalOpen}
-          setFollowUpModal={setFollowUpModal}
+          callToEdit={callToEdit}
+          setCallToEdit={setCallToEdit}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
