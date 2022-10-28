@@ -168,13 +168,13 @@ function Helpdesk() {
                   <td className="td flex justify-around items-center">
                     {chamado.priority}{" "}
                     {chamado.priority === "Alta" && (
-                      <img src="/High Priority.png" alt="Alta" />
+                      <Image width={30} height={30} src="/High Priority.png" alt="Alta" />
                     )}
                     {chamado.priority === "Média" && (
-                      <img src="/Medium Priority.png" alt="Média" />
+                      <Image width={30} height={30} src="/Medium Priority.png" alt="Média" />
                     )}
                     {chamado.priority === "Baixa" && (
-                      <img src="/Low Priority.png" alt="Baixa" />
+                      <Image width={30} height={30} src="/Low Priority.png" alt="Baixa" />
                     )}
                   </td>
                   <td className="td">{chamado.inCharge}</td>
