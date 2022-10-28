@@ -5,8 +5,7 @@ import { getObjectsOfCollection } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
-import { useRecoilState } from "recoil";
-import { DescState } from "../atoms/DescAtom";
+
 
 function Helpdesk() {
   const router = useRouter();
@@ -15,7 +14,7 @@ function Helpdesk() {
   const [isEditModalOpen, setEditModal] = useState(false);
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [closedCalls, setClosedCalls] = useState([]);
-  const [description, setdesc] = useRecoilState(DescState);
+
 
   // open modal
   function handleOpenModal() {
@@ -184,6 +183,11 @@ function Helpdesk() {
           setDescriptionModal={setDescriptionModal}
         />
       </div>
+=======
+      {/* === Configuração do Modal =====  */}
+      <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+      <EditCallModal isEditModalOpen={isEditModalOpen} setEditModal={setEditModal} />
+      <DescriptionModal description={description} isDescriptionModalOpen={isDescriptionModalOpen} setDescriptionModal={setDescriptionModal} />
     </div>
   );
 }

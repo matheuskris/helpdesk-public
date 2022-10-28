@@ -1,12 +1,9 @@
 import { useState } from "react";
 import Modal from "react-modal";
-import { DescState } from "../../atoms/DescAtom";
-import { useRecoilState } from "recoil";
 
 Modal.setAppElement("#__next");
 
-function DescriptionModal({ isDescriptionModalOpen, setDescriptionModal }) {
-  const [description, setdesc] = useRecoilState(DescState);
+function DescriptionModal({ isDescriptionModalOpen, setDescriptionModal, description }) {
 
   const customStyle = {
     content: {
