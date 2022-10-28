@@ -5,6 +5,7 @@ import { callsListener, writeNewCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
+import FollowUpModal from "../src/components/FollowUpModal";
 
 function Helpdesk() {
   const router = useRouter();
@@ -68,6 +69,11 @@ function Helpdesk() {
       router.push("/");
     }
   });
+
+  // open modal
+  function handleOpenModal() {
+    setModal(true);
+  }
 
   // fetching calls from firebase
   useEffect(() => {
@@ -189,9 +195,9 @@ function Helpdesk() {
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th className="th ">ID</th>
                 <th className="th ">Data Inicial</th>
-                <th className="th ">Data Término</th>
                 <th className="th ">Título</th>
                 <th className="th ">Descrição</th>
+                <th className="th">Follow up</th>
                 <th className="th ">Prioridade</th>
                 <th className="th ">Responsável</th>
                 <th className="th "></th>
@@ -206,7 +212,6 @@ function Helpdesk() {
                 >
                   <td className="td">{chamado.id}</td>
                   <td className="td">{chamado.start.day}</td>
-                  <td className="td"> - </td>
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
@@ -214,7 +219,41 @@ function Helpdesk() {
                   >
                     {chamado.description}
                   </td>
-                  <td className="td">{chamado.priority}</td>
+                  <td className="td">
+                    <button
+                      onClick={() => handleDetails(chamado)}
+                      className="btnDetails"
+                    >
+                      Detalhes
+                    </button>
+                  </td>
+                  <td className="td flex justify-around items-center">
+                    {chamado.priority}{" "}
+                    {chamado.priority === "Alta" && (
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/High Priority.png"
+                        alt="Alta"
+                      />
+                    )}
+                    {chamado.priority === "Média" && (
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/Medium Priority.png"
+                        alt="Média"
+                      />
+                    )}
+                    {chamado.priority === "Baixa" && (
+                      <Image
+                        width={30}
+                        height={30}
+                        src="/Low Priority.png"
+                        alt="Baixa"
+                      />
+                    )}
+                  </td>
                   <td className="td">{chamado.inCharge}</td>
                   <td className="td">
                     <button
@@ -244,25 +283,16 @@ function Helpdesk() {
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
         />
+        <FollowUpModal
+          isFollowUpModalOpen={isFollowUpModalOpen}
+          setFollowUpModal={setFollowUpModal}
+        />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}
           setDescriptionModal={setDescriptionModal}
+          description={description}
         />
       </div>
-
-      {/* === Configuração do Modal =====  */}
-      <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
-      <EditCallModal
-        isEditModalOpen={isEditModalOpen}
-        setEditModal={setEditModal}
-        callToEdit={callToEdit}
-        setCallToEdit={setCallToEdit}
-      />
-      <DescriptionModal
-        description={description}
-        isDescriptionModalOpen={isDescriptionModalOpen}
-        setDescriptionModal={setDescriptionModal}
-      />
     </div>
   );
 }
