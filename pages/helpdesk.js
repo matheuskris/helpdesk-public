@@ -106,7 +106,7 @@ function Helpdesk() {
     if (timePassedInSecs < 3600) {
       return `${timePassedInMin.toFixed(0)} min`;
     }
-    const timePassedInHoras = timePassedInMin * 60;
+    const timePassedInHoras = timePassedInMin / 60;
     const minPassHour = timePassedInMin % 60;
     if (timePassedInSecs < 86400) {
       return `${timePassedInHoras.toFixed(0)} hr ${minPassHour.toFixed(0)} min`;
@@ -195,6 +195,31 @@ function Helpdesk() {
     writeNewCall({ ...chamado, isClosed: false });
   }
 
+
+
+
+  function exportReport(){
+    const XLSX = require('xlsx')
+    // array of objects to save in Excel
+    let binary_univers = filteredCalls;
+  
+    let binaryWS = XLSX.utils.json_to_sheet(binary_univers); 
+    
+    // Create a new Workbook
+    var wb = XLSX.utils.book_new() 
+  
+    // Name your sheet
+    XLSX.utils.book_append_sheet(wb, binaryWS, 'relatorio mes 1') 
+  
+    // export your excel
+    XLSX.writeFile(wb, 'relatorio mes 1.xlsx');
+  }
+
+
+
+
+
+  
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
@@ -209,6 +234,7 @@ function Helpdesk() {
             Painel de Controle
           </h1>
           <div className="">
+            <button className="" onClick={exportReport}>Exportar</button>
             {showClosedCalls ? (
               <button
                 onClick={handleShowClosedCalls}

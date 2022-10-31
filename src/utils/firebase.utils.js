@@ -58,6 +58,13 @@ export const writeNewCall = async (call) => {
   }
 };
 
+export const removeExistingCall = async (call) => {
+  try {
+    await remove(ref(RTdatabase, "calls/" + call.id));
+  } catch (error) {
+    console.log(error);
+  }
+};
 export const editExistingCall = async (call, oldId) => {
   try {
     await remove(ref(RTdatabase, "calls/" + oldId));
