@@ -22,16 +22,6 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
     setModal(false);
   }
 
-  // just an example of what the date should look like
-  function getBeatyDate() {
-    const date = new Date();
-
-    return {
-      day: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-      hour: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-    };
-  }
-
   // Estilo do Modal
   const customStyle = {
     content: {
@@ -48,13 +38,13 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
   // adding new call to firebase thru the modal
   async function handleRegister(e) {
     e.preventDefault();
-    const newDate = getBeatyDate();
+    const newDate = new Date();
+    const sendDate = Date.parse(newDate);
     const objectToSend = {
       ...infoCall,
-      start: newDate,
+      start: sendDate,
     };
-    console.log(objectToSend);
-    console.log(objectToSend);
+
     for (const prop in objectToSend) {
       if (!objectToSend[prop]) {
         setIsRegisterFull(false);
