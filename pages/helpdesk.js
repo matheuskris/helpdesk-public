@@ -195,31 +195,23 @@ function Helpdesk() {
     writeNewCall({ ...chamado, isClosed: false });
   }
 
-
-
-
-  function exportReport(){
-    const XLSX = require('xlsx')
+  function exportReport() {
+    const XLSX = require("xlsx");
     // array of objects to save in Excel
     let binary_univers = filteredCalls;
-  
-    let binaryWS = XLSX.utils.json_to_sheet(binary_univers); 
-    
+
+    let binaryWS = XLSX.utils.json_to_sheet(binary_univers);
+
     // Create a new Workbook
-    var wb = XLSX.utils.book_new() 
-  
+    var wb = XLSX.utils.book_new();
+
     // Name your sheet
-    XLSX.utils.book_append_sheet(wb, binaryWS, 'relatorio mes 1') 
-  
+    XLSX.utils.book_append_sheet(wb, binaryWS, "Dê o nome do seu relatório");
+
     // export your excel
-    XLSX.writeFile(wb, 'relatorio mes 1.xlsx');
+    XLSX.writeFile(wb, "Dê o nome do seu relatório.xlsx");
   }
 
-
-
-
-
-  
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
@@ -234,7 +226,6 @@ function Helpdesk() {
             Painel de Controle
           </h1>
           <div className="">
-            <button className="" onClick={exportReport}>Exportar</button>
             {showClosedCalls ? (
               <button
                 onClick={handleShowClosedCalls}
@@ -328,9 +319,13 @@ function Helpdesk() {
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
-                    className="td"
+                    className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
                   >
-                    {chamado.description}
+                    {chamado.description.length > 500 ? (
+                      <p className="font-bold cursor-pointer">Clique aqui para visualizar a descrição</p>
+                    ) : (
+                      chamado.description
+                    )}
                   </td>
                   <td className="td">
                     <button
@@ -340,7 +335,7 @@ function Helpdesk() {
                       Detalhes
                     </button>
                   </td>
-                  <td className="td flex justify-around items-center">
+                  <td className="td flex justify-around items-center ">
                     {chamado.priority}{" "}
                     {chamado.priority === "Alta" && (
                       <Image
@@ -397,6 +392,12 @@ function Helpdesk() {
               ))}
             </tbody>
           </table>
+          <div className="w-[100%] mt-4 flex items-center justify-end">
+            <button className="btnExport" onClick={exportReport}>
+              Exportar para Excel
+            </button>
+            <Image className="" src="/SVG excel.svg" width={48} height={48} />
+          </div>
         </div>
 
         {/* === Configuração do Modal =====  */}
