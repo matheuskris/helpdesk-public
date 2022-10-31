@@ -214,10 +214,10 @@ function Helpdesk() {
     var wb = XLSX.utils.book_new();
 
     // Name your sheet
-    XLSX.utils.book_append_sheet(wb, binaryWS, "relatorio mes 1");
+    XLSX.utils.book_append_sheet(wb, binaryWS, "Dê o nome do seu relatório");
 
     // export your excel
-    XLSX.writeFile(wb, "relatorio mes 1.xlsx");
+    XLSX.writeFile(wb, "Dê o nome do seu relatório.xlsx");
   }
 
   return (
@@ -310,8 +310,9 @@ function Helpdesk() {
                 >
                   Responsável
                 </th>
+                {showClosedCalls ? <th className="th">Tempo Consumido</th> : ""}
                 <th className="th"></th>
-                <th className="th"></th>
+                {showClosedCalls ? "" : <th className="th"></th>}
               </tr>
             </thead>
             <tbody>
@@ -326,7 +327,7 @@ function Helpdesk() {
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
-                    className="td"
+                    className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
                   >
                     {chamado.description}
                   </td>
@@ -338,7 +339,7 @@ function Helpdesk() {
                       Detalhes
                     </button>
                   </td>
-                  <td className="td h-fit flex justify-around">
+                  <td className="td flex justify-around items-center ">
                     {chamado.priority}{" "}
                     {chamado.priority === "Alta" && (
                       <Image
@@ -366,14 +367,18 @@ function Helpdesk() {
                     )}
                   </td>
                   <td className="td">{chamado.inCharge}</td>
-                  <td className="td">
-                    <button
-                      onClick={() => handleEditModal(chamado)}
-                      className="btnEdit"
-                    >
-                      Editar
-                    </button>
-                  </td>
+                  {showClosedCalls ? (
+                    <td className="td">{chamado?.timeSpent}</td>
+                  ) : (
+                    <td className="td">
+                      <button
+                        onClick={() => handleEditModal(chamado)}
+                        className="btnEdit"
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  )}
                   <td className="td">
                     {showClosedCalls ? (
                       <button
@@ -395,6 +400,12 @@ function Helpdesk() {
               ))}
             </tbody>
           </table>
+          <div className="w-[100%] mt-4 flex items-center justify-end">
+            <button className="btnExport" onClick={exportReport}>
+              Exportar para Excel
+            </button>
+            <Image className="" src="/SVG excel.svg" width={48} height={48} />
+          </div>
         </div>
 
         {/* === Configuração do Modal =====  */}

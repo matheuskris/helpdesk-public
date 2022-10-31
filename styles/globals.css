@@ -44,6 +44,9 @@
         @apply bg-red-500 text-white px-6 py-3 text-lg mr-6 font-semibold rounded-[24px] hover:bg-red-600 transition duration-100 active:scale-95
     }
     .btnReopenCall {
-        @apply bg-green-600 text-white px-3 py-2 text-lg mr-6 font-semibold rounded-lg hover:bg-green-700 transition duration-100 active:scale-95
+        @apply bg-green-600 text-white px-3 py-2 text-base mr-6 font-semibold rounded-lg hover:bg-green-700 transition duration-100 active:scale-95
+    }
+    .btnExport {
+        @apply text-white font-semibold text-lg px-3 py-1 bg-green-500 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg 
     }
 }
