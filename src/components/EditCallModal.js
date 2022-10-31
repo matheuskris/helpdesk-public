@@ -29,7 +29,8 @@ function EditCallModal({
       borderRadius: "24px",
     },
   };
-
+  const callDate = new Date(1580266800000);
+  console.log(callDate);
   // Close Modal
   function handleCloseModal() {
     setEditModal(false);

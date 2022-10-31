@@ -92,6 +92,15 @@ function Helpdesk() {
     }
   }
 
+  // showing ongoingTime of calls
+
+  function showOnGoingTime(date) {
+    const currentDate = new Date();
+    const currentHour = currentDate.getHours();
+    const currentDay = currentDate.getDay();
+    const currentMinutes = currentDate.getMinutes();
+  }
+
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
     if (localStorage.getItem("user")) {
