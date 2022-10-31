@@ -1,31 +1,31 @@
-import Head from 'next/head';
+import Head from "next/head";
 import "../styles/globals.css";
-import ProgressBar from '@badrap/bar-of-progress';
-import Router from 'next/router';
-
+import ProgressBar from "@badrap/bar-of-progress";
+import Router from "next/router";
+import { wrapper } from "../src/store/store";
 
 const progress = new ProgressBar({
   size: 4,
-  color: 'blue',
-  className: 'z-50',
+  color: "blue",
+  className: "z-50",
   delay: 0,
 });
 
-Router.events.on('routeChangeStart', progress.start);
-Router.events.on('routeChangeComplete', progress.finish);
-Router.events.on('routeChangeError', progress.finish);
+Router.events.on("routeChangeStart", progress.start);
+Router.events.on("routeChangeComplete", progress.finish);
+Router.events.on("routeChangeError", progress.finish);
 
 function MyApp({ Component, pageProps }) {
   return (
-      <div>
-        <Head>
-          <title>Help | Desk</title>
-          <meta name="description" content="" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-          <Component {...pageProps} />
-      </div>
-    )
+    <div>
+      <Head>
+        <title>Help | Desk</title>
+        <meta name="description" content="" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Component {...pageProps} />
+    </div>
+  );
 }
 
-export default MyApp;
+export default wrapper.withRedux(MyApp);
