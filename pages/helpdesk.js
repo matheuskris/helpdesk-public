@@ -7,6 +7,7 @@ import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 import FollowUpModal from "../src/components/FollowUpModal";
 import { initialCall } from "../src/components/CreateCallModal";
+import { parse } from "postcss";
 
 function Helpdesk() {
   const router = useRouter();
@@ -92,13 +93,26 @@ function Helpdesk() {
     }
   }
 
-  // showing ongoingTime of calls
-
-  function showOnGoingTime(date) {
+  // showing ongoingTime of call
+  function showOnGoingTime(parsedDate) {
     const currentDate = new Date();
-    const currentHour = currentDate.getHours();
-    const currentDay = currentDate.getDay();
-    const currentMinutes = currentDate.getMinutes();
+    const callDate = new Date(parsedDate);
+
+    const timePassedInSecs = (currentDate - callDate) / 1000;
+    if (timePassedInSecs < 60) {
+      return `${timePassedInSecs.toFixed(0)} seg`;
+    }
+    const timePassedInMin = timePassedInSecs / 60;
+    if (timePassedInSecs < 3600) {
+      return `${timePassedInMin.toFixed(0)} min`;
+    }
+    const timePassedInHoras = timePassedInMin * 60;
+    const minPassHour = timePassedInMin % 60;
+    if (timePassedInSecs < 86400) {
+      return `${timePassedInHoras.toFixed(0)} hr ${minPassHour.toFixed(0)} min`;
+    }
+    const daysPassed = timePassedInHoras / 24;
+    return `${daysPassed.toFixed(0)} dias`;
   }
 
   // checking if the user is authenticated if not, pushing to login page
@@ -284,7 +298,7 @@ function Helpdesk() {
                 >
                   <td className="td">{chamado.id}</td>
                   <td className="td">{chamado?.client}</td>
-                  <td className="td">{chamado.start?.day}</td>
+                  <td className="td">{showOnGoingTime(chamado.start)}</td>
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
