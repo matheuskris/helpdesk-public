@@ -303,8 +303,9 @@ function Helpdesk() {
                 >
                   Responsável
                 </th>
+                {showClosedCalls ? <th className="th">Tempo Consumido</th> : ""}
                 <th className="th"></th>
-                <th className="th"></th>
+                {showClosedCalls ? "" : <th className="th"></th>}
               </tr>
             </thead>
             <tbody>
@@ -321,11 +322,7 @@ function Helpdesk() {
                     onClick={() => checkDescription(chamado.description)}
                     className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
                   >
-                    {chamado.description.length > 500 ? (
-                      <p className="font-bold cursor-pointer">Clique aqui para visualizar a descrição</p>
-                    ) : (
-                      chamado.description
-                    )}
+                    {chamado.description}
                   </td>
                   <td className="td">
                     <button
@@ -363,14 +360,18 @@ function Helpdesk() {
                     )}
                   </td>
                   <td className="td">{chamado.inCharge}</td>
-                  <td className="td">
-                    <button
-                      onClick={() => handleEditModal(chamado)}
-                      className="btnEdit"
-                    >
-                      Editar
-                    </button>
-                  </td>
+                  {showClosedCalls ? (
+                    <td className="td">{chamado?.timeSpent}</td>
+                  ) : (
+                    <td className="td">
+                      <button
+                        onClick={() => handleEditModal(chamado)}
+                        className="btnEdit"
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  )}
                   <td className="td">
                     {showClosedCalls ? (
                       <button
