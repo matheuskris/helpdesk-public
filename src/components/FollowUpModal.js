@@ -1,10 +1,15 @@
 import { useState } from "react";
 import Modal from "react-modal";
-import { writeNewCall }from"../utils/firebase.utils"
+import { writeNewCall } from "../utils/firebase.utils";
 
 Modal.setAppElement("#__next");
 
-function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpChamado, setFollowUpChamado }) {
+function FollowUpModal({
+  isFollowUpModalOpen,
+  setFollowUpModal,
+  followUpChamado,
+  setFollowUpChamado,
+}) {
   const customStyle = {
     content: {
       top: "50%",
@@ -33,7 +38,7 @@ function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpChamado,
   }
 
   function handleSaveFollowUp() {
-    writeNewCall({...followUpChamado, followUp: followUpChamado.followUp})
+    writeNewCall(followUpChamado);
     setFollowUpModal(false);
   }
 
@@ -56,10 +61,7 @@ function FollowUpModal({ isFollowUpModalOpen, setFollowUpModal, followUpChamado,
             onChange={handleChange}
           />
         </div>
-        <button
-          onClick={handleSaveFollowUp}
-          className="btnSaveDetails"
-        >
+        <button onClick={handleSaveFollowUp} className="btnSaveDetails">
           Salvar
         </button>
       </div>

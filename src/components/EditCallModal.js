@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
-import { writeNewCall } from "../utils/firebase.utils";
+import { editExistingCall } from "../utils/firebase.utils";
 
 Modal.setAppElement("#__next");
 
@@ -11,6 +11,11 @@ function EditCallModal({
   setCallToEdit,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [oldId, setOldId] = useState({});
+
+  useEffect(() => {
+    setOldId(callToEdit.id);
+  }, [isEditModalOpen]);
 
   // Modal's style
   const customStyle = {
@@ -48,7 +53,7 @@ function EditCallModal({
       }
     }
     setEditModal(false);
-    writeNewCall(callToEdit);
+    editExistingCall(callToEdit, oldId);
   }
 
   return (

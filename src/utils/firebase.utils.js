@@ -15,7 +15,14 @@ import {
   query,
 } from "firebase/firestore/lite";
 
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  update,
+  remove,
+} from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -51,8 +58,9 @@ export const writeNewCall = async (call) => {
   }
 };
 
-export const editExistingCall = async (call) => {
+export const editExistingCall = async (call, oldId) => {
   try {
+    await remove(ref(RTdatabase, "calls/" + oldId));
     await set(ref(RTdatabase, "calls/" + call.id), call);
   } catch (error) {
     console.log(error);
