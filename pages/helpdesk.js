@@ -177,59 +177,18 @@ function Helpdesk() {
     setClosedCalls(!showClosedCalls);
   }
 
+  function handleReopenCall(chamado) {
+    writeNewCall({ ...chamado, isClosed: false });
+  }
+
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
       {/* Aside */}
-      <div className="flex-col flex fixed w-[13%] h-full bg-[#c4c4c4]">
-        {/* Titulo e SVG Menu */}
-        <div className="flex items-center justify-between mt-4 mx-4">
-          <h1 className="text-lg font-semibold text-white">Help Desk</h1>
-          <Image
-            className="cursor-pointer"
-            width={24}
-            height={24}
-            src="/menu.svg"
-            alt="Ícone Menu"
-          />
-        </div>
 
-        {/* Opções */}
-        <div className="flex flex-col gap-2 w-[100%] mt-auto mb-4">
-          <div className="opcoes">
-            <Image
-              src="/phone.svg"
-              width={18}
-              height={18}
-              alt="Ícone Telefone"
-            />
-            <p className="mx-1">Contato</p>
-          </div>
-          <div className="opcoes">
-            <Image
-              src="/mdi_help-circle-outline.svg"
-              width={18}
-              height={18}
-              alt="Ícone Ajuda"
-            />
-            <p className="mx-1">Ajuda</p>
-          </div>
-          <div className="opcoes">
-            <Image
-              src="/mdi_login.svg"
-              width={18}
-              height={18}
-              alt="Ícone Sair"
-            />
-            <p onClick={logout} className="mx-1 cursor-pointer">
-              Sair
-            </p>
-          </div>
-        </div>
-      </div>
       {/* Final Aside */}
 
       {/* Content */}
-      <div className="ml-[13%] px-6 ">
+      <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
         <div className="flex justify-between items-center pt-[50px]">
           <h1 className="pl-10 text-3xl font-semibold mb-2">
@@ -260,7 +219,7 @@ function Helpdesk() {
 
         {/* Tabela */}
         <div className="rounded-[30px] overflow-hidden w-[95%] mx-auto">
-          <table className=" bg-white h-auto w-[100%] overflow-x-scroll border-collapse text-lg ">
+          <table className=" bg-white h-auto w-[100%] overflow-x-scroll text-lg ">
             <thead>
               <tr className="bg-[#c4c4c4] text-white text-left">
                 <th
@@ -295,7 +254,7 @@ function Helpdesk() {
                 >
                   Título
                 </th>
-                <th className="th w-[150px]">Descrição</th>
+                <th className="th">Descrição</th>
                 <th className="th">Follow up</th>
                 <th
                   className="th"
@@ -329,7 +288,7 @@ function Helpdesk() {
                   <td className="td">{chamado.title}</td>
                   <td
                     onClick={() => checkDescription(chamado.description)}
-                    className="td cursor-pointer whitespace-nowrap truncate"
+                    className="td"
                   >
                     {chamado.description}
                   </td>
@@ -378,12 +337,21 @@ function Helpdesk() {
                     </button>
                   </td>
                   <td className="td">
-                    <button
-                      onClick={() => handleCloseCall(chamado)}
-                      className="btnCloseCall"
-                    >
-                      Finalizar
-                    </button>
+                    {showClosedCalls ? (
+                      <button
+                        onClick={() => handleReopenCall(chamado)}
+                        className="btnReopenCall"
+                      >
+                        Reabrir
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleCloseCall(chamado)}
+                        className="btnCloseCall"
+                      >
+                        Finalizar
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

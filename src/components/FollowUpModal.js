@@ -26,16 +26,17 @@ function FollowUpModal({
       alignItems: "center",
     },
   };
-
-  function handleCloseModal() {
-    setFollowUpModal(false);
-  }
-
+  
   function handleChange(e) {
     const { value } = e.target;
     const { name } = e.target;
     setFollowUpChamado({ ...followUpChamado, [name]: value });
   }
+  
+  function handleCloseModal() {
+    setFollowUpModal(false);
+  }
+
 
   function handleSaveFollowUp() {
     writeNewCall(followUpChamado);
