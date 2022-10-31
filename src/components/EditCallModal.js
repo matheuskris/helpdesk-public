@@ -30,7 +30,6 @@ function EditCallModal({
     },
   };
   const callDate = new Date(1580266800000);
-  console.log(callDate);
   // Close Modal
   function handleCloseModal() {
     setEditModal(false);
@@ -46,13 +45,16 @@ function EditCallModal({
   // Function Edit
   function handleEdit(e) {
     e.preventDefault();
-
+    console.log(callToEdit);
     for (const prop in callToEdit) {
-      if (!callToEdit[prop]) {
+      if (callToEdit[prop] === "" || callToEdit[prop] === undefined) {
+        console.log("failed", callToEdit[prop]);
         setIsRegisterFull(false);
         return;
       }
     }
+    console.log("passed");
+    return;
     setEditModal(false);
     editExistingCall(callToEdit, oldId);
   }

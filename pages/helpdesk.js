@@ -7,10 +7,12 @@ import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 import FollowUpModal from "../src/components/FollowUpModal";
 import { initialCall } from "../src/components/CreateCallModal";
-import { parse } from "postcss";
+import { setCalls } from "../src/store/callsSlicer/callsSlicer";
+import { useDispatch } from "react-redux";
 
 function Helpdesk() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [chamados, setChamados] = useState([]);
 
   const [isModalOpen, setModal] = useState(false);
@@ -26,6 +28,32 @@ function Helpdesk() {
 
   // FOLLOW UP STATE
   const [followUpChamado, setFollowUpChamado] = useState({});
+
+  // checking if the user is authenticated if not, pushing to login page
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      return;
+    } else {
+      router.push("/");
+    }
+  });
+  // fetching calls from firebase
+  useEffect(() => {
+    const transformObjectToArray = (object) => {
+      const newArray = [];
+      for (const prop in object) {
+        newArray.push(object[prop]);
+      }
+      setChamados(newArray);
+    };
+
+    callsListener(transformObjectToArray);
+  }, []);
+
+  useEffect(() => {
+    const callsToStore = [...chamados];
+    dispatch(setCalls(callsToStore));
+  }, [chamados]);
 
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
@@ -115,31 +143,10 @@ function Helpdesk() {
     return `${daysPassed.toFixed(0)} dias`;
   }
 
-  // checking if the user is authenticated if not, pushing to login page
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      return;
-    } else {
-      router.push("/");
-    }
-  });
-
   // open modal
   function handleOpenModal() {
     setModal(true);
   }
-
-  // fetching calls from firebase
-  useEffect(() => {
-    const transformObjectToArray = (object) => {
-      const newArray = [];
-      for (const prop in object) {
-        newArray.push(object[prop]);
-      }
-      setChamados(newArray);
-    };
-    callsListener(transformObjectToArray);
-  }, []);
 
   // Logaut logic
   function logout() {
@@ -148,20 +155,21 @@ function Helpdesk() {
   }
 
   // handle Get Beautifull Data
-  function getBeatyDate() {
-    const date = new Date();
+  // function getBeatyDate() {
+  //   const date = new Date();
 
-    return {
-      day: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-      hour: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-    };
-  }
+  //   return {
+  //     day: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+  //     hour: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+  //   };
+  // }
 
   // Close Call
   function handleCloseCall(callToClose) {
-    const newDate = getBeatyDate();
+    const newDate = new Date();
+    const dateToSend = Date.parse(newDate);
 
-    writeNewCall({ ...callToClose, finished: newDate, isClosed: true });
+    writeNewCall({ ...callToClose, finished: dateToSend, isClosed: true });
   }
 
   // open modal
@@ -214,10 +222,6 @@ function Helpdesk() {
 
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
-      {/* Aside */}
-
-      {/* Final Aside */}
-
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
@@ -226,6 +230,9 @@ function Helpdesk() {
             Painel de Controle
           </h1>
           <div className="">
+            <button className="" onClick={exportReport}>
+              Exportar
+            </button>
             {showClosedCalls ? (
               <button
                 onClick={handleShowClosedCalls}
