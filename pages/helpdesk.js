@@ -6,6 +6,7 @@ import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 import FollowUpModal from "../src/components/FollowUpModal";
+import { initialCall } from "../src/components/CreateCallModal";
 
 function Helpdesk() {
   const router = useRouter();
@@ -15,11 +16,12 @@ function Helpdesk() {
   const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
 
   const [isEditModalOpen, setEditModal] = useState(false);
-  const [callToEdit, setCallToEdit] = useState();
+  const [callToEdit, setCallToEdit] = useState(initialCall);
 
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
-  const [filterOrderBy, setFilterOrderBy] = useState("id")
+  const [filterOrderBy, setFilterOrderBy] = useState("id");
+  const [showClosedCalls, setClosedCalls] = useState(false);
 
   // FOLLOW UP STATE
   const [followUpChamado, setFollowUpChamado] = useState({});
@@ -73,7 +75,13 @@ function Helpdesk() {
     }
   });
 
-  let filteredCalls = orderedCalls.filter((call) => !call.isClosed);
+  const filteredCalls = orderedCalls.filter((call) => {
+    if (showClosedCalls) {
+      return call.isClosed;
+    } else {
+      return !call.isClosed;
+    }
+  });
 
   // não está funcionando, resolver depois
   function handleFilter(filterId) {
@@ -151,15 +159,13 @@ function Helpdesk() {
   }
 
   // FOLLOW UP FUNCTION
-  function handleShowFollowUp( chamado ) {
+  function handleShowFollowUp(chamado) {
     setFollowUpModal(true);
-    if(chamado.followUp){
-      setFollowUpChamado(chamado)
-    }
+    setFollowUpChamado(chamado);
   }
 
   function handleShowClosedCalls() {
-    return filteredCalls.filter(call => call.isClosed)
+    setClosedCalls(!showClosedCalls);
   }
 
   return (
@@ -221,7 +227,22 @@ function Helpdesk() {
             Painel de Controle
           </h1>
           <div className="">
-            <button onClick={handleShowClosedCalls} className="btnShowClosedCalls">Visualizar Chamados Fechados</button>
+            {showClosedCalls ? (
+              <button
+                onClick={handleShowClosedCalls}
+                className="btnShowClosedCalls bg-green-600 hover:bg-green-700"
+              >
+                Visualizar Chamados Abertos
+              </button>
+            ) : (
+              <button
+                onClick={handleShowClosedCalls}
+                className="btnShowClosedCalls"
+              >
+                Visualizar Chamados Fechados
+              </button>
+            )}
+
             <button onClick={handleOpenModal} className="btnAddChamado">
               Abrir um chamado
             </button>
@@ -362,10 +383,7 @@ function Helpdesk() {
         </div>
 
         {/* === Configuração do Modal =====  */}
-        <CreateCallModal 
-          isModalOpen={isModalOpen} 
-          setModal={setModal} 
-        />
+        <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
         <EditCallModal
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}

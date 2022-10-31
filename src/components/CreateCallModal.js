@@ -4,15 +4,17 @@ import { writeNewCall } from "../utils/firebase.utils";
 import Modal from "react-modal";
 Modal.setAppElement("#__next");
 
+export const initialCall = {
+  id: "",
+  start: "",
+  title: "",
+  description: "",
+  priority: "",
+  inCharge: "",
+};
+
 export default function CreateCallModal({ isModalOpen, setModal }) {
-  const [infoCall, setInfoCall] = useState({
-    id: "",
-    start: "",
-    title: "",
-    description: "",
-    priority: "",
-    inCharge: "",
-  });
+  const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
 
   // ====== Funções do Modal =========
