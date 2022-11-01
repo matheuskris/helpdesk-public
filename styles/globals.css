@@ -2,51 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer components {
-    .input {
-        @apply p-2 bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none
-    }
-    .btnLogin {
-        @apply px-6 py-4 mt-10 text-black font-bold bg-gray-200 rounded-xl hover:bg-gray-400 transition duration-200 active:scale-95
-    }
-    .opcoes {
-        @apply flex items-center justify-start cursor-pointer mx-6 w-[100%]
-    }
-    .btnAddChamado {
-        @apply text-lg text-white font-semibold mb-6 mr-[60px] px-6 py-3 rounded-[24px] bg-blue-600 hover:bg-blue-700 active:scale-95 transition duration-200 
-    }
-    .th {
-       @apply font-bold p-[16px] 2xl:text-base cursor-pointer
-    }
-    .td {
-        @apply font-semibold p-[16px] 2xl:text-base border-r  
-    }
-    .inputCadastro {
-        @apply bg-transparent outline-none border-b p-4 text-black placeholder:text-gray-600
-    }
-    .btnCadastrar {
-        @apply mt-12 py-2 px-4 mb-4 bg-blue-500 rounded-2xl text-white text-lg tracking-wider font-semibold w-[100%] lg:w-[600px] hover:bg-blue-700 active:scale-95 transition duration-200 mx-auto 
-    }
-    .btnEdit {
-        @apply p-2 rounded-lg font-semibold cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition duration-100 active:scale-95
-    }
-    .btnCloseCall {
-        @apply p-2 rounded-lg font-semibold cursor-pointer bg-red-500 hover:bg-red-700 active:scale-95 transition duration-100
-    }
-    .btnDetails {
-        @apply bg-green-600 text-white px-3 py-2 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg
-    }
-    .btnSaveDetails {
-        @apply px-4 py-3 bg-green-500 absolute bottom-8 rounded-xl w-[50%] text-xl font-bold hover:bg-green-600 transition duration-100 active:scale-95
-    }
-    .btnShowClosedCalls {
-        @apply bg-red-500 text-white px-6 py-3 text-lg mr-6 font-semibold rounded-[24px] hover:bg-red-600 transition duration-100 active:scale-95
-    }
-    .btnReopenCall {
-        @apply bg-green-600 text-white px-3 py-2 text-base mr-6 font-semibold rounded-lg hover:bg-green-700 transition duration-100 active:scale-95
-    }
-    .btnExport {
-        @apply text-white font-semibold text-lg px-3 py-1 bg-green-500 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg 
-    }
+  .input {
+    @apply p-2 bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none;
+  }
+  .btnLogin {
+    @apply px-6 py-4 mt-10 text-black font-bold bg-gray-200 rounded-xl hover:bg-gray-400 transition duration-200 active:scale-95;
+  }
+  .opcoes {
+    @apply flex items-center justify-start cursor-pointer mx-6 w-[100%];
+  }
+  .btnAddChamado {
+    @apply text-lg text-white font-semibold px-6 py-3 rounded-[24px] bg-blue-600 hover:bg-blue-700 active:scale-95 transition duration-200;
+  }
+  .th {
+    @apply font-bold p-[16px] 2xl:text-base cursor-pointer;
+  }
+  .td {
+    @apply font-semibold p-[16px] 2xl:text-base border-r;
+  }
+  .inputCadastro {
+    @apply bg-transparent outline-none border-b p-4 text-black placeholder:text-gray-600;
+  }
+  .btnCadastrar {
+    @apply mt-12 py-2 px-4 mb-4 bg-blue-500 rounded-2xl text-white text-lg tracking-wider font-semibold w-[100%] lg:w-[600px] hover:bg-blue-700 active:scale-95 transition duration-200 mx-auto;
+  }
+  .btnEdit {
+    @apply p-2 rounded-lg font-semibold cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition duration-100 active:scale-95;
+  }
+  .btnCloseCall {
+    @apply p-2 rounded-lg font-semibold cursor-pointer bg-red-500 hover:bg-red-700 active:scale-95 transition duration-100;
+  }
+  .btnDetails {
+    @apply bg-green-600 text-white px-3 py-2 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg;
+  }
+  .btnSaveDetails {
+    @apply px-4 py-3 bg-green-500 absolute bottom-8 rounded-xl w-[50%] text-xl font-bold hover:bg-green-600 transition duration-100 active:scale-95;
+  }
+  .btnShowClosedCalls {
+    @apply bg-red-500 text-white px-6 py-3 text-lg font-semibold rounded-[24px] hover:bg-red-600 transition duration-100 active:scale-95;
+  }
+  .btnReopenCall {
+    @apply bg-green-600 text-white px-3 py-2 text-base mr-6 font-semibold rounded-lg hover:bg-green-700 transition duration-100 active:scale-95;
+  }
+  .btnExport {
+    @apply text-white font-semibold text-lg px-3 py-1 bg-green-500 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg;
+  }
 }
