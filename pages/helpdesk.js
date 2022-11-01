@@ -10,6 +10,8 @@ import { initialCall } from "../src/components/CreateCallModal";
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch } from "react-redux";
 
+import { getTimeStringFromMs } from "../src/utils/functions.utils";
+
 function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -25,6 +27,8 @@ function Helpdesk() {
   const [description, setDescription] = useState("");
   const [filterOrderBy, setFilterOrderBy] = useState("id");
   const [showClosedCalls, setClosedCalls] = useState(false);
+  const [selectFilter, setSelectFilter] = useState("id");
+  const [searchField, setSearchField] = useState("");
 
   // FOLLOW UP STATE
   const [followUpChamado, setFollowUpChamado] = useState({});
@@ -54,6 +58,16 @@ function Helpdesk() {
     const callsToStore = [...chamados];
     dispatch(setCalls(callsToStore));
   }, [chamados]);
+
+  function handleSelectChange(e) {
+    const { value } = e.target;
+    console.log(value);
+    setSelectFilter(value);
+  }
+  function handleSearchField(e) {
+    const { value } = e.target;
+    setSearchField(value);
+  }
 
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
@@ -105,10 +119,16 @@ function Helpdesk() {
   });
 
   const filteredCalls = orderedCalls.filter((call) => {
+    let doesCallIsSearched = true;
+    if (searchField) {
+      doesCallIsSearched = call[selectFilter]
+        .toLowerCase()
+        .includes(searchField.toLowerCase());
+    }
     if (showClosedCalls) {
-      return call.isClosed;
+      return call.isClosed && doesCallIsSearched;
     } else {
-      return !call.isClosed;
+      return !call.isClosed && doesCallIsSearched;
     }
   });
 
@@ -126,23 +146,13 @@ function Helpdesk() {
     const currentDate = new Date();
     const callDate = new Date(parsedDate);
 
-    const timePassedInSecs = (currentDate - callDate) / 1000;
-    if (timePassedInSecs < 60) {
-      return `${timePassedInSecs.toFixed(0)} seg`;
-    }
-    const timePassedInMin = timePassedInSecs / 60;
-    if (timePassedInSecs < 3600) {
-      return `${timePassedInMin.toFixed(0)} min`;
-    }
-    const timePassedInHoras = timePassedInMin / 60;
-    const minPassHour = timePassedInMin % 60;
-    if (timePassedInSecs < 86400) {
-      return `${timePassedInHoras.toFixed(0)} hr ${minPassHour.toFixed(0)} min`;
-    }
-    const daysPassed = timePassedInHoras / 24;
-    return `${daysPassed.toFixed(0)} dias`;
+    return getTimeStringFromMs(currentDate - callDate);
   }
 
+  function showTimeSpent(chamado) {
+    const timeSpentinMs = chamado.finished - chamado.start;
+    return getTimeStringFromMs(timeSpentinMs);
+  }
   // open modal
   function handleOpenModal() {
     setModal(true);
@@ -225,14 +235,25 @@ function Helpdesk() {
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
-        <div className="flex justify-between items-center pt-[50px]">
-          <h1 className="pl-10 text-3xl font-semibold mb-2">
-            Painel de Controle
-          </h1>
-          <div className="">
-            <button className="" onClick={exportReport}>
-              Exportar
-            </button>
+        <div className="flex flex-row justify-between items-center pt-[20px] mb-4">
+          <div className="pl-10 flex flex-col">
+            <h1 className="text-3xl font-semibold mb-2">Painel de Controle</h1>
+            <h3 className="text-2xl ">Filtro</h3>
+            <div className="bg-green-700 p-2 rounded-xl flex gap-4">
+              <select className="rounded-lg p-2" onChange={handleSelectChange}>
+                <option value="id">Id</option>
+                <option value="client">Empresa</option>
+                <option value="inCharge">Responsável</option>
+              </select>
+              <input
+                type="text"
+                name="searchField"
+                onChange={handleSearchField}
+                className="p-2 rounded-lg"
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 place-self-end mr-12">
             {showClosedCalls ? (
               <button
                 onClick={handleShowClosedCalls}
@@ -368,7 +389,7 @@ function Helpdesk() {
                   </td>
                   <td className="td">{chamado.inCharge}</td>
                   {showClosedCalls ? (
-                    <td className="td">{chamado?.timeSpent}</td>
+                    <td className="td">{showTimeSpent(chamado)}</td>
                   ) : (
                     <td className="td">
                       <button
