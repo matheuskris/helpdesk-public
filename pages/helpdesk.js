@@ -16,22 +16,19 @@ function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [chamados, setChamados] = useState([]);
-
   const [isModalOpen, setModal] = useState(false);
   const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
-
+  const [followUpChamado, setFollowUpChamado] = useState({});
   const [isEditModalOpen, setEditModal] = useState(false);
   const [callToEdit, setCallToEdit] = useState(initialCall);
-
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
   const [filterOrderBy, setFilterOrderBy] = useState("id");
   const [showClosedCalls, setClosedCalls] = useState(false);
   const [selectFilter, setSelectFilter] = useState("id");
-  const [searchField, setSearchField] = useState("");
-
-  // FOLLOW UP STATE
-  const [followUpChamado, setFollowUpChamado] = useState({});
+  const [searchField, setSearchField] = useState(""); 
+  const [date1, setDate1] = useState(new Date())
+  const [date2, setDate2] = useState(new Date())
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -119,13 +116,20 @@ function Helpdesk() {
   });
 
   const filteredCalls = orderedCalls.filter((call) => {
-    let doesCallIsSearched = call[selectFilter]
-        .toLowerCase()
-        .includes(searchField.toLowerCase());
-    if (showClosedCalls) {
-      return call.isClosed && doesCallIsSearched;
+    if(selectFilter === 'data') {
+      let X = new Date(call.start) >= date1
+      let Y = new Date(call.finished) <= date2
+      console.log(X,)
+      return !call.isClosed && X && Y
     } else {
-      return !call.isClosed && doesCallIsSearched;
+      let doesCallIsSearched = call[selectFilter]
+          .toLowerCase()
+          .includes(searchField.toLowerCase());
+      if (showClosedCalls) {
+        return call.isClosed && doesCallIsSearched;
+      } else {
+        return !call.isClosed && doesCallIsSearched;
+      }
     }
   });
 
@@ -210,6 +214,16 @@ function Helpdesk() {
     writeNewCall({ ...chamado, isClosed: false });
   }
 
+  function handleOnChangeDate1(e){
+    const { value } = e.target;
+    setDate1(value)
+  }
+
+  function handleOnChangeDate2(e){
+    const { value } = e.target;
+    setDate2(value)
+  }
+
   function exportReport() {
     const XLSX = require("xlsx");
     // array of objects to save in Excel
@@ -237,21 +251,37 @@ function Helpdesk() {
             <h1 className="text-3xl font-semibold mb-2">Painel de Controle</h1>
           </div>
           <div className="flex gap-4 place-self-end mr-12">
-            <div className="flex items-center justify-between mr-6">
+            <div className="flex items-center justify-between">
               <h3 className="text-xl border-b border-black ">Escolha um filtro:</h3>
               <select className="rounded-lg p-2 border text-base outline-gray-400" onChange={handleSelectChange}>
                 <option value="id">Id</option>
-                <option ption value="client">
-                  Cliente
-                </option>
+                <option value="client">Cliente</option>
                 <option value="inCharge">Responsável</option>
+                <option value="data">Data</option>
               </select>
-              <input
-                type="text"
-                name="searchField"
-                onChange={handleSearchField}
-                className="p-2 rounded-lg border text-base w-[30%] outline-gray-400"
-              />
+              {selectFilter === 'data' ? (
+                <>
+                  <input
+                  type="date"
+                  name="searchField"
+                  onChange={handleOnChangeDate1}
+                  className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
+                />
+                  <input
+                    type="date"
+                    name="searchField"
+                    onChange={handleOnChangeDate2}
+                    className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
+                  />
+                </>
+              ) : (
+                <input
+                  type="text"
+                  name="searchField"
+                  onChange={handleSearchField}
+                  className="p-2 rounded-lg border text-base w-[30%] outline-gray-400"
+                />
+              )}
             </div>
             {showClosedCalls ? (
               <button
