@@ -119,12 +119,9 @@ function Helpdesk() {
   });
 
   const filteredCalls = orderedCalls.filter((call) => {
-    let doesCallIsSearched = true;
-    if (searchField) {
-      doesCallIsSearched = call[selectFilter]
+    let doesCallIsSearched = call[selectFilter]
         .toLowerCase()
         .includes(searchField.toLowerCase());
-    }
     if (showClosedCalls) {
       return call.isClosed && doesCallIsSearched;
     } else {
@@ -224,10 +221,10 @@ function Helpdesk() {
     var wb = XLSX.utils.book_new();
 
     // Name your sheet
-    XLSX.utils.book_append_sheet(wb, binaryWS, "Dê o nome do seu relatório");
+    XLSX.utils.book_append_sheet(wb, binaryWS, "Dê um nome ao seu relatório");
 
     // export your excel
-    XLSX.writeFile(wb, "Dê o nome do seu relatório.xlsx");
+    XLSX.writeFile(wb, "Dê um nome ao seu relatório.xlsx");
   }
 
   return (
@@ -236,24 +233,26 @@ function Helpdesk() {
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
         <div className="flex flex-row justify-between items-center pt-[20px] mb-4">
-          <div className="pl-10 flex flex-col">
+          <div className="pl-10 flex">
             <h1 className="text-3xl font-semibold mb-2">Painel de Controle</h1>
-            <h3 className="text-2xl ">Filtro</h3>
-            <div className="bg-green-700 p-2 rounded-xl flex gap-4">
-              <select className="rounded-lg p-2" onChange={handleSelectChange}>
+          </div>
+          <div className="flex gap-4 place-self-end mr-12">
+            <div className="flex items-center justify-between mr-6">
+              <h3 className="text-xl border-b border-black ">Escolha um filtro:</h3>
+              <select className="rounded-lg p-2 border text-base outline-gray-400" onChange={handleSelectChange}>
                 <option value="id">Id</option>
-                <option value="client">Empresa</option>
+                <option ption value="client">
+                  Cliente
+                </option>
                 <option value="inCharge">Responsável</option>
               </select>
               <input
                 type="text"
                 name="searchField"
                 onChange={handleSearchField}
-                className="p-2 rounded-lg"
+                className="p-2 rounded-lg border text-base w-[30%] outline-gray-400"
               />
             </div>
-          </div>
-          <div className="flex gap-4 place-self-end mr-12">
             {showClosedCalls ? (
               <button
                 onClick={handleShowClosedCalls}
