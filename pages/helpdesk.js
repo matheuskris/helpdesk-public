@@ -9,26 +9,30 @@ import FollowUpModal from "../src/components/FollowUpModal";
 import { initialCall } from "../src/components/CreateCallModal";
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch } from "react-redux";
-
-import { getTimeStringFromMs } from "../src/utils/functions.utils";
+import Table from "../src/components/Table";
+import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
+import { getBeatyDate } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
+  // D A T A
   const [chamados, setChamados] = useState([]);
+  // M O D A I S
   const [isModalOpen, setModal] = useState(false);
   const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
   const [followUpChamado, setFollowUpChamado] = useState({});
   const [isEditModalOpen, setEditModal] = useState(false);
-  const [callToEdit, setCallToEdit] = useState(initialCall);
+  const [callToEdit, setCallToEdit] = useState({});
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
+  // F I L T E R
   const [filterOrderBy, setFilterOrderBy] = useState("id");
   const [showClosedCalls, setClosedCalls] = useState(false);
   const [selectFilter, setSelectFilter] = useState("id");
   const [searchField, setSearchField] = useState("");
-  const [date1, setDate1] = useState();
-  const [date2, setDate2] = useState();
+  const [date1, setDate1] = useState({});
+  const [date2, setDate2] = useState({});
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -38,6 +42,11 @@ function Helpdesk() {
       router.push("/");
     }
   });
+  // Logaut logic
+  function logout() {
+    localStorage.removeItem("user");
+    router.push("/");
+  }
   // fetching calls from firebase
   useEffect(() => {
     const transformObjectToArray = (object) => {
@@ -114,7 +123,7 @@ function Helpdesk() {
         return 0;
     }
   });
-  console.log(Date.parse(date1));
+
   const filteredCalls = orderedCalls.filter((call) => {
     if (selectFilter === "data") {
       const X = call.start >= Date.parse(date1);
@@ -136,7 +145,7 @@ function Helpdesk() {
     }
   });
 
-  // não está funcionando, resolver depois
+  // não está funcionando totalmente, resolver depois
   function handleFilter(filterId) {
     if (filterOrderBy === filterId) {
       filteredCalls.reverse();
@@ -144,39 +153,6 @@ function Helpdesk() {
       setFilterOrderBy(filterId);
     }
   }
-
-  // showing ongoingTime of call
-  function showOnGoingTime(parsedDate) {
-    const currentDate = new Date();
-    const callDate = new Date(parsedDate);
-
-    return getTimeStringFromMs(currentDate - callDate);
-  }
-
-  function showTimeSpent(chamado) {
-    const timeSpentinMs = chamado.finished - chamado.start;
-    return getTimeStringFromMs(timeSpentinMs);
-  }
-  // open modal
-  function handleOpenModal() {
-    setModal(true);
-  }
-
-  // Logaut logic
-  function logout() {
-    localStorage.removeItem("user");
-    router.push("/");
-  }
-
-  // handle Get Beautifull Data
-  // function getBeatyDate() {
-  //   const date = new Date();
-
-  //   return {
-  //     day: `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-  //     hour: `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-  //   };
-  // }
 
   // Close Call
   function handleCloseCall(callToClose) {
@@ -186,42 +162,36 @@ function Helpdesk() {
     writeNewCall({ ...callToClose, finished: dateToSend, isClosed: true });
   }
 
-  // open modal
-  function handleOpenModal() {
-    setModal(true);
-  }
-
-  // opening the modal and setting the description to get in the modal
+  // M O D A I S
   function checkDescription(desc) {
     setDescriptionModal(true);
     setDescription(desc);
   }
 
-  // Edit Modal
+  function handleOpenModal() {
+    setModal(true);
+  }
+
   function handleEditModal(chamado) {
     setEditModal(true);
     setCallToEdit(chamado);
   }
 
-  // FOLLOW UP FUNCTION
   function handleShowFollowUp(chamado) {
     setFollowUpModal(true);
     setFollowUpChamado(chamado);
-  }
-
-  function handleShowClosedCalls() {
-    setClosedCalls(!showClosedCalls);
   }
 
   function handleReopenCall(chamado) {
     writeNewCall({ ...chamado, isClosed: false });
   }
 
+  function handleShowClosedCalls() {
+    setClosedCalls(!showClosedCalls);
+  }
+  // F I L T E R
   function handleOnChangeDate1(e) {
     const { value } = e.target;
-    console.log(value);
-    const daterer = new Date(value);
-    console.log(daterer);
     setDate1(value);
   }
 
@@ -229,22 +199,33 @@ function Helpdesk() {
     const { value } = e.target;
     setDate2(value);
   }
-
-  function exportReport() {
-    const XLSX = require("xlsx");
-    // array of objects to save in Excel
-    let binary_univers = filteredCalls;
-
-    let binaryWS = XLSX.utils.json_to_sheet(binary_univers);
-
-    // Create a new Workbook
-    var wb = XLSX.utils.book_new();
-
-    // Name your sheet
-    XLSX.utils.book_append_sheet(wb, binaryWS, "Dê um nome ao seu relatório");
-
-    // export your excel
-    XLSX.writeFile(wb, "Dê um nome ao seu relatório.xlsx");
+  function handleDownload() {
+    let objectToExport = [];
+    filteredCalls.forEach((element) => {
+      const {
+        client,
+        description,
+        id,
+        inCharge,
+        priority,
+        start,
+        title,
+        finished,
+        followUp,
+      } = element;
+      objectToExport.push({
+        id: id,
+        Cliente: client,
+        Título: title,
+        Descrição: description,
+        Acompanhamento: followUp,
+        Prioridade: priority,
+        Responsável: inCharge,
+        Início: getBeatyDate(start),
+        Término: getBeatyDate(finished),
+      });
+    });
+    downloadTableDataInExcel(objectToExport);
   }
 
   return (
@@ -320,154 +301,27 @@ function Helpdesk() {
 
         {/* Tabela */}
         <div className="rounded-[30px] overflow-hidden w-[95%] mx-auto">
-          <table className=" bg-white h-auto w-[100%] overflow-x-scroll text-lg ">
-            <thead>
-              <tr className="bg-[#c4c4c4] text-white text-left">
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("id");
-                  }}
-                >
-                  ID
-                </th>
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("client");
-                  }}
-                >
-                  Cliente
-                </th>
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("start");
-                  }}
-                >
-                  Data Inicial
-                </th>
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("title");
-                  }}
-                >
-                  Título
-                </th>
-                <th className="th">Descrição</th>
-                <th className="th">Follow up</th>
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("priority");
-                  }}
-                >
-                  Prioridade
-                </th>
-                <th
-                  className="th"
-                  onClick={() => {
-                    handleFilter("inCharge");
-                  }}
-                >
-                  Responsável
-                </th>
-                {showClosedCalls ? <th className="th">Tempo Consumido</th> : ""}
-                <th className="th"></th>
-                {showClosedCalls ? "" : <th className="th"></th>}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCalls.map((chamado) => (
-                <tr
-                  key={chamado.id}
-                  className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
-                >
-                  <td className="td">{chamado.id}</td>
-                  <td className="td">{chamado?.client}</td>
-                  <td className="td">{showOnGoingTime(chamado.start)}</td>
-                  <td className="td">{chamado.title}</td>
-                  <td
-                    onClick={() => checkDescription(chamado.description)}
-                    className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
-                  >
-                    {chamado.description}
-                  </td>
-                  <td className="td">
-                    <button
-                      onClick={() => handleShowFollowUp(chamado)}
-                      className="btnDetails"
-                    >
-                      Detalhes
-                    </button>
-                  </td>
-                  <td className="td flex justify-around items-center ">
-                    {chamado.priority}{" "}
-                    {chamado.priority === "Alta" && (
-                      <Image
-                        width={30}
-                        height={30}
-                        src="/High Priority.png"
-                        alt="Alta"
-                      />
-                    )}
-                    {chamado.priority === "Média" && (
-                      <Image
-                        width={30}
-                        height={30}
-                        src="/Medium Priority.png"
-                        alt="Média"
-                      />
-                    )}
-                    {chamado.priority === "Baixa" && (
-                      <Image
-                        width={30}
-                        height={30}
-                        src="/Low Priority.png"
-                        alt="Baixa"
-                      />
-                    )}
-                  </td>
-                  <td className="td">{chamado.inCharge}</td>
-                  {showClosedCalls ? (
-                    <td className="td">{showTimeSpent(chamado)}</td>
-                  ) : (
-                    <td className="td">
-                      <button
-                        onClick={() => handleEditModal(chamado)}
-                        className="btnEdit"
-                      >
-                        Editar
-                      </button>
-                    </td>
-                  )}
-                  <td className="td">
-                    {showClosedCalls ? (
-                      <button
-                        onClick={() => handleReopenCall(chamado)}
-                        className="btnReopenCall"
-                      >
-                        Reabrir
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleCloseCall(chamado)}
-                        className="btnCloseCall"
-                      >
-                        Finalizar
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table
+            handleFilter={handleFilter}
+            showClosedCalls={showClosedCalls}
+            filteredCalls={filteredCalls}
+            checkDescription={checkDescription}
+            handleShowFollowUp={handleShowFollowUp}
+            handleEditModal={handleEditModal}
+            handleReopenCall={handleReopenCall}
+            handleCloseCall={handleCloseCall}
+          />
           <div className="w-[100%] mt-4 flex items-center justify-end">
-            <button className="btnExport" onClick={exportReport}>
+            <button className="btnExport" onClick={handleDownload}>
               Exportar para Excel
             </button>
-            <Image className="" src="/SVG excel.svg" width={48} height={48} />
+            <Image
+              className=""
+              src="/SVG excel.svg"
+              width={48}
+              height={48}
+              alt="logo excel"
+            />
           </div>
         </div>
 
