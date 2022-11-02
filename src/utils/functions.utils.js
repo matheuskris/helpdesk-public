@@ -15,3 +15,14 @@ export function getTimeStringFromMs(timeInMs) {
   const days = timeInHours / 24;
   return `${days.toFixed(0)} dias`;
 }
+
+export function getBeatyDate(dateInMs) {
+  const date = new Date(dateInMs);
+
+  if (!date.getDate()) {
+    return "";
+  }
+
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} às
+    ${date.getHours()}:${date.getMinutes()}`;
+}
