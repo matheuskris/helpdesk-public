@@ -26,9 +26,9 @@ function Helpdesk() {
   const [filterOrderBy, setFilterOrderBy] = useState("id");
   const [showClosedCalls, setClosedCalls] = useState(false);
   const [selectFilter, setSelectFilter] = useState("id");
-  const [searchField, setSearchField] = useState(""); 
-  const [date1, setDate1] = useState(new Date())
-  const [date2, setDate2] = useState(new Date())
+  const [searchField, setSearchField] = useState("");
+  const [date1, setDate1] = useState();
+  const [date2, setDate2] = useState();
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -114,17 +114,20 @@ function Helpdesk() {
         return 0;
     }
   });
-
+  console.log(Date.parse(date1));
   const filteredCalls = orderedCalls.filter((call) => {
-    if(selectFilter === 'data') {
-      let X = new Date(call.start) >= date1
-      let Y = new Date(call.finished) <= date2
-      console.log(X,)
-      return !call.isClosed && X && Y
+    if (selectFilter === "data") {
+      const X = call.start >= Date.parse(date1);
+      const Y = call.start <= Date.parse(date2) + 84600000;
+      if (showClosedCalls) {
+        return call.isClosed && X && Y;
+      } else {
+        return !call.isClosed && X && Y;
+      }
     } else {
       let doesCallIsSearched = call[selectFilter]
-          .toLowerCase()
-          .includes(searchField.toLowerCase());
+        .toLowerCase()
+        .includes(searchField.toLowerCase());
       if (showClosedCalls) {
         return call.isClosed && doesCallIsSearched;
       } else {
@@ -214,14 +217,17 @@ function Helpdesk() {
     writeNewCall({ ...chamado, isClosed: false });
   }
 
-  function handleOnChangeDate1(e){
+  function handleOnChangeDate1(e) {
     const { value } = e.target;
-    setDate1(value)
+    console.log(value);
+    const daterer = new Date(value);
+    console.log(daterer);
+    setDate1(value);
   }
 
-  function handleOnChangeDate2(e){
+  function handleOnChangeDate2(e) {
     const { value } = e.target;
-    setDate2(value)
+    setDate2(value);
   }
 
   function exportReport() {
@@ -252,24 +258,31 @@ function Helpdesk() {
           </div>
           <div className="flex gap-4 place-self-end mr-12">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl border-b border-black ">Escolha um filtro:</h3>
-              <select className="rounded-lg p-2 border text-base outline-gray-400" onChange={handleSelectChange}>
+              <h3 className="text-xl border-b border-black ">
+                Escolha um filtro:
+              </h3>
+              <select
+                className="rounded-lg p-2 border text-base outline-gray-400"
+                onChange={handleSelectChange}
+              >
                 <option value="id">Id</option>
                 <option value="client">Cliente</option>
                 <option value="inCharge">Responsável</option>
                 <option value="data">Data</option>
               </select>
-              {selectFilter === 'data' ? (
+              {selectFilter === "data" ? (
                 <>
-                  <input
-                  type="date"
-                  name="searchField"
-                  onChange={handleOnChangeDate1}
-                  className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
-                />
                   <input
                     type="date"
                     name="searchField"
+                    value={date1}
+                    onChange={handleOnChangeDate1}
+                    className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
+                  />
+                  <input
+                    type="date"
+                    name="searchField"
+                    value={date2}
                     onChange={handleOnChangeDate2}
                     className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
                   />
