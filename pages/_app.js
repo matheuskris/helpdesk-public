@@ -2,7 +2,8 @@ import Head from "next/head";
 import "../styles/globals.css";
 import ProgressBar from "@badrap/bar-of-progress";
 import Router from "next/router";
-import { wrapper } from "../src/store/store";
+import { store } from "../src/store/store";
+import { Provider } from "react-redux";
 
 const progress = new ProgressBar({
   size: 4,
@@ -23,9 +24,11 @@ function MyApp({ Component, pageProps }) {
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Component {...pageProps} />
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
     </div>
   );
 }
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;
