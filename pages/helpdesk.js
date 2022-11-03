@@ -78,7 +78,7 @@ function Helpdesk() {
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
       case "start":
-        return a.start?.hour - b.start?.hour;
+        return b.start - a.start;
       case "id":
         return a.id - b.id;
       case "inCharge":
