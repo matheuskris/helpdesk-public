@@ -258,14 +258,14 @@ function Helpdesk() {
                     name="searchField"
                     value={date1}
                     onChange={handleOnChangeDate1}
-                    className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
+                    className="p-2 rounded-lg border text-base w-[22%] outline-gray-400"
                   />
                   <input
                     type="date"
                     name="searchField"
                     value={date2}
                     onChange={handleOnChangeDate2}
-                    className="p-2 rounded-lg border text-base w-[20%] outline-gray-400"
+                    className="p-2 rounded-lg border text-base w-[22%] outline-gray-400"
                   />
                 </>
               ) : (
