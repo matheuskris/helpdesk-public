@@ -45,7 +45,6 @@ function EditCallModal({
   // Function Edit
   function handleEdit(e) {
     e.preventDefault();
-    console.log(callToEdit);
     for (const prop in callToEdit) {
       if (callToEdit[prop] === "" || callToEdit[prop] === undefined) {
         console.log("failed", callToEdit[prop]);
@@ -53,8 +52,6 @@ function EditCallModal({
         return;
       }
     }
-    console.log("passed");
-    return;
     setEditModal(false);
     editExistingCall(callToEdit, oldId);
   }
