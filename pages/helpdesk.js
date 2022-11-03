@@ -317,7 +317,7 @@ function Helpdesk() {
             </button>
             <Image
               className=""
-              src="/SVG excel.svg"
+              src="/excel.svg"
               width={48}
               height={48}
               alt="logo excel"

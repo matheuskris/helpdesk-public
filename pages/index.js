@@ -75,6 +75,10 @@ function Login() {
           setlogInError(
             "muitas tentativas erradas, tente novamente mais tarde"
           );
+        case "auth/user-not-found":
+          setlogInError(
+            "Usuário não encontrado."
+          );
           break;
         default:
           setlogInError(
