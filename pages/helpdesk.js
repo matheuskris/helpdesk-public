@@ -239,11 +239,15 @@ function Helpdesk() {
           </div>
           <div className="flex gap-4 place-self-end mr-12">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl border-b border-black ">
-                Escolha um filtro:
-              </h3>
+              {selectFilter === "data" ? (
+                ""
+              ) : (
+                <h3 className="text-lg border-b border-black ">
+                  Escolha um filtro:
+                </h3>
+              )}
               <select
-                className="rounded-lg p-2 border text-base outline-gray-400"
+                className="rounded-lg p-2 border text-sm outline-gray-400"
                 onChange={handleSelectChange}
               >
                 <option value="id">Id</option>
@@ -258,14 +262,14 @@ function Helpdesk() {
                     name="searchField"
                     value={date1}
                     onChange={handleOnChangeDate1}
-                    className="p-2 rounded-lg border text-base w-[22%] outline-gray-400"
+                    className="p-2 rounded-lg border text-sm outline-gray-400 mx-3"
                   />
                   <input
                     type="date"
                     name="searchField"
                     value={date2}
                     onChange={handleOnChangeDate2}
-                    className="p-2 rounded-lg border text-base w-[22%] outline-gray-400"
+                    className="p-2 rounded-lg border text-sm outline-gray-400"
                   />
                 </>
               ) : (
