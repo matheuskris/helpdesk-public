@@ -13,7 +13,8 @@ export function getTimeStringFromMs(timeInMs) {
     return `${timeInHours.toFixed(0)} hr ${minPassHour.toFixed(0)} min`;
   }
   const days = timeInHours / 24;
-  return `${days.toFixed(0)} dias`;
+  const text = days.toFixed(0) > 1 ? " dias" : " dia";
+  return days.toFixed(0) + text;
 }
 
 export function getBeatyDate(dateInMs) {
