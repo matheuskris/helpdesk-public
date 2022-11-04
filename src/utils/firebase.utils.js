@@ -4,25 +4,11 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  writeBatch,
-  query,
-} from "firebase/firestore/lite";
+import { getFirestore } from "firebase/firestore/lite";
 
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue,
-  update,
-  remove,
-} from "firebase/database";
+import { getDatabase, ref, set, onValue, remove } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -31,13 +17,13 @@ import {
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAYqv1f7R5WaUzGMf_BzBvyKMrVsX7hGKI",
-  authDomain: "helpdesk-6d98c.firebaseapp.com",
-  projectId: "helpdesk-6d98c",
-  storageBucket: "helpdesk-6d98c.appspot.com",
-  messagingSenderId: "703993776912",
-  appId: "1:703993776912:web:425bb51d4b589abd2d7395",
-  measurementId: "G-SFZM2BE8EL",
+  apiKey: "AIzaSyA8qF1dVd5CMZUezcGzC3o4CZdNW6VbKqU",
+  authDomain: "helpdeskmatheus-403de.firebaseapp.com",
+  projectId: "helpdeskmatheus-403de",
+  storageBucket: "helpdeskmatheus-403de.appspot.com",
+  messagingSenderId: "9535806706",
+  appId: "1:9535806706:web:6a699b4119402642f4846b",
+  measurementId: "G-LDMWYZ17T2",
 };
 
 // Initialize Firebase
@@ -50,34 +36,34 @@ const db = getFirestore();
 
 const RTdatabase = getDatabase(app);
 
-export const writeNewCall = async (call) => {
+export const writeNewCall = async (userUid, call) => {
   try {
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    await set(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id), call);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const removeExistingCall = async (call) => {
+export const removeExistingCall = async (userUid, call) => {
   try {
-    await remove(ref(RTdatabase, "calls/" + call.id));
+    await remove(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id));
   } catch (error) {
     console.log(error);
   }
 };
-export const editExistingCall = async (call, oldId) => {
+export const editExistingCall = async (userUid, call, oldId) => {
   try {
-    await remove(ref(RTdatabase, "calls/" + oldId));
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    await remove(ref(RTdatabase, "/users/" + userUid + "/calls/" + oldId));
+    await set(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id), call);
   } catch (error) {
     console.log(error);
   }
 };
 
-const callsRef = ref(RTdatabase, "calls/");
+export const callsListener = (userUid, callback) => {
+  const userCallsRef = ref(RTdatabase, "/users/" + userUid + "/calls");
 
-export const callsListener = (callback) => {
-  return onValue(callsRef, (callsSnapshot) => {
+  return onValue(userCallsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
     callback(data);
   });
@@ -92,6 +78,10 @@ export const createAuthUserWithEmailAndPassword = async (email, password) => {
 export const signInAuthWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
   return await signInWithEmailAndPassword(auth, email, password);
+};
+
+export const authListener = (callback) => {
+  onAuthStateChanged(auth, (user) => callback(user));
 };
 
 // // OLD DATABASE

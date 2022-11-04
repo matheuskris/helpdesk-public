@@ -13,7 +13,7 @@ export const initialCall = {
   inCharge: "",
 };
 
-export default function CreateCallModal({ isModalOpen, setModal }) {
+export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
 
@@ -51,8 +51,8 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
         return;
       }
     }
-
-    await writeNewCall(objectToSend);
+    setModal(false);
+    await writeNewCall(userUid, objectToSend);
     setInfoCall({
       id: "",
       start: "",
@@ -61,7 +61,6 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       priority: "",
       inCharge: "",
     });
-    setModal(false);
   }
 
   // Normal handle change

@@ -2,28 +2,20 @@ import Image from "next/image";
 import Helpdesk from "./helpdesk";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  signInAuthWithEmailAndPassword,
-  createUserDocumentFromAuth,
-} from "../src/utils/firebase.utils";
-import Loading from '../src/components/Loading';
+import { signInAuthWithEmailAndPassword } from "../src/utils/firebase.utils";
+import Loading from "../src/components/Loading";
 
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser } from "../src/store/userSlicer/user.selector";
+import { setUser } from "../src/store/userSlicer/userSlicer";
 
 export default function Checking() {
-  const [isUserLogged, setIsUserLogged] = useState(true);
-  
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      setIsUserLogged(true);
-    } else {
-      setIsUserLogged(false);
-    }
-  }, []);
+  const user = useSelector(selectUser);
 
-  return <>{isUserLogged ? <Helpdesk /> : <Login />}</>;
+  return <>{user ? <Helpdesk /> : <Login user={user} />}</>;
 }
 
-function Login() {
+function Login({ user }) {
   const [credential, setCredential] = useState({
     email: "",
     password: "",
@@ -32,8 +24,10 @@ function Login() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    if (localStorage.getItem("user")) {
+    if (user) {
       router.push("/helpdesk");
     }
   }, []);
@@ -47,7 +41,7 @@ function Login() {
 
   async function handleLogin(e) {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     if (!credential.email || !credential.password) {
       setlogInError("insira dados válidos");
       setCredential({
@@ -61,11 +55,11 @@ function Login() {
       const userCredential = await signInAuthWithEmailAndPassword(
         credential.email,
         credential.password
-        );
+      );
       const { user } = userCredential;
 
-      localStorage.setItem("user", user);
-      router.push("/helpdesk");
+      dispatch(setUser(user));
+      // router.push("/helpdesk");
     } catch (error) {
       switch (error.code) {
         case "auth/wrong-password":
@@ -76,9 +70,7 @@ function Login() {
             "muitas tentativas erradas, tente novamente mais tarde"
           );
         case "auth/user-not-found":
-          setlogInError(
-            "Usuário não encontrado."
-          );
+          setlogInError("Usuário não encontrado.");
           break;
         default:
           setlogInError(
@@ -129,8 +121,12 @@ function Login() {
           ) : (
             ""
           )}
-          <button disabled={isLoading} onClick={handleLogin} className="btnLogin">
-          {isLoading ? <Loading /> : 'Login'}
+          <button
+            disabled={isLoading}
+            onClick={handleLogin}
+            className="btnLogin"
+          >
+            {isLoading ? <Loading /> : "Login"}
           </button>
         </form>
       </div>

@@ -1,17 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
-import userSlice from "../userSlicer/userSlicer";
 
 const initialState = {
-  calls: null,
+  user: null,
 };
 
-export const callsSlice = createSlice({
-  name: "calls",
+export const userSlice = createSlice({
+  name: "userState",
   initialState,
   reducers: {
-    setCalls(state, action) {
-      state.calls = action.payload;
+    setUser(state, action) {
+      state.user = action.payload;
     },
   },
   extraReducers: {
@@ -24,5 +23,6 @@ export const callsSlice = createSlice({
   },
 });
 
-export const { setCalls } = callsSlice.actions;
-export default callsSlice.reducer;
+export const { setUser } = userSlice.actions;
+
+export default userSlice.reducer;

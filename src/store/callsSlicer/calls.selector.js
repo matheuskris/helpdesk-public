@@ -1,1 +1,1 @@
-export const selectAllCalls = (state) => state.calls;
+export const selectAllCalls = (state) => state.calls.calls;

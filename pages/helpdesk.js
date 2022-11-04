@@ -6,16 +6,19 @@ import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 import FollowUpModal from "../src/components/FollowUpModal";
-import { initialCall } from "../src/components/CreateCallModal";
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
 import { getBeatyDate } from "../src/utils/functions.utils";
+import { setUser } from "../src/store/userSlicer/userSlicer";
+import { selectUser } from "../src/store/userSlicer/user.selector";
 
 function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const userUid = user.uid;
   // D A T A
   const [chamados, setChamados] = useState([]);
   // M O D A I S
@@ -28,6 +31,7 @@ function Helpdesk() {
   const [description, setDescription] = useState("");
   // F I L T E R
   const [filterOrderBy, setFilterOrderBy] = useState("id");
+  const [isOrderInverted, setIsInvertedOrder] = useState(false);
   const [showClosedCalls, setClosedCalls] = useState(false);
   const [selectFilter, setSelectFilter] = useState("id");
   const [searchField, setSearchField] = useState("");
@@ -36,16 +40,16 @@ function Helpdesk() {
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
-    if (localStorage.getItem("user")) {
+    if (user) {
       return;
     } else {
       router.push("/");
     }
   });
+
   // Logaut logic
   function logout() {
-    localStorage.removeItem("user");
-    router.push("/");
+    dispatch(setUser(null));
   }
   // fetching calls from firebase
   useEffect(() => {
@@ -57,7 +61,7 @@ function Helpdesk() {
       setChamados(newArray);
     };
 
-    callsListener(transformObjectToArray);
+    callsListener(userUid, transformObjectToArray);
   }, []);
 
   useEffect(() => {
@@ -145,10 +149,14 @@ function Helpdesk() {
     }
   });
 
+  if (isOrderInverted) {
+    filteredCalls.reverse();
+  }
+
   // não está funcionando totalmente, resolver depois
-  function handleFilter(filterId) {
-    if (filterOrderBy === filterId) {
-      filteredCalls.reverse();
+  function handleFilter(collumName) {
+    if (filterOrderBy === collumName) {
+      setIsInvertedOrder(!isOrderInverted);
     } else {
       setFilterOrderBy(filterId);
     }
@@ -315,29 +323,38 @@ function Helpdesk() {
             handleReopenCall={handleReopenCall}
             handleCloseCall={handleCloseCall}
           />
-          <div className="w-[100%] mt-4 flex items-center justify-end">
-            <button className="btnExport" onClick={handleDownload}>
-              Exportar para Excel
-            </button>
-            <Image
-              className=""
-              src="/excel.svg"
-              width={48}
-              height={48}
-              alt="logo excel"
-            />
-          </div>
+        </div>
+        <div className="w-[95%] mt-4 flex items-center justify-end mx-auto">
+          <button className="btnExport bg-black" onClick={logout}>
+            Sair
+          </button>
+          <button className="btnExport" onClick={handleDownload}>
+            Exportar para Excel
+          </button>
+          <Image
+            className=""
+            src="/excel.svg"
+            width={48}
+            height={48}
+            alt="logo excel"
+          />
         </div>
 
         {/* === Configuração do Modal =====  */}
-        <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+        <CreateCallModal
+          userUid={userUid}
+          isModalOpen={isModalOpen}
+          setModal={setModal}
+        />
         <EditCallModal
+          userUid={userUid}
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
           callToEdit={callToEdit}
           setCallToEdit={setCallToEdit}
         />
         <FollowUpModal
+          userUid={userUid}
           isFollowUpModalOpen={isFollowUpModalOpen}
           setFollowUpModal={setFollowUpModal}
           followUpChamado={followUpChamado}

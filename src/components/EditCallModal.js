@@ -9,6 +9,7 @@ function EditCallModal({
   setEditModal,
   callToEdit,
   setCallToEdit,
+  userUid,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [oldId, setOldId] = useState({});
@@ -29,7 +30,6 @@ function EditCallModal({
       borderRadius: "24px",
     },
   };
-  const callDate = new Date(1580266800000);
   // Close Modal
   function handleCloseModal() {
     setEditModal(false);
@@ -53,7 +53,7 @@ function EditCallModal({
       }
     }
     setEditModal(false);
-    editExistingCall(callToEdit, oldId);
+    editExistingCall(userUid, callToEdit, oldId);
   }
 
   return (
