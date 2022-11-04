@@ -69,7 +69,7 @@ export default function CallDetails(props) {
   },[callId])
 
   const tramites = transformObjectToArray(proceduresCall?.tramites);
-
+  tramites.reverse()
   async function handleCloseTramite(tramite) {
     const newDate = new Date();
     const sendDate = Date.parse(newDate);
