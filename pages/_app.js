@@ -3,7 +3,9 @@ import "../styles/globals.css";
 import ProgressBar from "@badrap/bar-of-progress";
 import Router from "next/router";
 import { store } from "../src/store/store";
-import { Provider } from "react-redux";
+import { Provider, red } from "react-redux";
+import { useEffect } from "react";
+import { callsListener } from "../src/utils/firebase.utils";
 
 const progress = new ProgressBar({
   size: 4,

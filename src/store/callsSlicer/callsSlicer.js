@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
-  calls: null,
+  calls: [],
 };
 
 export const callsSlice = createSlice({
@@ -24,3 +24,4 @@ export const callsSlice = createSlice({
 });
 
 export const { setCalls } = callsSlice.actions;
+export default callsSlice.reducer;

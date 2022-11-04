@@ -83,6 +83,15 @@ export const callsListener = (callback) => {
   });
 };
 
+export const proceduresListener = (callback, callId) => {
+  const callRef = ref(RTdatabase,"/calls/" + callId)
+  return onValue(callRef, (callSnapshot) => {
+    const data = callSnapshot.val()
+    callback(data)
+  })
+}
+
+
 // USER AUTH STUFF
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;

@@ -1,4 +1,4 @@
-import { getTimeStringFromMs } from "../utils/functions.utils";
+import { getBeatyDate, getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
 
 function Table(props) {
@@ -7,7 +7,7 @@ function Table(props) {
     showClosedCalls,
     filteredCalls,
     checkDescription,
-    handleShowFollowUp,
+    handleShowTramites,
     handleEditModal,
     handleReopenCall,
     handleCloseCall,
@@ -20,9 +20,22 @@ function Table(props) {
     return getTimeStringFromMs(currentDate - callDate);
   }
 
-  function showTimeSpent(chamado) {
+  // Function time open
+  function showTimeOpen(chamado) {
     const timeSpentinMs = chamado.finished - chamado.start;
     return getTimeStringFromMs(timeSpentinMs);
+  }
+  console.log(filteredCalls)
+  // function time spent
+  function showTimeSpent(chamado) {
+    let time = 0
+    const tramcham = chamado.tramites
+    for(const prop in tramcham){
+      if(tramcham[prop].finished){
+        time = time + tramcham[prop].finished - tramcham[prop].start
+      }
+    }
+    return (time/3600000).toFixed(1) + " hr"
   }
 
   return (
@@ -79,7 +92,8 @@ function Table(props) {
           >
             Responsável
           </th>
-          {showClosedCalls ? <th className="th">Tempo Consumido</th> : ""}
+          <th className="th">Tempo consumido</th>
+          {showClosedCalls ? <th className="th">Tempo em aberto</th> : ""}
           <th className="th"></th>
           {showClosedCalls ? "" : <th className="th"></th>}
         </tr>
@@ -96,13 +110,13 @@ function Table(props) {
             <td className="td">{chamado.title}</td>
             <td
               onClick={() => checkDescription(chamado.description)}
-              className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
+              className="td cursor-pointer whitespace-nowrap truncate max-w-[250px]"
             >
               {chamado.description}
             </td>
             <td className="td">
               <button
-                onClick={() => handleShowFollowUp(chamado)}
+                onClick={() => handleShowTramites(chamado)}
                 className="btnDetails"
               >
                 Detalhes
@@ -136,8 +150,11 @@ function Table(props) {
               )}
             </td>
             <td className="td">{chamado.inCharge}</td>
+
+            <td className="td">{showTimeSpent(chamado)}</td>
+
             {showClosedCalls ? (
-              <td className="td">{showTimeSpent(chamado)}</td>
+              <td className="td">{showTimeOpen(chamado)}</td>
             ) : (
               <td className="td">
                 <button

@@ -60,20 +60,23 @@ function Helpdesk() {
     callsListener(transformObjectToArray);
   }, []);
 
+
+  // throwing calls to redux
   useEffect(() => {
     const callsToStore = [...chamados];
     dispatch(setCalls(callsToStore));
   }, [chamados]);
 
+
   function handleSelectChange(e) {
     const { value } = e.target;
-    console.log(value);
     setSelectFilter(value);
   }
   function handleSearchField(e) {
     const { value } = e.target;
     setSearchField(value);
   }
+
 
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
@@ -123,7 +126,6 @@ function Helpdesk() {
         return 0;
     }
   });
-
   const filteredCalls = orderedCalls.filter((call) => {
     if (selectFilter === "data") {
       const X = call.start >= Date.parse(date1);
@@ -177,9 +179,15 @@ function Helpdesk() {
     setCallToEdit(chamado);
   }
 
-  function handleShowFollowUp(chamado) {
-    setFollowUpModal(true);
-    setFollowUpChamado(chamado);
+
+  function handleShowTramites(chamado) {
+    router.push({
+      pathname: '/calldetails',
+      query: {
+        id: chamado.id,
+      }
+    })
+
   }
 
   function handleReopenCall(chamado) {
@@ -310,7 +318,7 @@ function Helpdesk() {
             showClosedCalls={showClosedCalls}
             filteredCalls={filteredCalls}
             checkDescription={checkDescription}
-            handleShowFollowUp={handleShowFollowUp}
+            handleShowTramites={handleShowTramites}
             handleEditModal={handleEditModal}
             handleReopenCall={handleReopenCall}
             handleCloseCall={handleCloseCall}
