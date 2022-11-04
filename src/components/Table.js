@@ -35,7 +35,15 @@ function Table(props) {
         time = time + tramcham[prop].finished - tramcham[prop].start
       }
     }
-    return (time/3600000).toFixed(1) + " hr"
+    
+    const hora = (time/3600000).toFixed(1)  
+    const min = ((time%3600000)/60000).toFixed(0) + " min"
+
+    if(hora < 1) {
+      return min
+    } else {
+      return `${hora}hr ${min}`
+    }
   }
 
   return (

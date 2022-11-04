@@ -107,7 +107,7 @@ export default function TramiteModal({ isModalOpen, setModal, chamado }) {
           className="inputCadastro"
           type="text"
         />
-        <input
+        <textarea
           onChange={handleChange}
           name="description"
           value={infoCall.description}
