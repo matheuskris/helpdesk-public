@@ -7,7 +7,7 @@ export default function CallDetails() {
   const selectCalls = useSelector(selectAllCalls);
   const callId = router.query.id;
 
-  console.log(selectCalls);
+  console.log(selectCalls[callId]);
 
-  return <div>Hello world {}</div>;
+  return <div>Hello world {callId}</div>;
 }

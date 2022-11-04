@@ -18,7 +18,7 @@ function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
-  const userUid = user.uid;
+  const userUid = user?.uid;
   // D A T A
   const [chamados, setChamados] = useState([]);
   // M O D A I S
@@ -45,7 +45,7 @@ function Helpdesk() {
     } else {
       router.push("/");
     }
-  });
+  }, []);
 
   // Logaut logic
   function logout() {
@@ -54,6 +54,9 @@ function Helpdesk() {
   // fetching calls from firebase
   useEffect(() => {
     const transformObjectToArray = (object) => {
+      const newObject = Object.assign({}, object);
+      dispatch(setCalls(newObject));
+
       const newArray = [];
       for (const prop in object) {
         newArray.push(object[prop]);
@@ -64,10 +67,10 @@ function Helpdesk() {
     callsListener(userUid, transformObjectToArray);
   }, []);
 
-  useEffect(() => {
-    const callsToStore = [...chamados];
-    dispatch(setCalls(callsToStore));
-  }, [chamados]);
+  // useEffect(() => {
+  //   const callsToStore = [...chamados];
+  //   dispatch(setCalls(callsToStore));
+  // }, [chamados]);
 
   function handleSelectChange(e) {
     const { value } = e.target;
@@ -158,7 +161,8 @@ function Helpdesk() {
     if (filterOrderBy === collumName) {
       setIsInvertedOrder(!isOrderInverted);
     } else {
-      setFilterOrderBy(filterId);
+      setFilterOrderBy(collumName);
+      setIsInvertedOrder(false);
     }
   }
 

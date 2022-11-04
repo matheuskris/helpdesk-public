@@ -1,5 +1,6 @@
 import { getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
+import Link from "next/link";
 
 function Table(props) {
   const {
@@ -101,12 +102,13 @@ function Table(props) {
               {chamado.description}
             </td>
             <td className="td">
-              <button
+              {/* <button
                 onClick={() => handleShowFollowUp(chamado)}
                 className="btnDetails"
               >
                 Detalhes
-              </button>
+              </button> */}
+              <Link href={`/calldetails?id=${chamado.id}`}> Detalhes</Link>
             </td>
             <td className="td flex justify-around items-center ">
               {chamado.priority}{" "}

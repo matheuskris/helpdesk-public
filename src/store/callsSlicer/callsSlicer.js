@@ -1,9 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { HYDRATE } from "next-redux-wrapper";
-import userSlice from "../userSlicer/userSlicer";
 
 const initialState = {
-  calls: null,
+  calls: [],
 };
 
 export const callsSlice = createSlice({
