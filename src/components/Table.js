@@ -25,24 +25,24 @@ function Table(props) {
     const timeSpentinMs = chamado.finished - chamado.start;
     return getTimeStringFromMs(timeSpentinMs);
   }
-  console.log(filteredCalls)
+  console.log(filteredCalls);
   // function time spent
   function showTimeSpent(chamado) {
-    let time = 0
-    const tramcham = chamado.tramites
-    for(const prop in tramcham){
-      if(tramcham[prop].finished){
-        time = time + tramcham[prop].finished - tramcham[prop].start
+    let time = 0;
+    const tramcham = chamado.tramites;
+    for (const prop in tramcham) {
+      if (tramcham[prop].finished) {
+        time = time + tramcham[prop].finished - tramcham[prop].start;
       }
     }
-    
-    const hora = (time/3600000).toFixed(1)  
-    const min = ((time%3600000)/60000).toFixed(0) + " min"
 
-    if(hora < 1) {
-      return min
+    const hora = (time / 3600000).toFixed(1);
+    const min = ((time % 3600000) / 60000).toFixed(0) + " min";
+
+    if (hora < 1) {
+      return min;
     } else {
-      return `${hora}hr ${min}`
+      return `${hora}hr ${min}`;
     }
   }
 
@@ -72,8 +72,21 @@ function Table(props) {
               handleFilter("start");
             }}
           >
-            Data Inicial
+            Data de Abertura
           </th>
+          {showClosedCalls ? (
+            <th
+              className="th"
+              onClick={() => {
+                handleFilter("start");
+              }}
+            >
+              Data de fechamento
+            </th>
+          ) : (
+            ""
+          )}
+
           <th
             className="th"
             onClick={() => {
@@ -114,7 +127,12 @@ function Table(props) {
           >
             <td className="td">{chamado.id}</td>
             <td className="td">{chamado?.client}</td>
-            <td className="td">{showOnGoingTime(chamado.start)}</td>
+            <td className="td">{getBeatyDate(chamado.start)}</td>
+            {showClosedCalls ? (
+              <td className="td">{getBeatyDate(chamado.finished)}</td>
+            ) : (
+              ""
+            )}
             <td className="td">{chamado.title}</td>
             <td
               onClick={() => checkDescription(chamado.description)}

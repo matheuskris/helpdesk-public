@@ -72,11 +72,22 @@ export default function TramiteModal({ isModalOpen, setModal, chamado }) {
     const { name } = e.target;
     setInfoCall({ ...infoCall, [name]: value });
   }
-
   
   const handleCloseTramite = () => {
     editExistingCall(call, id)
   }
+
+  let nCerto = 1;
+  
+  if (chamadoRecebido.tramites) {
+    const qtdDeTramites = parseInt(chamadoRecebido?.tramites?.length);
+    nCerto = qtdDeTramites + 1
+    console.log(qtdDeTramites)
+    console.log(nCerto)
+  } else {
+    
+  }
+
 
   return (
     <Modal
@@ -92,12 +103,12 @@ export default function TramiteModal({ isModalOpen, setModal, chamado }) {
           Abrindo Trâmite
         </h1>
         <input
-          onChange={handleChange}
           name="id"
-          value={infoCall.id}
+          value={nCerto}
           placeholder="ID"
           className="inputCadastro"
           type="text"
+          disabled
         />
         <input
           onChange={handleChange}
