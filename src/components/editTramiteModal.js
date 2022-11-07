@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { editExistingCall } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
-import { info } from "autoprefixer";
 Modal.setAppElement("#__next");
 
 export const initialCall = {
@@ -12,18 +11,18 @@ export const initialCall = {
   inCharge: "",
 };
 
-export default function TramiteModal({
-  isModalOpen,
-  setModal,
-  chamado,
-  tramites,
+export default function EditTramiteModal({
+  isEditModalOpen,
+  setEditModal,
+  editChamado,
+  editTramite,
+  setTramiteToEdit,
 }) {
-  const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
-  const chamadoRecebido = chamado;
+  const chamadoToEdit = editChamado;
   // ====== Funções do Modal =========
   function handleCloseModal() {
-    setModal(false);
+    setEditModal(false);
   }
 
   // Estilo do Modal
@@ -42,64 +41,40 @@ export default function TramiteModal({
   // adding new call to firebase thru the modal
   async function handleRegister(e) {
     e.preventDefault();
-    const newDate = new Date();
-    const sendDate = Date.parse(newDate);
 
-    for (const prop in infoCall) {
-      if (!infoCall[prop]) {
+    for (const prop in editTramite) {
+      if (!editTramite[prop]) {
         setIsRegisterFull(false);
         return;
       }
     }
 
     const objectToSend = {
-      ...chamadoRecebido,
+      ...chamadoToEdit,
       tramites: {
-        ...chamadoRecebido?.tramites,
-        [infoCall.id]: {
-          ...infoCall,
-          start: sendDate,
+        ...chamadoToEdit?.tramites,
+        [editTramite.id]: {
+          ...editTramite,
         },
       },
     };
 
     console.log(objectToSend);
-    await editExistingCall(objectToSend, chamadoRecebido.id);
-    setInfoCall({
-      id: infoCall.id + 1,
-      title: "",
-      description: "",
-      inCharge: "",
-    });
+    await editExistingCall(objectToSend, chamadoToEdit.id);
     setIsRegisterFull(true);
-    setModal(false);
+    setEditModal(false);
   }
 
   // Normal handle change
   function handleChange(e) {
     const { value } = e.target;
     const { name } = e.target;
-    setInfoCall({ ...infoCall, [name]: value });
+    setTramiteToEdit({ ...editTramite, [name]: value });
   }
-
-  const handleCloseTramite = () => {
-    editExistingCall(call, id);
-  };
-
-  useEffect(() => {
-    let nTramites = 0;
-    if (tramites) {
-      nTramites = tramites.length;
-    }
-
-    const newTramiteId = nTramites + 1;
-
-    setInfoCall({ ...infoCall, id: newTramiteId });
-  }, [chamadoRecebido]);
 
   return (
     <Modal
-      isOpen={isModalOpen}
+      isOpen={isEditModalOpen}
       onRequestClose={handleCloseModal}
       style={customStyle}
     >
@@ -108,11 +83,11 @@ export default function TramiteModal({
         className="w-[100%] h-[100%] mx-auto flex flex-col"
       >
         <h1 className="text-black text-2xl font-semibold mx-auto mt-10 mb-8 pb-1 border-b border-gray-400">
-          Abrindo Trâmite
+          Editando Trâmite
         </h1>
         <input
           name="id"
-          value={infoCall.id}
+          value={editTramite.id}
           placeholder="ID"
           className="inputCadastro"
           type="text"
@@ -121,7 +96,7 @@ export default function TramiteModal({
         <input
           onChange={handleChange}
           name="title"
-          value={infoCall.title}
+          value={editTramite.title}
           placeholder="Título"
           className="inputCadastro"
           type="text"
@@ -129,7 +104,7 @@ export default function TramiteModal({
         <textarea
           onChange={handleChange}
           name="description"
-          value={infoCall.description}
+          value={editTramite.description}
           placeholder="Descrição"
           className="inputCadastro"
           type="text"
@@ -137,15 +112,14 @@ export default function TramiteModal({
         <select
           onChange={handleChange}
           name="inCharge"
-          value={infoCall.inCharge}
+          value={editTramite.inCharge}
           className="p-4 outline-none inputCadastro"
         >
-          <option defaultValue={true}>Responsável:</option>
           <option value="Flávio">Flávio</option>
           <option value="Patrícia">Patrícia</option>
           <option value="Mônica">Mônica</option>
         </select>
-        <button className=" bg-blue-600 btnCadastrar">Criar</button>
+        <button className=" bg-blue-600 btnCadastrar">Salvar alterações</button>
       </form>
       {isRegisterFull ? (
         ""

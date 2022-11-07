@@ -6,51 +6,28 @@ import TramiteModal from "../src/components/TramiteModal";
 import { useEffect, useState } from "react";
 import { proceduresListener } from "../src/utils/firebase.utils";
 import { editExistingCall } from "../src/utils/firebase.utils";
+import EditTramiteModal from "../src/components/editTramiteModal";
 
 export default function CallDetails(props) {
   const router = useRouter();
   const [isModalOpen, setModal] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [tramiteCallToEdit, setTramiteCallToEdit] = useState({});
+  const [tramiteToEdit, setTramiteToEdit] = useState({});
+
   const callId = router.query.id;
 
   const [proceduresCall, setProceduresCall] = useState({});
-  // const TramitesDoChamado = [
-  //   {
-  //     Responsável: "Flávio",
-  //     DataInicial: "03/11/2022",
-  //     HoraInicial: "12:34:42",
-  //     DataFinal: "04/11/2022",
-  //     HoraFinal: "15:34:42",
-  //     Título:
-  //       "Fazendo contato com o cliente para discutir sobre como o dia está bonito hoje",
-  //     Descrição:
-  //       "Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada. ",
-  //   },
-  //   {
-  //     Responsável: "Mônica",
-  //     DataInicial: "03/11/2022",
-  //     HoraInicial: "12:34:42",
-  //     DataFinal: "04/11/2022",
-  //     HoraFinal: "15:34:42",
-  //     Título:
-  //       "Fazendo contato com o cliente para discutir sobre como o dia está bonito hoje",
-  //     Descrição:
-  //       "Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada. Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada. ",
-  //   },
-  //   {
-  //     Responsável: "Patrícia",
-  //     DataInicial: "03/11/2022",
-  //     HoraInicial: "12:34:42",
-  //     DataFinal: "04/11/2022",
-  //     HoraFinal: "15:34:42",
-  //     Título:
-  //       "Fazendo contato com o cliente para discutir sobre como o dia está bonito hoje",
-  //     Descrição:
-  //       "Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada. Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar d conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.Ligamos e conversamos bastante, lembrar de ligar mais vezes quando estiver sem fazer nada.  ",
-  //   },
-  // ];
-  console.log(proceduresCall)
+
   const openTramiteModal = () => {
     setModal(true);
+  };
+
+  const handleEditTramite = (tramite) => {
+    setIsEditModalOpen(true);
+    setTramiteCallToEdit(proceduresCall);
+    setTramiteToEdit(tramite);
   };
 
   const transformObjectToArray = (object) => {
@@ -63,13 +40,13 @@ export default function CallDetails(props) {
 
   useEffect(() => {
     const setUseStateCall = (newCall) => {
-      setProceduresCall(newCall)
-    }
-    proceduresListener(setUseStateCall, callId)
-  },[callId])
+      setProceduresCall(newCall);
+    };
+    proceduresListener(setUseStateCall, callId);
+  }, [callId]);
 
   const tramites = transformObjectToArray(proceduresCall?.tramites);
-  tramites.reverse()
+  tramites.reverse();
   async function handleCloseTramite(tramite) {
     const newDate = new Date();
     const sendDate = Date.parse(newDate);
@@ -77,11 +54,11 @@ export default function CallDetails(props) {
       ...proceduresCall,
       tramites: {
         ...proceduresCall.tramites,
-      [tramite.id]:{
-            ...tramite,
-            finished:sendDate
-        }
-    },
+        [tramite.id]: {
+          ...tramite,
+          finished: sendDate,
+        },
+      },
     };
 
     await editExistingCall(objectToSend, proceduresCall.id);
@@ -93,7 +70,8 @@ export default function CallDetails(props) {
       <div className="bg-gray-300 p-6 rounded-lg">
         <div className="flex justify-between">
           <h1 className="text-4xl">
-          <strong>Chamado: </strong>{callId || ""}
+            <strong>Chamado: </strong>
+            {callId || ""}
           </h1>
           <button
             onClick={() => openTramiteModal()}
@@ -102,7 +80,9 @@ export default function CallDetails(props) {
             Abrir um trâmite
           </button>
         </div>
-        <h2 className="text-2xl"><strong>Cliente:</strong> {proceduresCall?.client}</h2>
+        <h2 className="text-2xl">
+          <strong>Cliente:</strong> {proceduresCall?.client}
+        </h2>
         <p className="text-2xl">Descrição do chamado:</p>
         <p className=" text-lg">{proceduresCall?.description}</p>
       </div>
@@ -111,14 +91,23 @@ export default function CallDetails(props) {
       {tramites.map((tramite) => (
         <TramiteInfo
           key={tramite.id}
-          tramite = {tramite}
-          handleCloseTramite = {handleCloseTramite}
+          tramite={tramite}
+          handleCloseTramite={handleCloseTramite}
+          handleEditTramite={handleEditTramite}
         />
       ))}
       <TramiteModal
+        tramites={tramites}
         chamado={proceduresCall}
         isModalOpen={isModalOpen}
         setModal={setModal}
+      />
+      <EditTramiteModal
+        isEditModalOpen={isEditModalOpen}
+        setEditModal={setIsEditModalOpen}
+        editChamado={tramiteCallToEdit}
+        editTramite={tramiteToEdit}
+        setTramiteToEdit={setTramiteToEdit}
       />
     </div>
   );
