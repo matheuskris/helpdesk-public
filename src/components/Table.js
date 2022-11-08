@@ -37,8 +37,8 @@ function Table(props) {
       }
     }
 
-    const hora = (time / 3600000).toFixed(1);
-    const min = ((time % 3600000) / 60000).toFixed(0) + " min";
+    const hora = parseInt((time / 3600000));
+    const min = ((time % 3600000) / 60000).toFixed(0) + "min";
 
     if (hora < 1) {
       return min;
