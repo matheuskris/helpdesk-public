@@ -1,3 +1,4 @@
+import { set } from "firebase/database";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { editExistingCall } from "../utils/firebase.utils";
@@ -11,10 +12,36 @@ function EditCallModal({
   setCallToEdit,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [timeInput, setTimeInput] = useState({});
   const [oldId, setOldId] = useState({});
 
   useEffect(() => {
     setOldId(callToEdit.id);
+    const newDateObject = new Date(callToEdit.start);
+
+    const minutes =
+      newDateObject.getMinutes() < 10
+        ? "0" + newDateObject.getMinutes()
+        : newDateObject.getMinutes();
+
+    const hours =
+      newDateObject.getHours() < 10
+        ? "0" + newDateObject.getHours()
+        : newDateObject.getHours();
+    const day =
+      newDateObject.getDate() < 10
+        ? "0" + newDateObject.getDate()
+        : newDateObject.getDate();
+
+    const date =
+      newDateObject.getFullYear() +
+      "-" +
+      (newDateObject.getMonth() + 1) +
+      "-" +
+      day;
+
+    const hour = hours + ":" + minutes;
+    setTimeInput({ date, hour });
   }, [isEditModalOpen]);
 
   // Modal's style
@@ -29,7 +56,6 @@ function EditCallModal({
       borderRadius: "24px",
     },
   };
-  const callDate = new Date(1580266800000);
   // Close Modal
   function handleCloseModal() {
     setEditModal(false);
@@ -40,6 +66,19 @@ function EditCallModal({
     const { value } = e.target;
     const { name } = e.target;
     setCallToEdit({ ...callToEdit, [name]: value });
+  }
+  //
+  useEffect(() => {
+    const myDateString = timeInput.date + "T" + timeInput.hour;
+    const myNewDate = new Date(myDateString);
+    const dateInMs = Date.parse(myNewDate);
+    setCallToEdit({ ...callToEdit, start: dateInMs });
+  }, [timeInput]);
+  //
+  function handleTimeChange(e) {
+    const { value } = e.target;
+    const { name } = e.target;
+    setTimeInput({ ...timeInput, [name]: value });
   }
 
   // Function Edit
@@ -77,6 +116,18 @@ function EditCallModal({
             placeholder="ID"
             className="inputCadastro"
             type="number"
+          />
+          <input
+            name="hour"
+            type="time"
+            onChange={handleTimeChange}
+            value={timeInput.hour}
+          />
+          <input
+            name="date"
+            type="date"
+            onChange={handleTimeChange}
+            value={timeInput.date}
           />
           <input
             onChange={handleChange}

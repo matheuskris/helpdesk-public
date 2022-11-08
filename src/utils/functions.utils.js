@@ -37,15 +37,18 @@ export function getTotalTimeObject(arrayOfCalls) {
       const { tramites } = call;
       for (const tramite in tramites) {
         const { finished, start, inCharge } = tramites[tramite];
+
         const personInCharge = inCharge
           .toLowerCase()
           .normalize("NFD")
           .replace(/[\u0300-\u036f]/g, "");
+
         if (finished) {
+          const timeConsumed = finished - start;
+
           if (!personsTotalTime[personInCharge]) {
             personsTotalTime[personInCharge] = 0;
           }
-          const timeConsumed = finished - start;
           personsTotalTime[personInCharge] += timeConsumed;
         }
       }
