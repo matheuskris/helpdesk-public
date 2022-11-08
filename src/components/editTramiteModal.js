@@ -146,12 +146,14 @@ export default function EditTramiteModal({
         <input
           name="hour"
           type="time"
+          className="inputCadastro"
           onChange={handleTimeChange}
           value={timeInput.hour}
         />
         <input
           name="date"
           type="date"
+          className="inputCadastro"
           onChange={handleTimeChange}
           value={timeInput.date}
         />
