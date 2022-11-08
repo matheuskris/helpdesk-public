@@ -6,12 +6,12 @@ import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
 import FollowUpModal from "../src/components/FollowUpModal";
-import { initialCall } from "../src/components/CreateCallModal";
+
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
-import { getBeatyDate } from "../src/utils/functions.utils";
+import { getBeatyDate, getTotalTimeObject } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
@@ -33,6 +33,8 @@ function Helpdesk() {
   const [searchField, setSearchField] = useState("");
   const [date1, setDate1] = useState({});
   const [date2, setDate2] = useState({});
+  // T O T A L   T I M E
+  const [totalTime, setTotalTime] = useState({});
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -60,13 +62,13 @@ function Helpdesk() {
     callsListener(transformObjectToArray);
   }, []);
 
-
   // throwing calls to redux
   useEffect(() => {
     const callsToStore = [...chamados];
     dispatch(setCalls(callsToStore));
-  }, [chamados]);
 
+    setTotalTime(getTotalTimeObject(chamados));
+  }, [chamados]);
 
   function handleSelectChange(e) {
     const { value } = e.target;
@@ -76,7 +78,6 @@ function Helpdesk() {
     const { value } = e.target;
     setSearchField(value);
   }
-
 
   const orderedCalls = chamados.sort(function (a, b) {
     switch (filterOrderBy) {
@@ -179,15 +180,13 @@ function Helpdesk() {
     setCallToEdit(chamado);
   }
 
-
   function handleShowTramites(chamado) {
     router.push({
-      pathname: '/calldetails',
+      pathname: "/calldetails",
       query: {
         id: chamado.id,
-      }
-    })
-
+      },
+    });
   }
 
   function handleReopenCall(chamado) {
@@ -322,6 +321,7 @@ function Helpdesk() {
             handleEditModal={handleEditModal}
             handleReopenCall={handleReopenCall}
             handleCloseCall={handleCloseCall}
+            totalTime={totalTime}
           />
           <div className="w-[100%] mt-4 flex items-center justify-end">
             <button className="btnExport" onClick={handleDownload}>

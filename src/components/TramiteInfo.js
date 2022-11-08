@@ -19,26 +19,27 @@ function TramiteInfo({ tramite, handleCloseTramite, handleEditTramite }) {
             <strong className="tracking-wide">Título do trâmite:</strong>{" "}
             {title}
           </h2>
-          <p className="mt-1">{description}</p>
+          <div className="flex justify-between items-center">
+            <button
+                  onClick={() => handleEditTramite(tramite)}
+                  className="px-3 py-2 mx-4 rounded-xl bg-yellow-400 hover:bg-yellow-500 transition duration-150 active:scale-95"
+                >
+                  Editar Tramite
+                </button>
+            {finished ? (
+                ''
+            ) : (
+              <button
+                  onClick={() => handleCloseTramite(tramite)}
+                  className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-600 transition duration-150 active:scale-95"
+                >
+                  Finalizar trâmite
+                </button>
+            )}{" "}
+          </div>
         </div>
+        <p className="mt-1">{description}</p>
       </div>
-
-      {finished ? (
-        ""
-      ) : (
-        <button
-          onClick={() => handleCloseTramite(tramite)}
-          className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-700 transition duration-150 active:scale-95"
-        >
-          Finalizar trâmite
-        </button>
-      )}
-      <button
-        onClick={() => handleEditTramite(tramite)}
-        className="px-3 py-2 rounded-xl bg-red-500 hover:bg-red-700 transition duration-150 active:scale-95"
-      >
-        Editar Tramite
-      </button>
 
       <div className="w-full border-b-2 pt-2 border-black" />
     </div>
