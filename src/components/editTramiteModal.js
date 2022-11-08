@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { editExistingCall } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
@@ -19,10 +19,52 @@ export default function EditTramiteModal({
   setTramiteToEdit,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [timeInput, setTimeInput] = useState({});
   const chamadoToEdit = editChamado;
   // ====== Funções do Modal =========
   function handleCloseModal() {
     setEditModal(false);
+  }
+
+  useEffect(() => {
+    const newDateObject = new Date(editTramite.start);
+
+    const minutes =
+      newDateObject.getMinutes() < 10
+        ? "0" + newDateObject.getMinutes()
+        : newDateObject.getMinutes();
+
+    const hours =
+      newDateObject.getHours() < 10
+        ? "0" + newDateObject.getHours()
+        : newDateObject.getHours();
+    const day =
+      newDateObject.getDate() < 10
+        ? "0" + newDateObject.getDate()
+        : newDateObject.getDate();
+
+    const date =
+      newDateObject.getFullYear() +
+      "-" +
+      (newDateObject.getMonth() + 1) +
+      "-" +
+      day;
+
+    const hour = hours + ":" + minutes;
+    setTimeInput({ date, hour });
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
+    const myDateString = timeInput.date + "T" + timeInput.hour;
+    const myNewDate = new Date(myDateString);
+    const dateInMs = Date.parse(myNewDate);
+    setTramiteToEdit({ ...editTramite, start: dateInMs });
+  }, [timeInput]);
+
+  function handleTimeChange(e) {
+    const { value } = e.target;
+    const { name } = e.target;
+    setTimeInput({ ...timeInput, [name]: value });
   }
 
   // Estilo do Modal
@@ -100,6 +142,18 @@ export default function EditTramiteModal({
           placeholder="Título"
           className="inputCadastro"
           type="text"
+        />
+        <input
+          name="hour"
+          type="time"
+          onChange={handleTimeChange}
+          value={timeInput.hour}
+        />
+        <input
+          name="date"
+          type="date"
+          onChange={handleTimeChange}
+          value={timeInput.date}
         />
         <textarea
           onChange={handleChange}
