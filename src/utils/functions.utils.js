@@ -23,7 +23,40 @@ export function getBeatyDate(dateInMs) {
   if (!date.getDate()) {
     return "";
   }
+  const minutes =
+    date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+  const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  return `${day}/${date.getMonth() + 1}/${date.getFullYear()} às
+    ${date.getHours()}:${minutes}`;
+}
 
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} às
-    ${date.getHours()}:${date.getMinutes()}`;
+export function getTotalTimeObject(arrayOfCalls) {
+  const totalTime = arrayOfCalls.reduce((object, call) => {
+    let personsTotalTime = {};
+    if (call.tramites) {
+      const { tramites } = call;
+      for (const tramite in tramites) {
+        const { finished, start, inCharge } = tramites[tramite];
+        const personInCharge = inCharge
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        if (finished) {
+          if (!personsTotalTime[personInCharge]) {
+            personsTotalTime[personInCharge] = 0;
+          }
+          const timeConsumed = finished - start;
+          personsTotalTime[personInCharge] += timeConsumed;
+        }
+      }
+    }
+    for (const prop in personsTotalTime) {
+      if (!object[prop]) {
+        object[prop] = 0;
+      }
+      object[prop] += personsTotalTime[prop];
+    }
+    return object;
+  }, {});
+  return totalTime;
 }

@@ -1,5 +1,6 @@
 import { getBeatyDate, getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
+import PersonsCard from "./PersonsCard";
 
 function Table(props) {
   const {
@@ -11,6 +12,7 @@ function Table(props) {
     handleEditModal,
     handleReopenCall,
     handleCloseCall,
+    totalTime,
   } = props;
 
   function showOnGoingTime(parsedDate) {
@@ -25,7 +27,6 @@ function Table(props) {
     const timeSpentinMs = chamado.finished - chamado.start;
     return getTimeStringFromMs(timeSpentinMs);
   }
-  console.log(filteredCalls);
   // function time spent
   function showTimeSpent(chamado) {
     let time = 0;
@@ -175,7 +176,9 @@ function Table(props) {
                 />
               )}
             </td>
-            <td className="td">{chamado.inCharge}</td>
+            <td className="td">
+              <PersonsCard totalTime={totalTime} inCharge={chamado.inCharge} />
+            </td>
 
             <td className="td">{showTimeSpent(chamado)}</td>
 
