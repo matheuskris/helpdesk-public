@@ -23,11 +23,15 @@ export function getBeatyDate(dateInMs) {
   if (!date.getDate()) {
     return "";
   }
-  const minutes =
-    date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-  const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-  return `${day}/${date.getMonth() + 1}/${date.getFullYear()} às
-    ${date.getHours()}:${minutes}`;
+    
+  const monthPlus1 = date.getMonth() + 1 
+  const day = `${date.getDate() > 9 ? date.getDate() : '0' + date.getDate()}`
+  const month = `${monthPlus1 > 9 ? monthPlus1 : '0' + monthPlus1}`
+  const minute = `${date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes()}`
+  const hour = `${date.getHours() > 9 ? date.getHours() : '0' + date.getHours()}`
+  
+  return `${day}/${month}/${date.getFullYear()} às
+    ${hour}:${minute}`;
 }
 
 export function getTotalTimeObject(arrayOfCalls) {
@@ -45,6 +49,7 @@ export function getTotalTimeObject(arrayOfCalls) {
 
         if (finished) {
           const timeConsumed = finished - start;
+
 
           if (!personsTotalTime[personInCharge]) {
             personsTotalTime[personInCharge] = 0;
