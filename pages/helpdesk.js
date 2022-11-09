@@ -137,6 +137,9 @@ function Helpdesk() {
         return !call.isClosed && X && Y;
       }
     } else {
+      if (!call.userClient) {
+        call.userClient = "";
+      }
       let doesCallIsSearched = call[selectFilter]
         .toLowerCase()
         .includes(searchField.toLowerCase());
@@ -159,9 +162,13 @@ function Helpdesk() {
 
   // Close Call
   function handleCloseCall(callToClose) {
-    const newDate = new Date();
-    const dateToSend = Date.parse(newDate);
-
+    let dateToSend;
+    if (!callToClose.finished) {
+      const newDate = new Date();
+      dateToSend = Date.parse(newDate);
+    } else {
+      dateToSend = callToClose.finished;
+    }
     writeNewCall({ ...callToClose, finished: dateToSend, isClosed: true });
   }
 
@@ -249,9 +256,7 @@ function Helpdesk() {
               {selectFilter === "data" ? (
                 ""
               ) : (
-                <h3 className="text-lg ">
-                  Escolha um filtro:
-                </h3>
+                <h3 className="text-lg ">Escolha um filtro:</h3>
               )}
               <select
                 className="rounded-lg p-2 border text-sm outline-gray-400"
