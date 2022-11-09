@@ -249,7 +249,7 @@ function Helpdesk() {
               {selectFilter === "data" ? (
                 ""
               ) : (
-                <h3 className="text-lg border-b border-black ">
+                <h3 className="text-lg ">
                   Escolha um filtro:
                 </h3>
               )}
@@ -261,6 +261,7 @@ function Helpdesk() {
                 <option value="client">Cliente</option>
                 <option value="inCharge">Responsável</option>
                 <option value="data">Data</option>
+                <option value="description">Descrição</option>
               </select>
               {selectFilter === "data" ? (
                 <>
