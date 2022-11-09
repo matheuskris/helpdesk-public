@@ -3,6 +3,7 @@ import { editExistingCall } from "../utils/firebase.utils";
 import { getStringDateToTimeInput } from "../utils/functions.utils";
 
 import Modal from "react-modal";
+import { set } from "firebase/database";
 Modal.setAppElement("#__next");
 
 export const initialCall = {
@@ -28,11 +29,19 @@ export default function EditTramiteModal({
   }
 
   useEffect(() => {
+    setIsRegisterFull(true);
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
     const startObj = getStringDateToTimeInput(editTramite.start);
     const { hour, date } = startObj;
-    const endObj = getStringDateToTimeInput(editTramite.finished);
-    const endTime = endObj.hour;
-    const endDate = endObj.date;
+    let endTime = "";
+    let endDate = "";
+    if (editTramite.finished) {
+      const endObj = getStringDateToTimeInput(editTramite.finished);
+      endTime = endObj.hour;
+      endDate = endObj.date;
+    }
 
     setTimeInput({ date, hour, endTime, endDate });
   }, [isEditModalOpen]);
@@ -42,14 +51,21 @@ export default function EditTramiteModal({
     const myNewStartDate = new Date(myStartDateString);
     const startDateInMs = Date.parse(myNewStartDate);
 
-    const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
-    const myNewEndDate = new Date(myEndDateString);
-    const endDateInMs = Date.parse(myNewEndDate);
+    if (timeInput.endDate && timeInput.endTime) {
+      const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
+      const myNewEndDate = new Date(myEndDateString);
+      const endDateInMs = Date.parse(myNewEndDate);
 
+      setTramiteToEdit({
+        ...editTramite,
+        start: startDateInMs,
+        finished: endDateInMs,
+      });
+      return;
+    }
     setTramiteToEdit({
       ...editTramite,
       start: startDateInMs,
-      finished: endDateInMs,
     });
   }, [timeInput]);
 

@@ -55,12 +55,9 @@ export function getStringDateToTimeInput(dateString) {
       ? "0" + newDateObject.getDate()
       : newDateObject.getDate();
 
-  const date =
-    newDateObject.getFullYear() +
-    "-" +
-    (newDateObject.getMonth() + 1) +
-    "-" +
-    day;
+  const month = newDateObject.getMonth() + 1;
+  const inputMonth = month > 9 ? month : "0" + month;
+  const date = newDateObject.getFullYear() + "-" + inputMonth + "-" + day;
 
   const hour = hours + ":" + minutes;
   return { hour, date };
