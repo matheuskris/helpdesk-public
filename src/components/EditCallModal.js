@@ -20,11 +20,18 @@ function EditCallModal({
 
     const startObj = getStringDateToTimeInput(callToEdit.start);
     const { hour, date } = startObj;
-    const endObj = getStringDateToTimeInput(callToEdit.finished);
-    const endTime = endObj.hour;
-    const endDate = endObj.date;
-
+    let endTime = "";
+    let endDate = "";
+    if (callToEdit.finished) {
+      const endObj = getStringDateToTimeInput(callToEdit.finished);
+      endTime = endObj.hour;
+      endDate = endObj.date;
+    }
     setTimeInput({ date, hour, endTime, endDate });
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
+    setIsRegisterFull(true);
   }, [isEditModalOpen]);
 
   // Modal's style
@@ -55,15 +62,25 @@ function EditCallModal({
     const myStartDateString = timeInput.date + "T" + timeInput.hour;
     const myNewStartDate = new Date(myStartDateString);
     const startDateInMs = Date.parse(myNewStartDate);
+    // if (!startDateInMs) {
+    //   return;
+    // }
 
-    const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
-    const myNewEndDate = new Date(myEndDateString);
-    const endDateInMs = Date.parse(myNewEndDate);
+    if (timeInput.endDate && timeInput.endTime) {
+      const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
+      const myNewEndDate = new Date(myEndDateString);
+      const endDateInMs = Date.parse(myNewEndDate);
 
+      setCallToEdit({
+        ...callToEdit,
+        start: startDateInMs,
+        finished: endDateInMs,
+      });
+      return;
+    }
     setCallToEdit({
       ...callToEdit,
       start: startDateInMs,
-      finished: endDateInMs,
     });
   }, [timeInput]);
   //
@@ -76,13 +93,15 @@ function EditCallModal({
   // Function Edit
   function handleEdit(e) {
     e.preventDefault();
+    console.log(callToEdit);
     for (const prop in callToEdit) {
-      if (callToEdit[prop] === "" || callToEdit[prop] === undefined) {
+      if (!callToEdit[prop]) {
         console.log("failed", callToEdit[prop]);
         setIsRegisterFull(false);
         return;
       }
     }
+    console.log(callToEdit);
     setEditModal(false);
     editExistingCall(callToEdit, oldId);
   }

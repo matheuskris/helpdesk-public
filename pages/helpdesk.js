@@ -137,9 +137,9 @@ function Helpdesk() {
         return !call.isClosed && X && Y;
       }
     } else {
-      let propFilter = call[selectFilter]
-      if(!propFilter){
-        propFilter =""
+      let propFilter = call[selectFilter];
+      if (!propFilter) {
+        propFilter = "";
       }
       let doesCallIsSearched = propFilter
         .toLowerCase()
@@ -198,7 +198,9 @@ function Helpdesk() {
   }
 
   function handleReopenCall(chamado) {
-    writeNewCall({ ...chamado, isClosed: false });
+    let callWithoutIsClosed = { ...chamado };
+    delete callWithoutIsClosed.isClosed;
+    writeNewCall(callWithoutIsClosed);
   }
 
   function handleShowClosedCalls() {

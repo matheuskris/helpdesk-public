@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { editExistingCall } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
-import { info } from "autoprefixer";
+
 Modal.setAppElement("#__next");
 
 export const initialCall = {
@@ -81,10 +81,6 @@ export default function TramiteModal({
     const { name } = e.target;
     setInfoCall({ ...infoCall, [name]: value });
   }
-
-  const handleCloseTramite = () => {
-    editExistingCall(call, id);
-  };
 
   useEffect(() => {
     let nTramites = 0;
