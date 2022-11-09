@@ -137,7 +137,11 @@ function Helpdesk() {
         return !call.isClosed && X && Y;
       }
     } else {
-      let doesCallIsSearched = call[selectFilter]
+      let propFilter = call[selectFilter]
+      if(!propFilter){
+        propFilter =""
+      }
+      let doesCallIsSearched = propFilter
         .toLowerCase()
         .includes(searchField.toLowerCase());
       if (showClosedCalls) {
@@ -262,6 +266,7 @@ function Helpdesk() {
                 <option value="inCharge">Responsável</option>
                 <option value="data">Data</option>
                 <option value="description">Descrição</option>
+                <option value="userClient">Usuário Cliente</option>
               </select>
               {selectFilter === "data" ? (
                 <>

@@ -70,6 +70,14 @@ function Table(props) {
           <th
             className="th"
             onClick={() => {
+              handleFilter("userClient");
+            }}
+          >
+            Usuário Cliente
+          </th>
+          <th
+            className="th"
+            onClick={() => {
               handleFilter("start");
             }}
           >
@@ -128,6 +136,7 @@ function Table(props) {
           >
             <td className="td">{chamado.id}</td>
             <td className="td">{chamado?.client}</td>
+            <td className="td">{chamado?.userClient}</td>
             <td className="td">{getBeatyDate(chamado.start)}</td>
             {showClosedCalls ? (
               <td className="td">{getBeatyDate(chamado.finished)}</td>

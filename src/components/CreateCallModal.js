@@ -6,6 +6,8 @@ Modal.setAppElement("#__next");
 
 export const initialCall = {
   id: "",
+  client: '',
+  userClient: '',
   start: "",
   title: "",
   description: "",
@@ -55,6 +57,8 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
     await writeNewCall(objectToSend);
     setInfoCall({
       id: "",
+      client: '',
+      userClient: '',
       start: "",
       title: "",
       description: "",
@@ -97,6 +101,14 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
           name="client"
           value={infoCall.client}
           placeholder="Cliente"
+          className="inputCadastro"
+          type="text"
+        />
+        <input
+          onChange={handleChange}
+          name="userClient"
+          value={infoCall?.userClient}
+          placeholder="Usuário Cliente"
           className="inputCadastro"
           type="text"
         />
