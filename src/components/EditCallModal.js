@@ -1,7 +1,7 @@
-import { set } from "firebase/database";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { editExistingCall } from "../utils/firebase.utils";
+import { getStringDateToTimeInput } from "../utils/functions.utils";
 
 Modal.setAppElement("#__next");
 
@@ -17,31 +17,14 @@ function EditCallModal({
 
   useEffect(() => {
     setOldId(callToEdit.id);
-    const newDateObject = new Date(callToEdit.start);
 
-    const minutes =
-      newDateObject.getMinutes() < 10
-        ? "0" + newDateObject.getMinutes()
-        : newDateObject.getMinutes();
+    const startObj = getStringDateToTimeInput(callToEdit.start);
+    const { hour, date } = startObj;
+    const endObj = getStringDateToTimeInput(callToEdit.finished);
+    const endTime = endObj.hour;
+    const endDate = endObj.date;
 
-    const hours =
-      newDateObject.getHours() < 10
-        ? "0" + newDateObject.getHours()
-        : newDateObject.getHours();
-    const day =
-      newDateObject.getDate() < 10
-        ? "0" + newDateObject.getDate()
-        : newDateObject.getDate();
-
-    const date =
-      newDateObject.getFullYear() +
-      "-" +
-      (newDateObject.getMonth() + 1) +
-      "-" +
-      day;
-
-    const hour = hours + ":" + minutes;
-    setTimeInput({ date, hour });
+    setTimeInput({ date, hour, endTime, endDate });
   }, [isEditModalOpen]);
 
   // Modal's style
@@ -69,10 +52,19 @@ function EditCallModal({
   }
   //
   useEffect(() => {
-    const myDateString = timeInput.date + "T" + timeInput.hour;
-    const myNewDate = new Date(myDateString);
-    const dateInMs = Date.parse(myNewDate);
-    setCallToEdit({ ...callToEdit, start: dateInMs });
+    const myStartDateString = timeInput.date + "T" + timeInput.hour;
+    const myNewStartDate = new Date(myStartDateString);
+    const startDateInMs = Date.parse(myNewStartDate);
+
+    const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
+    const myNewEndDate = new Date(myEndDateString);
+    const endDateInMs = Date.parse(myNewEndDate);
+
+    setCallToEdit({
+      ...callToEdit,
+      start: startDateInMs,
+      finished: endDateInMs,
+    });
   }, [timeInput]);
   //
   function handleTimeChange(e) {
@@ -117,20 +109,42 @@ function EditCallModal({
             className="inputCadastro"
             type="number"
           />
-          <input
-            name="hour"
-            type="time"
-            className="inputCadastro"
-            onChange={handleTimeChange}
-            value={timeInput.hour}
-          />
-          <input
-            name="date"
-            type="date"
-            className="inputCadastro"
-            onChange={handleTimeChange}
-            value={timeInput.date}
-          />
+          <div>
+            <label className="border-b p-4">
+              De
+              <input
+                name="hour"
+                type="time"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.hour}
+              />
+              <input
+                name="date"
+                type="date"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.date}
+              />
+            </label>
+            <label className="border-b p-4">
+              Até
+              <input
+                name="endTime"
+                type="time"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.endTime}
+              />
+              <input
+                name="endDate"
+                type="date"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.endDate}
+              />
+            </label>
+          </div>
           <input
             onChange={handleChange}
             name="client"
