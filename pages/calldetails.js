@@ -88,14 +88,16 @@ export default function CallDetails(props) {
       </div>
 
       {/* Tramites Infos */}
-      {tramites.map((tramite) => (
-        <TramiteInfo
-          key={tramite.id}
-          tramite={tramite}
-          handleCloseTramite={handleCloseTramite}
-          handleEditTramite={handleEditTramite}
-        />
-      ))}
+      {tramites
+        ? tramites.map((tramite) => (
+            <TramiteInfo
+              key={tramite.id}
+              tramite={tramite}
+              handleCloseTramite={handleCloseTramite}
+              handleEditTramite={handleEditTramite}
+            />
+          ))
+        : "Nenhum trâmite aberto"}
       <TramiteModal
         tramites={tramites}
         chamado={proceduresCall}
