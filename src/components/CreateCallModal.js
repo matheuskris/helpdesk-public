@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { writeNewCall } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
@@ -6,8 +6,8 @@ Modal.setAppElement("#__next");
 
 export const initialCall = {
   id: "",
-  client: '',
-  userClient: '',
+  client: "",
+  userClient: "",
   start: "",
   title: "",
   description: "",
@@ -18,12 +18,17 @@ export const initialCall = {
 export default function CreateCallModal({ isModalOpen, setModal }) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [idBeeingUsed, setIdbeeingUsed] = useState(false);
 
   // ====== Funções do Modal =========
   function handleCloseModal() {
     setModal(false);
   }
 
+  useEffect(() => {
+    setIsRegisterFull(true);
+    setIdbeeingUsed(false);
+  }, [isModalOpen]);
   // Estilo do Modal
   const customStyle = {
     content: {
@@ -54,11 +59,16 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       }
     }
 
-    await writeNewCall(objectToSend);
+    const string = await writeNewCall(objectToSend);
+    if (string) {
+      console.log(string);
+      setIdbeeingUsed(true);
+      return;
+    }
     setInfoCall({
       id: "",
-      client: '',
-      userClient: '',
+      client: "",
+      userClient: "",
       start: "",
       title: "",
       description: "",
@@ -66,6 +76,8 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       inCharge: "",
     });
     setModal(false);
+    setIdbeeingUsed(false);
+    setIsRegisterFull(false);
   }
 
   // Normal handle change
@@ -156,6 +168,11 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
         ""
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
+      )}
+      {idBeeingUsed ? (
+        <p className="text-red-600">Esse Id já está sendo usado</p>
+      ) : (
+        ""
       )}
     </Modal>
   );

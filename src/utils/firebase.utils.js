@@ -22,6 +22,8 @@ import {
   onValue,
   update,
   remove,
+  get,
+  child,
 } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -50,9 +52,28 @@ const db = getFirestore();
 
 const RTdatabase = getDatabase(app);
 
+export const getCallToSeeIfItAlreadyExists = async (id) => {
+  const idRef = ref(RTdatabase, "testCalls/" + id);
+  const doesIdReturnsAValue = await get(idRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        console.log(snapshot.val());
+        return true;
+      } else {
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  return doesIdReturnsAValue;
+};
+
 export const writeNewCall = async (call) => {
+  const idIsBeeingUsed = await getCallToSeeIfItAlreadyExists(call.id);
+  if (idIsBeeingUsed) return "já existe um chamado com esse nome";
   try {
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    await set(ref(RTdatabase, "testCalls/" + call.id), call);
   } catch (error) {
     console.log(error);
   }
@@ -60,21 +81,25 @@ export const writeNewCall = async (call) => {
 
 export const removeExistingCall = async (call) => {
   try {
-    await remove(ref(RTdatabase, "calls/" + call.id));
+    await remove(ref(RTdatabase, "testCalls/" + call.id));
   } catch (error) {
     console.log(error);
   }
 };
 export const editExistingCall = async (call, oldId) => {
+  if (call.id !== oldId) {
+    const returnedString = await getCallToSeeIfItAlreadyExists(call.id);
+    if (returnedString) return returnedString;
+  }
   try {
-    await remove(ref(RTdatabase, "calls/" + oldId));
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    await remove(ref(RTdatabase, "testCalls/" + oldId));
+    await set(ref(RTdatabase, "testCalls/" + call.id), call);
   } catch (error) {
     console.log(error);
   }
 };
 
-const callsRef = ref(RTdatabase, "calls/");
+const callsRef = ref(RTdatabase, "testCalls/");
 
 export const callsListener = (callback) => {
   return onValue(callsRef, (callsSnapshot) => {
@@ -84,13 +109,12 @@ export const callsListener = (callback) => {
 };
 
 export const proceduresListener = (callback, callId) => {
-  const callRef = ref(RTdatabase,"/calls/" + callId)
+  const callRef = ref(RTdatabase, "/testCalls/" + callId);
   return onValue(callRef, (callSnapshot) => {
-    const data = callSnapshot.val()
-    callback(data)
-  })
-}
-
+    const data = callSnapshot.val();
+    callback(data);
+  });
+};
 
 // USER AUTH STUFF
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
