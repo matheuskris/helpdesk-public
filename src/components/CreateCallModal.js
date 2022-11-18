@@ -18,7 +18,7 @@ export const initialCall = {
 export default function CreateCallModal({ isModalOpen, setModal }) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
-  const [idBeeingUsed, setIdbeeingUsed] = useState(false);
+  const [error, setError] = useState("");
 
   // ====== Funções do Modal =========
   function handleCloseModal() {
@@ -27,7 +27,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
 
   useEffect(() => {
     setIsRegisterFull(true);
-    setIdbeeingUsed(false);
+    setError("");
   }, [isModalOpen]);
   // Estilo do Modal
   const customStyle = {
@@ -60,9 +60,11 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
     }
 
     const string = await writeNewCall(objectToSend);
-    if (string) {
+    if (string === "success") {
+      console.log("chamado criado com sucesso");
+    } else {
+      setError(string);
       console.log(string);
-      setIdbeeingUsed(true);
       return;
     }
     setInfoCall({
@@ -76,7 +78,6 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       inCharge: "",
     });
     setModal(false);
-    setIdbeeingUsed(false);
     setIsRegisterFull(false);
   }
 
@@ -169,11 +170,7 @@ export default function CreateCallModal({ isModalOpen, setModal }) {
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
       )}
-      {idBeeingUsed ? (
-        <p className="text-red-600">Esse Id já está sendo usado</p>
-      ) : (
-        ""
-      )}
+      {error ? <p className="text-red-600">{error}</p> : ""}
     </Modal>
   );
 }

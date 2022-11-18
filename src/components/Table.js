@@ -37,7 +37,7 @@ function Table(props) {
       }
     }
 
-    const hora = parseInt((time / 3600000));
+    const hora = parseInt(time / 3600000);
     const min = ((time % 3600000) / 60000).toFixed(0) + "min";
 
     if (hora < 1) {
@@ -131,7 +131,7 @@ function Table(props) {
       <tbody>
         {filteredCalls.map((chamado) => (
           <tr
-            key={chamado.id}
+            key={chamado.key}
             className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
           >
             <td className="td">{chamado.id}</td>

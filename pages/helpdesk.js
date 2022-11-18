@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { callsListener, writeNewCall } from "../src/utils/firebase.utils";
+import {
+  callsListener,
+  duplicateDB,
+  editExistingCall,
+  writeNewCall,
+} from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -170,7 +175,10 @@ function Helpdesk() {
     } else {
       dateToSend = callToClose.finished;
     }
-    writeNewCall({ ...callToClose, finished: dateToSend, isClosed: true });
+    editExistingCall(
+      { ...callToClose, finished: dateToSend, isClosed: true },
+      callToClose.id
+    );
   }
 
   // M O D A I S
@@ -192,15 +200,17 @@ function Helpdesk() {
     router.push({
       pathname: "/calldetails",
       query: {
-        id: chamado.id,
+        key: chamado.key,
       },
     });
   }
 
-  function handleReopenCall(chamado) {
-    let callWithoutIsClosed = { ...chamado };
-    delete callWithoutIsClosed.isClosed;
-    writeNewCall(callWithoutIsClosed);
+  async function handleReopenCall(chamado) {
+    let openCall = { ...chamado, isClosed: false };
+
+    console.log(openCall);
+    const response = await editExistingCall(openCall, chamado.id);
+    console.log(response);
   }
 
   function handleShowClosedCalls() {
@@ -346,6 +356,11 @@ function Helpdesk() {
             />
           </div>
         </div>
+        {/* <div>
+          <button onClick={duplicateDB} className=" bg-blue-600 btnCadastrar">
+            DATABASE
+          </button>
+        </div> */}
 
         {/* === Configuração do Modal =====  */}
         <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />

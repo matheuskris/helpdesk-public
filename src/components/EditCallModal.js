@@ -14,7 +14,7 @@ function EditCallModal({
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [timeInput, setTimeInput] = useState({});
   const [oldId, setOldId] = useState({});
-  const [idExists, setIdExists] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setOldId(callToEdit.id);
@@ -33,7 +33,7 @@ function EditCallModal({
 
   useEffect(() => {
     setIsRegisterFull(true);
-    setIdExists(false);
+    setError("");
   }, [isEditModalOpen]);
 
   // Modal's style
@@ -104,8 +104,10 @@ function EditCallModal({
       }
     }
     const string = await editExistingCall(callToEdit, oldId);
-    if (string) {
-      setIdExists(true);
+    if (string === "success") {
+      console.log("chamado editado com sucesso");
+    } else {
+      setError(string);
       return;
     }
     setEditModal(false);
@@ -234,7 +236,7 @@ function EditCallModal({
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
       )}
-      {idExists ? <p className="text-red-600">Esse Id já existe</p> : ""}
+      {error ? <p className="text-red-600">{error}</p> : ""}
     </Modal>
   );
 }

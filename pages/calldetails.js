@@ -16,7 +16,7 @@ export default function CallDetails(props) {
   const [tramiteCallToEdit, setTramiteCallToEdit] = useState({});
   const [tramiteToEdit, setTramiteToEdit] = useState({});
 
-  const callId = router.query.id;
+  const callKey = router.query.key;
 
   const [proceduresCall, setProceduresCall] = useState({});
 
@@ -42,8 +42,8 @@ export default function CallDetails(props) {
     const setUseStateCall = (newCall) => {
       setProceduresCall(newCall);
     };
-    proceduresListener(setUseStateCall, callId);
-  }, [callId]);
+    proceduresListener(setUseStateCall, callKey);
+  }, [callKey]);
 
   const tramites = transformObjectToArray(proceduresCall?.tramites);
   tramites.reverse();
@@ -71,7 +71,7 @@ export default function CallDetails(props) {
         <div className="flex justify-between">
           <h1 className="text-4xl">
             <strong>Chamado: </strong>
-            {callId || ""}
+            {proceduresCall?.id}
           </h1>
           <button
             onClick={() => openTramiteModal()}
