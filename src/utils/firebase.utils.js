@@ -22,6 +22,9 @@ import {
   onValue,
   update,
   remove,
+  get,
+  child,
+  push,
 } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -49,32 +52,100 @@ const db = getFirestore();
 //=========== R E A L === T I M E === D A T A B A S E =======
 
 const RTdatabase = getDatabase(app);
+const callsRefString = "newCallsStructure";
+
+// temporary Stuff
+
+// export const duplicateDB = async () => {
+//   const callsRef = ref(RTdatabase, "calls/");
+
+//   const data = await get(callsRef).then((snapshot) => {
+//     return snapshot.val();
+//   });
+
+//   for (const prop in data) {
+//     const newPostKey = push(child(ref(RTdatabase), "newCallsStructure/")).key;
+//     await set(ref(RTdatabase, "newCallsStructure/" + newPostKey), {
+//       ...data[prop],
+//       key: newPostKey,
+//     });
+//   }
+
+//   // try {
+//   //   await set(ref(RTdatabase, "newCallsStructure/"), data);
+//   // } catch (error) {
+//   //   console.log(error);
+//   // }
+// };
+// --------------------
+
+export const getCallToSeeIfItAlreadyExists = async (id) => {
+  const callsRef = ref(RTdatabase, callsRefString + "/");
+
+  const doesIdReturnsAValue = await get(callsRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        for (const prop in data) {
+          const callId = data[prop].id;
+
+          if (callId === id) {
+            return true;
+          }
+        }
+      } else {
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return doesIdReturnsAValue;
+};
 
 export const writeNewCall = async (call) => {
+  const idIsBeeingUsed = await getCallToSeeIfItAlreadyExists(call.id);
+  if (idIsBeeingUsed) return "já existe um chamado com esse id";
+
   try {
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    const newPostKey = push(child(ref(RTdatabase), callsRefString)).key;
+    await set(ref(RTdatabase, callsRefString + "/" + newPostKey), {
+      ...call,
+      key: newPostKey,
+    });
+    return "success";
   } catch (error) {
     console.log(error);
+    return error.code;
   }
 };
 
 export const removeExistingCall = async (call) => {
   try {
-    await remove(ref(RTdatabase, "calls/" + call.id));
-  } catch (error) {
-    console.log(error);
-  }
-};
-export const editExistingCall = async (call, oldId) => {
-  try {
-    await remove(ref(RTdatabase, "calls/" + oldId));
-    await set(ref(RTdatabase, "calls/" + call.id), call);
+    await remove(ref(RTdatabase, callsRefString + "/" + call.key));
   } catch (error) {
     console.log(error);
   }
 };
 
-const callsRef = ref(RTdatabase, "calls/");
+export const editExistingCall = async (call, oldId) => {
+  if (call.id !== oldId) {
+    const idExists = await getCallToSeeIfItAlreadyExists(call.id);
+    if (idExists) return "Já existe um chamado com esse ID";
+  }
+  try {
+    update(ref(RTdatabase, callsRefString + "/" + call.key), call);
+    console.log("success");
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
+const callsRef = ref(RTdatabase, callsRefString + "/");
 
 export const callsListener = (callback) => {
   return onValue(callsRef, (callsSnapshot) => {
@@ -83,14 +154,13 @@ export const callsListener = (callback) => {
   });
 };
 
-export const proceduresListener = (callback, callId) => {
-  const callRef = ref(RTdatabase,"/calls/" + callId)
+export const proceduresListener = (callback, callKey) => {
+  const callRef = ref(RTdatabase, "/" + callsRefString + "/" + callKey);
   return onValue(callRef, (callSnapshot) => {
-    const data = callSnapshot.val()
-    callback(data)
-  })
-}
-
+    const data = callSnapshot.val();
+    callback(data);
+  });
+};
 
 // USER AUTH STUFF
 export const createAuthUserWithEmailAndPassword = async (email, password) => {

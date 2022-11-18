@@ -20,11 +20,19 @@ export default function TramiteModal({
 }) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [error, setError] = useState("");
+
   const chamadoRecebido = chamado;
+  console.log(chamadoRecebido);
   // ====== Funções do Modal =========
   function handleCloseModal() {
     setModal(false);
   }
+
+  useEffect(() => {
+    setError("");
+    setIsRegisterFull(true);
+  }, [isModalOpen]);
 
   // Estilo do Modal
   const customStyle = {
@@ -64,7 +72,15 @@ export default function TramiteModal({
     };
 
     console.log(objectToSend);
-    await editExistingCall(objectToSend, chamadoRecebido.id);
+    const response = await editExistingCall(objectToSend, chamadoRecebido.id);
+    if (response === "success") {
+      console.log("tramite adicionado com sucesso");
+    } else {
+      setError(response);
+      console.log(response);
+      return;
+    }
+
     setInfoCall({
       id: infoCall.id + 1,
       title: "",
@@ -148,6 +164,7 @@ export default function TramiteModal({
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
       )}
+      {error ? <p className="text-red-600">{error}</p> : ""}
     </Modal>
   );
 }
