@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { editExistingCall } from "../utils/firebase.utils";
+import { editExistingTramite, writeNewTramite } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
 
@@ -22,8 +22,6 @@ export default function TramiteModal({
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [error, setError] = useState("");
 
-  const chamadoRecebido = chamado;
-  console.log(chamadoRecebido);
   // ====== Funções do Modal =========
   function handleCloseModal() {
     setModal(false);
@@ -61,18 +59,12 @@ export default function TramiteModal({
     }
 
     const objectToSend = {
-      ...chamadoRecebido,
-      tramites: {
-        ...chamadoRecebido?.tramites,
-        [infoCall.id]: {
-          ...infoCall,
-          start: sendDate,
-        },
-      },
+      ...infoCall,
+      start: sendDate,
     };
 
-    console.log(objectToSend);
-    const response = await editExistingCall(objectToSend, chamadoRecebido.id);
+    const response = await writeNewTramite(chamado.key, objectToSend);
+
     if (response === "success") {
       console.log("tramite adicionado com sucesso");
     } else {
@@ -107,7 +99,7 @@ export default function TramiteModal({
     const newTramiteId = nTramites + 1;
 
     setInfoCall({ ...infoCall, id: newTramiteId });
-  }, [chamadoRecebido]);
+  }, [chamado]);
 
   return (
     <Modal

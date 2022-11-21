@@ -1,12 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  callsListener,
-  duplicateDB,
-  editExistingCall,
-  writeNewCall,
-} from "../src/utils/firebase.utils";
+import { callsListener, editExistingCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -356,11 +351,6 @@ function Helpdesk() {
             />
           </div>
         </div>
-        {/* <div>
-          <button onClick={duplicateDB} className=" bg-blue-600 btnCadastrar">
-            DATABASE
-          </button>
-        </div> */}
 
         {/* === Configuração do Modal =====  */}
         <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
