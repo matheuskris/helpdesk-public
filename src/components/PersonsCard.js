@@ -1,5 +1,5 @@
 import * as HoverCard from '@radix-ui/react-hover-card';
-import { getTimeStringFromMs } from '../utils/functions.utils';
+import { getTimeInHoursFromMs } from '../utils/functions.utils';
 
 export default function PersonsCard({ inCharge, totalTime }) {
   const novemberStockHours = 112;
@@ -9,7 +9,7 @@ export default function PersonsCard({ inCharge, totalTime }) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
-  const eachTotalTime = getTimeStringFromMs(totalTime[personInCharge]);
+  const eachTotalTime = getTimeInHoursFromMs(totalTime[personInCharge]);
   const ocupationTime = `${((eachTotalTime / novemberStockHours) * 100).toFixed(
     0
   )}%`;
