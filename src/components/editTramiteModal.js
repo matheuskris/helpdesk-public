@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { editExistingCall } from "../utils/firebase.utils";
+import { editExistingTramite } from "../utils/firebase.utils";
 import { getStringDateToTimeInput } from "../utils/functions.utils";
 
 import Modal from "react-modal";
-import { set } from "firebase/database";
 Modal.setAppElement("#__next");
 
 export const initialCall = {
@@ -22,6 +21,7 @@ export default function EditTramiteModal({
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [timeInput, setTimeInput] = useState({});
+  const [error, setError] = useState("");
   const chamadoToEdit = editChamado;
   // ====== Funções do Modal =========
   function handleCloseModal() {
@@ -100,17 +100,19 @@ export default function EditTramiteModal({
     }
 
     const objectToSend = {
-      ...chamadoToEdit,
-      tramites: {
-        ...chamadoToEdit?.tramites,
-        [editTramite.id]: {
-          ...editTramite,
-        },
-      },
+      ...editTramite,
     };
 
     console.log(objectToSend);
-    await editExistingCall(objectToSend, chamadoToEdit.id);
+
+    const response = await editExistingTramite(chamadoToEdit.key, objectToSend);
+
+    if (response !== "success") {
+      setError(response);
+      return;
+    }
+
+    setError("");
     setIsRegisterFull(true);
     setEditModal(false);
   }
@@ -212,6 +214,7 @@ export default function EditTramiteModal({
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
       )}
+      {error ? <p className="text-red-600">{error}</p> : ""}
     </Modal>
   );
 }
