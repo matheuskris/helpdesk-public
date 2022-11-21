@@ -51,7 +51,7 @@ const auth = getAuth();
 //=========== R E A L === T I M E === D A T A B A S E =======
 
 const RTdatabase = getDatabase(app);
-const callsRefString = "newCallsStructure2";
+const callsRefString = "newCallsStructure";
 
 // temporary Stuff
 
