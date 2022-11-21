@@ -97,8 +97,7 @@ function EditCallModal({
     e.preventDefault();
     console.log(callToEdit);
     for (const prop in callToEdit) {
-      if (!callToEdit[prop]) {
-        console.log("failed", callToEdit[prop]);
+      if (callToEdit[prop] === "") {
         setIsRegisterFull(false);
         return;
       }

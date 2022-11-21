@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
-import { selectAllCalls } from "../src/store/callsSlicer/calls.selector";
-import { useSelector } from "react-redux";
+
 import TramiteInfo from "../src/components/TramiteInfo";
 import TramiteModal from "../src/components/TramiteModal";
 import { useEffect, useState } from "react";
@@ -46,7 +45,9 @@ export default function CallDetails(props) {
   }, [callKey]);
 
   const tramites = transformObjectToArray(proceduresCall?.tramites);
+
   tramites.reverse();
+
   async function handleCloseTramite(tramite) {
     const newDate = new Date();
     const sendDate = Date.parse(newDate);
@@ -64,27 +65,41 @@ export default function CallDetails(props) {
     await editExistingCall(objectToSend, proceduresCall.id);
   }
 
+  function goToCalls() {
+    router.push({
+      pathname: "/",
+    });
+  }
+
   return (
     <div className="p-6">
       {/* Call Infos */}
-      <div className="bg-gray-300 p-6 rounded-lg">
-        <div className="flex justify-between">
+      <div className="flex flex-row justify-between bg-gray-300 p-6 rounded-lg">
+        <div className="flex flex-col justify-between">
           <h1 className="text-4xl">
             <strong>Chamado: </strong>
             {proceduresCall?.id}
           </h1>
+          <h2 className="text-2xl">
+            <strong>Cliente:</strong> {proceduresCall?.client}
+          </h2>
+          <p className="text-2xl">Descrição do chamado:</p>
+          <p className=" text-lg">{proceduresCall?.description}</p>
+        </div>
+        <div className="flex flex-col justify-between">
           <button
-            onClick={() => openTramiteModal()}
+            onClick={openTramiteModal}
             className="bg-green-500 rounded-2xl px-3 py-2 text-lg cursor-pointer hover:bg-green-600 transition duration-150 active:scale-95"
           >
             Abrir um trâmite
           </button>
+          <button
+            onClick={goToCalls}
+            className="bg-green-500 rounded-2xl px-3 py-2 text-lg cursor-pointer hover:bg-green-600 transition duration-150 active:scale-95"
+          >
+            Voltar para chamados
+          </button>
         </div>
-        <h2 className="text-2xl">
-          <strong>Cliente:</strong> {proceduresCall?.client}
-        </h2>
-        <p className="text-2xl">Descrição do chamado:</p>
-        <p className=" text-lg">{proceduresCall?.description}</p>
       </div>
 
       {/* Tramites Infos */}

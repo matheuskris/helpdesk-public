@@ -47,7 +47,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const auth = getAuth();
-const db = getFirestore();
 
 //=========== R E A L === T I M E === D A T A B A S E =======
 
@@ -57,19 +56,21 @@ const callsRefString = "newCallsStructure";
 // temporary Stuff
 
 // export const duplicateDB = async () => {
-//   const callsRef = ref(RTdatabase, "calls/");
+//   const callsRef = ref(RTdatabase, "newCallsStructure/");
 
 //   const data = await get(callsRef).then((snapshot) => {
 //     return snapshot.val();
 //   });
+//   console.log(data);
+//   await set(ref(RTdatabase, "newCallsStructure2/"), data);
 
-//   for (const prop in data) {
-//     const newPostKey = push(child(ref(RTdatabase), "newCallsStructure/")).key;
-//     await set(ref(RTdatabase, "newCallsStructure/" + newPostKey), {
-//       ...data[prop],
-//       key: newPostKey,
-//     });
-//   }
+//   // for (const prop in data) {
+//   //   const newPostKey = push(child(ref(RTdatabase), "newCallsStructure/")).key;
+//   //   await set(ref(RTdatabase, "newCallsStructure/" + newPostKey), {
+//   //     ...data[prop],
+//   //     key: newPostKey,
+//   //   });
+//   // }
 
 //   // try {
 //   //   await set(ref(RTdatabase, "newCallsStructure/"), data);
@@ -77,7 +78,8 @@ const callsRefString = "newCallsStructure";
 //   //   console.log(error);
 //   // }
 // };
-// --------------------
+
+//--------------------
 
 export const getCallToSeeIfItAlreadyExists = async (id) => {
   const callsRef = ref(RTdatabase, callsRefString + "/");
@@ -145,6 +147,39 @@ export const editExistingCall = async (call, oldId) => {
   }
 };
 
+export const writeNewTramite = async (callKey, tramiteInfo) => {
+  try {
+    await set(
+      ref(
+        RTdatabase,
+        callsRefString + "/" + callKey + "/tramites/" + tramiteInfo.id
+      ),
+      tramiteInfo
+    );
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
+export const editExistingTramite = async (callKey, tramiteInfo) => {
+  try {
+    await update(
+      ref(
+        RTdatabase,
+        callsRefString + "/" + callKey + "/tramites/" + tramiteInfo.id
+      ),
+      tramiteInfo
+    );
+    console.log("success");
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
 const callsRef = ref(RTdatabase, callsRefString + "/");
 
 export const callsListener = (callback) => {
@@ -173,7 +208,9 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
-// // OLD DATABASE
+// // FIRESTORE DATABASE
+const db = getFirestore();
+
 // export const addObjectToCollection = async (collectionKey, objectToAdd) => {
 //   const collectionRef = collection(db, collectionKey);
 //   const batch = writeBatch(db);
