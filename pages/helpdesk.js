@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { callsListener, writeNewCall } from "../src/utils/firebase.utils";
+import { callsListener, editExistingCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -10,9 +10,9 @@ import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
-import { getBeatyDate } from "../src/utils/functions.utils";
 import { setUser } from "../src/store/userSlicer/userSlicer";
 import { selectUser } from "../src/store/userSlicer/user.selector";
+import { getBeatyDate, getTotalTimeObject } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
@@ -37,6 +37,8 @@ function Helpdesk() {
   const [searchField, setSearchField] = useState("");
   const [date1, setDate1] = useState({});
   const [date2, setDate2] = useState({});
+  // T O T A L   T I M E
+  const [totalTime, setTotalTime] = useState({});
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -67,14 +69,16 @@ function Helpdesk() {
     callsListener(userUid, transformObjectToArray);
   }, []);
 
-  // useEffect(() => {
-  //   const callsToStore = [...chamados];
-  //   dispatch(setCalls(callsToStore));
-  // }, [chamados]);
+  // throwing calls to redux
+  useEffect(() => {
+    const callsToStore = [...chamados];
+    dispatch(setCalls(callsToStore));
+
+    setTotalTime(getTotalTimeObject(chamados));
+  }, [chamados]);
 
   function handleSelectChange(e) {
     const { value } = e.target;
-    console.log(value);
     setSelectFilter(value);
   }
   function handleSearchField(e) {
@@ -130,7 +134,6 @@ function Helpdesk() {
         return 0;
     }
   });
-
   const filteredCalls = orderedCalls.filter((call) => {
     if (selectFilter === "data") {
       const X = call.start >= Date.parse(date1);
@@ -141,7 +144,11 @@ function Helpdesk() {
         return !call.isClosed && X && Y;
       }
     } else {
-      let doesCallIsSearched = call[selectFilter]
+      let propFilter = call[selectFilter];
+      if (!propFilter) {
+        propFilter = "";
+      }
+      let doesCallIsSearched = propFilter
         .toLowerCase()
         .includes(searchField.toLowerCase());
       if (showClosedCalls) {
@@ -168,10 +175,17 @@ function Helpdesk() {
 
   // Close Call
   function handleCloseCall(callToClose) {
-    const newDate = new Date();
-    const dateToSend = Date.parse(newDate);
-
-    writeNewCall({ ...callToClose, finished: dateToSend, isClosed: true });
+    let dateToSend;
+    if (!callToClose.finished) {
+      const newDate = new Date();
+      dateToSend = Date.parse(newDate);
+    } else {
+      dateToSend = callToClose.finished;
+    }
+    editExistingCall(
+      { ...callToClose, finished: dateToSend, isClosed: true },
+      callToClose.id
+    );
   }
 
   // M O D A I S
@@ -189,13 +203,21 @@ function Helpdesk() {
     setCallToEdit(chamado);
   }
 
-  function handleShowFollowUp(chamado) {
-    setFollowUpModal(true);
-    setFollowUpChamado(chamado);
+  function handleShowTramites(chamado) {
+    router.push({
+      pathname: "/calldetails",
+      query: {
+        key: chamado.key,
+      },
+    });
   }
 
-  function handleReopenCall(chamado) {
-    writeNewCall({ ...chamado, isClosed: false });
+  async function handleReopenCall(chamado) {
+    let openCall = { ...chamado, isClosed: false };
+
+    console.log(openCall);
+    const response = await editExistingCall(openCall, chamado.id);
+    console.log(response);
   }
 
   function handleShowClosedCalls() {
@@ -254,9 +276,7 @@ function Helpdesk() {
               {selectFilter === "data" ? (
                 ""
               ) : (
-                <h3 className="text-lg border-b border-black ">
-                  Escolha um filtro:
-                </h3>
+                <h3 className="text-lg ">Escolha um filtro:</h3>
               )}
               <select
                 className="rounded-lg p-2 border text-sm outline-gray-400"
@@ -266,6 +286,8 @@ function Helpdesk() {
                 <option value="client">Cliente</option>
                 <option value="inCharge">Responsável</option>
                 <option value="data">Data</option>
+                <option value="description">Descrição</option>
+                <option value="userClient">Usuário Cliente</option>
               </select>
               {selectFilter === "data" ? (
                 <>
@@ -322,10 +344,11 @@ function Helpdesk() {
             showClosedCalls={showClosedCalls}
             filteredCalls={filteredCalls}
             checkDescription={checkDescription}
-            handleShowFollowUp={handleShowFollowUp}
+            handleShowTramites={handleShowTramites}
             handleEditModal={handleEditModal}
             handleReopenCall={handleReopenCall}
             handleCloseCall={handleCloseCall}
+            totalTime={totalTime}
           />
         </div>
         <div className="w-[95%] mt-4 flex items-center justify-end mx-auto">

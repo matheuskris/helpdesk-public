@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { writeNewCall } from "../utils/firebase.utils";
+import { editExistingTramite, writeNewTramite } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
+
 Modal.setAppElement("#__next");
 
 export const initialCall = {
   id: "",
-  client: "",
-  userClient: "",
-  start: "",
   title: "",
   description: "",
-  priority: "",
   inCharge: "",
 };
 
-export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
+export default function TramiteModal({
+  isModalOpen,
+  setModal,
+  chamado,
+  tramites,
+}) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [error, setError] = useState("");
@@ -26,9 +28,10 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
   }
 
   useEffect(() => {
-    setIsRegisterFull(true);
     setError("");
+    setIsRegisterFull(true);
   }, [isModalOpen]);
+
   // Estilo do Modal
   const customStyle = {
     content: {
@@ -47,38 +50,37 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
     e.preventDefault();
     const newDate = new Date();
     const sendDate = Date.parse(newDate);
-    const objectToSend = {
-      ...infoCall,
-      start: sendDate,
-    };
 
-    for (const prop in objectToSend) {
-      if (!objectToSend[prop]) {
+    for (const prop in infoCall) {
+      if (!infoCall[prop]) {
         setIsRegisterFull(false);
         return;
       }
     }
 
-    const string = await writeNewCall(objectToSend);
-    if (string === "success") {
-      console.log("chamado criado com sucesso");
+    const objectToSend = {
+      ...infoCall,
+      start: sendDate,
+    };
+
+    const response = await writeNewTramite(chamado.key, objectToSend);
+
+    if (response === "success") {
+      console.log("tramite adicionado com sucesso");
     } else {
-      setError(string);
-      console.log(string);
+      setError(response);
+      console.log(response);
       return;
     }
+
     setInfoCall({
-      id: "",
-      client: "",
-      userClient: "",
-      start: "",
+      id: infoCall.id + 1,
       title: "",
       description: "",
-      priority: "",
       inCharge: "",
     });
+    setIsRegisterFull(true);
     setModal(false);
-    setIsRegisterFull(false);
   }
 
   // Normal handle change
@@ -87,6 +89,17 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
     const { name } = e.target;
     setInfoCall({ ...infoCall, [name]: value });
   }
+
+  useEffect(() => {
+    let nTramites = 0;
+    if (tramites) {
+      nTramites = tramites.length;
+    }
+
+    const newTramiteId = nTramites + 1;
+
+    setInfoCall({ ...infoCall, id: newTramiteId });
+  }, [chamado]);
 
   return (
     <Modal
@@ -99,31 +112,15 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
         className="w-[100%] h-[100%] mx-auto flex flex-col"
       >
         <h1 className="text-black text-2xl font-semibold mx-auto mt-10 mb-8 pb-1 border-b border-gray-400">
-          Detalhes do Chamado
+          Abrindo Trâmite
         </h1>
         <input
-          onChange={handleChange}
           name="id"
           value={infoCall.id}
           placeholder="ID"
           className="inputCadastro"
-          type="number"
-        />
-        <input
-          onChange={handleChange}
-          name="client"
-          value={infoCall.client}
-          placeholder="Cliente"
-          className="inputCadastro"
           type="text"
-        />
-        <input
-          onChange={handleChange}
-          name="userClient"
-          value={infoCall?.userClient}
-          placeholder="Usuário Cliente"
-          className="inputCadastro"
-          type="text"
+          disabled
         />
         <input
           onChange={handleChange}
@@ -133,7 +130,7 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
           className="inputCadastro"
           type="text"
         />
-        <input
+        <textarea
           onChange={handleChange}
           name="description"
           value={infoCall.description}
@@ -141,17 +138,6 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
           className="inputCadastro"
           type="text"
         />
-        <select
-          onChange={handleChange}
-          name="priority"
-          value={infoCall.priority}
-          className="p-4 outline-none inputCadastro"
-        >
-          <option defaultValue={true}>Prioridade:</option>
-          <option value="Alta">Alta</option>
-          <option value="Média">Média</option>
-          <option value="Baixa">Baixa</option>
-        </select>
         <select
           onChange={handleChange}
           name="inCharge"
@@ -163,7 +149,7 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
           <option value="Patrícia">Patrícia</option>
           <option value="Mônica">Mônica</option>
         </select>
-        <button className=" bg-blue-600 btnCadastrar">Cadastrar</button>
+        <button className=" bg-blue-600 btnCadastrar">Criar</button>
       </form>
       {isRegisterFull ? (
         ""

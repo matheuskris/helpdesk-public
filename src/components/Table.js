@@ -1,6 +1,6 @@
-import { getTimeStringFromMs } from "../utils/functions.utils";
+import { getBeatyDate, getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
-import Link from "next/link";
+import PersonsCard from "./PersonsCard";
 
 function Table(props) {
   const {
@@ -8,10 +8,11 @@ function Table(props) {
     showClosedCalls,
     filteredCalls,
     checkDescription,
-    handleShowFollowUp,
+    handleShowTramites,
     handleEditModal,
     handleReopenCall,
     handleCloseCall,
+    totalTime,
   } = props;
 
   function showOnGoingTime(parsedDate) {
@@ -21,9 +22,29 @@ function Table(props) {
     return getTimeStringFromMs(currentDate - callDate);
   }
 
-  function showTimeSpent(chamado) {
+  // Function time open
+  function showTimeOpen(chamado) {
     const timeSpentinMs = chamado.finished - chamado.start;
     return getTimeStringFromMs(timeSpentinMs);
+  }
+  // function time spent
+  function showTimeSpent(chamado) {
+    let time = 0;
+    const tramcham = chamado.tramites;
+    for (const prop in tramcham) {
+      if (tramcham[prop].finished) {
+        time = time + tramcham[prop].finished - tramcham[prop].start;
+      }
+    }
+
+    const hora = parseInt(time / 3600000);
+    const min = ((time % 3600000) / 60000).toFixed(0) + "min";
+
+    if (hora < 1) {
+      return min;
+    } else {
+      return `${hora}hr ${min}`;
+    }
   }
 
   return (
@@ -49,11 +70,32 @@ function Table(props) {
           <th
             className="th"
             onClick={() => {
+              handleFilter("userClient");
+            }}
+          >
+            Usuário Cliente
+          </th>
+          <th
+            className="th"
+            onClick={() => {
               handleFilter("start");
             }}
           >
-            Data Inicial
+            Data de Abertura
           </th>
+          {showClosedCalls ? (
+            <th
+              className="th"
+              onClick={() => {
+                handleFilter("start");
+              }}
+            >
+              Data de fechamento
+            </th>
+          ) : (
+            ""
+          )}
+
           <th
             className="th"
             onClick={() => {
@@ -80,7 +122,8 @@ function Table(props) {
           >
             Responsável
           </th>
-          {showClosedCalls ? <th className="th">Tempo Consumido</th> : ""}
+          <th className="th">Tempo consumido</th>
+          {showClosedCalls ? <th className="th">Tempo em aberto</th> : ""}
           <th className="th"></th>
           {showClosedCalls ? "" : <th className="th"></th>}
         </tr>
@@ -88,26 +131,32 @@ function Table(props) {
       <tbody>
         {filteredCalls.map((chamado) => (
           <tr
-            key={chamado.id}
+            key={chamado.key}
             className="border-b border-[#dddddd] even:bg-gray-200 mb-4"
           >
             <td className="td">{chamado.id}</td>
             <td className="td">{chamado?.client}</td>
-            <td className="td">{showOnGoingTime(chamado.start)}</td>
+            <td className="td">{chamado?.userClient}</td>
+            <td className="td">{getBeatyDate(chamado.start)}</td>
+            {showClosedCalls ? (
+              <td className="td">{getBeatyDate(chamado.finished)}</td>
+            ) : (
+              ""
+            )}
             <td className="td">{chamado.title}</td>
             <td
               onClick={() => checkDescription(chamado.description)}
-              className="td cursor-pointer whitespace-nowrap truncate max-w-[350px]"
+              className="td cursor-pointer whitespace-nowrap truncate max-w-[250px]"
             >
               {chamado.description}
             </td>
             <td className="td">
-              {/* <button
-                onClick={() => handleShowFollowUp(chamado)}
+              <button
+                onClick={() => handleShowTramites(chamado)}
                 className="btnDetails"
               >
                 Detalhes
-              </button> */}
+              </button>
               <Link href={`/calldetails?id=${chamado.id}`}> Detalhes</Link>
             </td>
             <td className="td flex justify-around items-center ">
@@ -137,9 +186,14 @@ function Table(props) {
                 />
               )}
             </td>
-            <td className="td">{chamado.inCharge}</td>
+            <td className="td">
+              <PersonsCard totalTime={totalTime} inCharge={chamado.inCharge} />
+            </td>
+
+            <td className="td">{showTimeSpent(chamado)}</td>
+
             {showClosedCalls ? (
-              <td className="td">{showTimeSpent(chamado)}</td>
+              <td className="td">{showTimeOpen(chamado)}</td>
             ) : (
               <td className="td">
                 <button

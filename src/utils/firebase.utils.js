@@ -8,7 +8,17 @@ import {
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore/lite";
 
-import { getDatabase, ref, set, onValue, remove } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  update,
+  remove,
+  get,
+  child,
+  push,
+} from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -30,41 +40,136 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const auth = getAuth();
-const db = getFirestore();
 
 //=========== R E A L === T I M E === D A T A B A S E =======
 
 const RTdatabase = getDatabase(app);
+const callsRefString = "newCallsStructure";
+
+export const getCallToSeeIfItAlreadyExists = async (id) => {
+  const callsRef = ref(RTdatabase, "/users/" + userUid + "/calls/");
+
+  const doesIdReturnsAValue = await get(callsRef)
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        for (const prop in data) {
+          const callId = data[prop].id;
+
+          if (callId === id) {
+            return true;
+          }
+        }
+      } else {
+        return false;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  return doesIdReturnsAValue;
+};
 
 export const writeNewCall = async (userUid, call) => {
+  const idIsBeeingUsed = await getCallToSeeIfItAlreadyExists(call.id);
+  if (idIsBeeingUsed) return "já existe um chamado com esse id";
+
   try {
-    await set(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id), call);
+    const newPostKey = push(
+      child(ref(RTdatabase), "/users/" + userUid + "/calls/")
+    ).key;
+    await set(ref(RTdatabase, "/users/" + userUid + "/calls/" + newPostKey), {
+      ...call,
+      key: newPostKey,
+    });
+    return "success";
   } catch (error) {
     console.log(error);
+    return error.code;
   }
 };
 
 export const removeExistingCall = async (userUid, call) => {
   try {
-    await remove(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id));
-  } catch (error) {
-    console.log(error);
-  }
-};
-export const editExistingCall = async (userUid, call, oldId) => {
-  try {
-    await remove(ref(RTdatabase, "/users/" + userUid + "/calls/" + oldId));
-    await set(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.id), call);
+    await remove(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.key));
   } catch (error) {
     console.log(error);
   }
 };
 
-export const callsListener = (userUid, callback) => {
-  const userCallsRef = ref(RTdatabase, "/users/" + userUid + "/calls");
+export const editExistingCall = async (call, oldId) => {
+  if (call.id !== oldId) {
+    const idExists = await getCallToSeeIfItAlreadyExists(call.id);
+    if (idExists) return "Já existe um chamado com esse ID";
+  }
+  try {
+    update(ref(RTdatabase, "/users/" + userUid + "/calls/" + call.key), call);
+    console.log("success");
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
+export const writeNewTramite = async (callKey, tramiteInfo) => {
+  try {
+    await set(
+      ref(
+        RTdatabase,
+        "/users/" +
+          userUid +
+          "/calls/" +
+          callKey +
+          "/tramites/" +
+          tramiteInfo.id
+      ),
+      tramiteInfo
+    );
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
+export const editExistingTramite = async (callKey, tramiteInfo) => {
+  try {
+    await update(
+      ref(
+        RTdatabase,
+        "/users/" +
+          userUid +
+          "/calls/" +
+          callKey +
+          "/tramites/" +
+          tramiteInfo.id
+      ),
+      tramiteInfo
+    );
+    console.log("success");
+    return "success";
+  } catch (error) {
+    console.log(error);
+    return error.code;
+  }
+};
+
+export const callsListener = (userUid) => {
+  const userCallsRef = ref(RTdatabase, "/users/" + userUid + "/calls/");
 
   return onValue(userCallsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
+    callback(data);
+  });
+};
+
+export const proceduresListener = (callback, callKey) => {
+  const callRef = ref(RTdatabase, "/" + callsRefString + "/" + callKey);
+  return onValue(callRef, (callSnapshot) => {
+    const data = callSnapshot.val();
     callback(data);
   });
 };

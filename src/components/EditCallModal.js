@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { editExistingCall } from "../utils/firebase.utils";
+import { getStringDateToTimeInput } from "../utils/functions.utils";
 
 Modal.setAppElement("#__next");
 
@@ -12,10 +13,28 @@ function EditCallModal({
   userUid,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
+  const [timeInput, setTimeInput] = useState({});
   const [oldId, setOldId] = useState({});
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setOldId(callToEdit.id);
+
+    const startObj = getStringDateToTimeInput(callToEdit.start);
+    const { hour, date } = startObj;
+    let endTime = "";
+    let endDate = "";
+    if (callToEdit.finished) {
+      const endObj = getStringDateToTimeInput(callToEdit.finished);
+      endTime = endObj.hour;
+      endDate = endObj.date;
+    }
+    setTimeInput({ date, hour, endTime, endDate });
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
+    setIsRegisterFull(true);
+    setError("");
   }, [isEditModalOpen]);
 
   // Modal's style
@@ -41,19 +60,57 @@ function EditCallModal({
     const { name } = e.target;
     setCallToEdit({ ...callToEdit, [name]: value });
   }
+  //
+  useEffect(() => {
+    const myStartDateString = timeInput.date + "T" + timeInput.hour;
+    const myNewStartDate = new Date(myStartDateString);
+    const startDateInMs = Date.parse(myNewStartDate);
+    // if (!startDateInMs) {
+    //   return;
+    // }
+
+    if (timeInput.endDate && timeInput.endTime) {
+      const myEndDateString = timeInput.endDate + "T" + timeInput.endTime;
+      const myNewEndDate = new Date(myEndDateString);
+      const endDateInMs = Date.parse(myNewEndDate);
+
+      setCallToEdit({
+        ...callToEdit,
+        start: startDateInMs,
+        finished: endDateInMs,
+      });
+      return;
+    }
+    setCallToEdit({
+      ...callToEdit,
+      start: startDateInMs,
+    });
+  }, [timeInput]);
+  //
+  function handleTimeChange(e) {
+    const { value } = e.target;
+    const { name } = e.target;
+    setTimeInput({ ...timeInput, [name]: value });
+  }
 
   // Function Edit
-  function handleEdit(e) {
+  async function handleEdit(e) {
     e.preventDefault();
+    console.log(callToEdit);
     for (const prop in callToEdit) {
-      if (callToEdit[prop] === "" || callToEdit[prop] === undefined) {
-        console.log("failed", callToEdit[prop]);
+      if (callToEdit[prop] === "") {
         setIsRegisterFull(false);
         return;
       }
     }
+    const string = await editExistingCall(callToEdit, oldId);
+    if (string === "success") {
+      console.log("chamado editado com sucesso");
+    } else {
+      setError(string);
+      return;
+    }
     setEditModal(false);
-    editExistingCall(userUid, callToEdit, oldId);
   }
 
   return (
@@ -78,11 +135,55 @@ function EditCallModal({
             className="inputCadastro"
             type="number"
           />
+          <div>
+            <label className="border-b p-4">
+              De
+              <input
+                name="hour"
+                type="time"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.hour}
+              />
+              <input
+                name="date"
+                type="date"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.date}
+              />
+            </label>
+            <label className="border-b p-4">
+              Até
+              <input
+                name="endTime"
+                type="time"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.endTime}
+              />
+              <input
+                name="endDate"
+                type="date"
+                className="bg-transparent outline-none p-4 text-black placeholder:text-gray-600"
+                onChange={handleTimeChange}
+                value={timeInput.endDate}
+              />
+            </label>
+          </div>
           <input
             onChange={handleChange}
             name="client"
-            value={callToEdit.client}
-            placeholder="ID"
+            value={callToEdit?.client}
+            placeholder="Cliente"
+            className="inputCadastro"
+            type="text"
+          />
+          <input
+            onChange={handleChange}
+            name="userClient"
+            value={callToEdit?.userClient}
+            placeholder="Usuário Cliente"
             className="inputCadastro"
             type="text"
           />
@@ -135,6 +236,7 @@ function EditCallModal({
       ) : (
         <p className="text-red-600">Preencha Todos os Campos</p>
       )}
+      {error ? <p className="text-red-600">{error}</p> : ""}
     </Modal>
   );
 }
