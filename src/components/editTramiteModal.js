@@ -3,6 +3,8 @@ import { editExistingTramite } from "../utils/firebase.utils";
 import { getStringDateToTimeInput } from "../utils/functions.utils";
 
 import Modal from "react-modal";
+import { useSelector } from "react-redux";
+import { selectProject, selectUser } from "../store/userSlicer/user.selector";
 Modal.setAppElement("#__next");
 
 export const initialCall = {
@@ -15,14 +17,16 @@ export const initialCall = {
 export default function EditTramiteModal({
   isEditModalOpen,
   setEditModal,
-  editChamado,
   editTramite,
   setTramiteToEdit,
+  persons,
+  call,
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [timeInput, setTimeInput] = useState({});
   const [error, setError] = useState("");
-  const chamadoToEdit = editChamado;
+  const user = useSelector(selectUser);
+  const project = useSelector(selectProject);
   // ====== Funções do Modal =========
   function handleCloseModal() {
     setEditModal(false);
@@ -105,7 +109,12 @@ export default function EditTramiteModal({
 
     console.log(objectToSend);
 
-    const response = await editExistingTramite(chamadoToEdit.key, objectToSend);
+    const response = await editExistingTramite(
+      project.key,
+      user.uid,
+      call.key,
+      objectToSend
+    );
 
     if (response !== "success") {
       setError(response);
@@ -203,9 +212,11 @@ export default function EditTramiteModal({
           value={editTramite.inCharge}
           className="p-4 outline-none inputCadastro"
         >
-          <option value="Flávio">Flávio</option>
-          <option value="Patrícia">Patrícia</option>
-          <option value="Mônica">Mônica</option>
+          {persons.map((person) => (
+            <option key={person} value={person}>
+              {person}
+            </option>
+          ))}
         </select>
         <button className=" bg-blue-600 btnCadastrar">Salvar alterações</button>
       </form>

@@ -5,26 +5,31 @@ import { callsListener, editExistingCall } from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
-import FollowUpModal from "../src/components/FollowUpModal";
+import AsideMenu from "../src/components/AsideMenu";
+
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
 import { setUser } from "../src/store/userSlicer/userSlicer";
-import { selectUser } from "../src/store/userSlicer/user.selector";
+import {
+  selectProject,
+  selectUser,
+} from "../src/store/userSlicer/user.selector";
 import { getBeatyDate, getTotalTimeObject } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const project = useSelector(selectProject);
+
   const userUid = user?.uid;
   // D A T A
   const [chamados, setChamados] = useState([]);
   // M O D A I S
   const [isModalOpen, setModal] = useState(false);
-  const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
-  const [followUpChamado, setFollowUpChamado] = useState({});
+
   const [isEditModalOpen, setEditModal] = useState(false);
   const [callToEdit, setCallToEdit] = useState({});
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
@@ -40,6 +45,8 @@ function Helpdesk() {
   // T O T A L   T I M E
   const [totalTime, setTotalTime] = useState({});
 
+  const personsInProject = Object.values(project.users);
+
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
     if (user) {
@@ -52,6 +59,7 @@ function Helpdesk() {
   // Logaut logic
   function logout() {
     dispatch(setUser(null));
+    router.push("/");
   }
   // fetching calls from firebase
   useEffect(() => {
@@ -66,7 +74,7 @@ function Helpdesk() {
       setChamados(newArray);
     };
 
-    callsListener(userUid, transformObjectToArray);
+    callsListener(project.key, transformObjectToArray);
   }, []);
 
   // throwing calls to redux
@@ -264,6 +272,7 @@ function Helpdesk() {
 
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
+      <AsideMenu />
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
@@ -273,9 +282,7 @@ function Helpdesk() {
           </div>
           <div className="flex gap-4 place-self-end mr-12">
             <div className="flex items-center justify-between">
-              {selectFilter === "data" ? (
-                ""
-              ) : (
+              {selectFilter !== "data" && (
                 <h3 className="text-lg ">Escolha um filtro:</h3>
               )}
               <select
@@ -338,7 +345,7 @@ function Helpdesk() {
         </div>
 
         {/* Tabela */}
-        <div className="rounded-[30px] overflow-hidden w-[95%] mx-auto">
+        <div className="rounded-[8px] border border-black overflow-hidden w-[95%] mx-auto">
           <Table
             handleFilter={handleFilter}
             showClosedCalls={showClosedCalls}
@@ -358,34 +365,25 @@ function Helpdesk() {
           <button className="btnExport" onClick={handleDownload}>
             Exportar para Excel
           </button>
-          <Image
-            className=""
-            src="/excel.svg"
-            width={48}
-            height={48}
-            alt="logo excel"
-          />
+          <Image src="/excel.svg" width={48} height={48} alt="logo excel" />
         </div>
 
         {/* === Configuração do Modal =====  */}
         <CreateCallModal
           userUid={userUid}
+          projectUid={project.key}
           isModalOpen={isModalOpen}
           setModal={setModal}
+          personsInProject={personsInProject}
         />
         <EditCallModal
+          projectUid={project.key}
           userUid={userUid}
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
           callToEdit={callToEdit}
           setCallToEdit={setCallToEdit}
-        />
-        <FollowUpModal
-          userUid={userUid}
-          isFollowUpModalOpen={isFollowUpModalOpen}
-          setFollowUpModal={setFollowUpModal}
-          followUpChamado={followUpChamado}
-          setFollowUpChamado={setFollowUpChamado}
+          personsInProject={personsInProject}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}

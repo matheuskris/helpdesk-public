@@ -1,6 +1,7 @@
 import { getBeatyDate, getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
 import PersonsCard from "./PersonsCard";
+import Link from "next/link";
 
 function Table(props) {
   const {
@@ -157,10 +158,9 @@ function Table(props) {
               >
                 Detalhes
               </button>
-              <Link href={`/calldetails?id=${chamado.id}`}> Detalhes</Link>
             </td>
             <td className="td flex justify-around items-center ">
-              {chamado.priority}{" "}
+              {chamado.priority}
               {chamado.priority === "Alta" && (
                 <Image
                   width={30}

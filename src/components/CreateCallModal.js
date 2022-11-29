@@ -15,7 +15,13 @@ export const initialCall = {
   inCharge: "",
 };
 
-export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
+export default function CreateCallModal({
+  userUid,
+  projectUid,
+  isModalOpen,
+  setModal,
+  personsInProject,
+}) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [error, setError] = useState("");
@@ -59,7 +65,7 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
       }
     }
 
-    const string = await writeNewCall(objectToSend);
+    const string = await writeNewCall(projectUid, userUid, objectToSend);
     if (string === "success") {
       console.log("chamado criado com sucesso");
     } else {
@@ -159,9 +165,11 @@ export default function CreateCallModal({ userUid, isModalOpen, setModal }) {
           className="p-4 outline-none inputCadastro"
         >
           <option defaultValue={true}>Responsável:</option>
-          <option value="Flávio">Flávio</option>
-          <option value="Patrícia">Patrícia</option>
-          <option value="Mônica">Mônica</option>
+          {personsInProject.map((person) => (
+            <option key={person} value={person}>
+              {person}
+            </option>
+          ))}
         </select>
         <button className=" bg-blue-600 btnCadastrar">Cadastrar</button>
       </form>

@@ -3,21 +3,30 @@ import { useRouter } from "next/router";
 import TramiteInfo from "../src/components/TramiteInfo";
 import TramiteModal from "../src/components/TramiteModal";
 import { useEffect, useState } from "react";
-import { proceduresListener } from "../src/utils/firebase.utils";
-import { editExistingCall } from "../src/utils/firebase.utils";
+import {
+  editExistingTramite,
+  proceduresListener,
+} from "../src/utils/firebase.utils";
 import EditTramiteModal from "../src/components/editTramiteModal";
+import { useSelector } from "react-redux";
+import {
+  selectProject,
+  selectUser,
+} from "../src/store/userSlicer/user.selector";
 
-export default function CallDetails(props) {
+export default function CallDetails() {
   const router = useRouter();
   const [isModalOpen, setModal] = useState(false);
+  const project = useSelector(selectProject);
+  const user = useSelector(selectUser);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [tramiteCallToEdit, setTramiteCallToEdit] = useState({});
   const [tramiteToEdit, setTramiteToEdit] = useState({});
 
   const callKey = router.query.key;
 
   const [proceduresCall, setProceduresCall] = useState({});
+  const personsInProject = Object.values(project.users);
 
   const openTramiteModal = () => {
     setModal(true);
@@ -25,7 +34,6 @@ export default function CallDetails(props) {
 
   const handleEditTramite = (tramite) => {
     setIsEditModalOpen(true);
-    setTramiteCallToEdit(proceduresCall);
     setTramiteToEdit(tramite);
   };
 
@@ -41,7 +49,7 @@ export default function CallDetails(props) {
     const setUseStateCall = (newCall) => {
       setProceduresCall(newCall);
     };
-    proceduresListener(setUseStateCall, callKey);
+    proceduresListener(setUseStateCall, project.key, callKey);
   }, [callKey]);
 
   const tramites = transformObjectToArray(proceduresCall?.tramites);
@@ -52,22 +60,22 @@ export default function CallDetails(props) {
     const newDate = new Date();
     const sendDate = Date.parse(newDate);
     const objectToSend = {
-      ...proceduresCall,
-      tramites: {
-        ...proceduresCall.tramites,
-        [tramite.id]: {
-          ...tramite,
-          finished: sendDate,
-        },
-      },
+      ...tramite,
+      finished: sendDate,
     };
 
-    await editExistingCall(objectToSend, proceduresCall.id);
+    const response = await editExistingTramite(
+      project.key,
+      user.uid,
+      callKey,
+      objectToSend
+    );
+    console.log(response);
   }
 
   function goToCalls() {
     router.push({
-      pathname: "/",
+      pathname: "/helpdesk",
     });
   }
 
@@ -118,13 +126,15 @@ export default function CallDetails(props) {
         chamado={proceduresCall}
         isModalOpen={isModalOpen}
         setModal={setModal}
+        persons={personsInProject}
       />
       <EditTramiteModal
         isEditModalOpen={isEditModalOpen}
         setEditModal={setIsEditModalOpen}
-        editChamado={tramiteCallToEdit}
         editTramite={tramiteToEdit}
         setTramiteToEdit={setTramiteToEdit}
+        persons={personsInProject}
+        call={proceduresCall}
       />
     </div>
   );

@@ -3,6 +3,8 @@ import { HYDRATE } from "next-redux-wrapper";
 
 const initialState = {
   user: null,
+  currentProject: null,
+  name: "",
 };
 
 export const userSlice = createSlice({
@@ -11,6 +13,12 @@ export const userSlice = createSlice({
   reducers: {
     setUser(state, action) {
       state.user = action.payload;
+    },
+    setName(state, action) {
+      state.name = action.payload;
+    },
+    setCurrentProject(state, action) {
+      state.currentProject = action.payload;
     },
   },
   extraReducers: {
@@ -23,6 +31,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser } = userSlice.actions;
+export const { setUser, setCurrentProject, setName } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { editExistingTramite, writeNewTramite } from "../utils/firebase.utils";
+import { writeNewTramite } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
+import { useSelector } from "react-redux";
+import { selectProject, selectUser } from "../store/userSlicer/user.selector";
 
 Modal.setAppElement("#__next");
 
@@ -17,10 +19,13 @@ export default function TramiteModal({
   setModal,
   chamado,
   tramites,
+  persons,
 }) {
   const [infoCall, setInfoCall] = useState(initialCall);
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [error, setError] = useState("");
+  const user = useSelector(selectUser);
+  const project = useSelector(selectProject);
 
   // ====== Funções do Modal =========
   function handleCloseModal() {
@@ -62,8 +67,16 @@ export default function TramiteModal({
       ...infoCall,
       start: sendDate,
     };
-
-    const response = await writeNewTramite(chamado.key, objectToSend);
+    if (!project.key || !user.uid || !chamado.key) {
+      console.log("erro aqui");
+      return;
+    }
+    const response = await writeNewTramite(
+      project.key,
+      user.uid,
+      chamado.key,
+      objectToSend
+    );
 
     if (response === "success") {
       console.log("tramite adicionado com sucesso");
@@ -145,9 +158,11 @@ export default function TramiteModal({
           className="p-4 outline-none inputCadastro"
         >
           <option defaultValue={true}>Responsável:</option>
-          <option value="Flávio">Flávio</option>
-          <option value="Patrícia">Patrícia</option>
-          <option value="Mônica">Mônica</option>
+          {persons.map((person) => (
+            <option key={person} value={person}>
+              {person}
+            </option>
+          ))}
         </select>
         <button className=" bg-blue-600 btnCadastrar">Criar</button>
       </form>
