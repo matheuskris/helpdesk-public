@@ -1,7 +1,11 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { callsListener, editExistingCall } from "../src/utils/firebase.utils";
+import {
+  callsListener,
+  editExistingCall,
+  editHourStock,
+} from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -11,7 +15,11 @@ import { setCalls } from "../src/store/callsSlicer/callsSlicer";
 import { useDispatch } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
-import { getBeatyDate, getTotalTimeObject } from "../src/utils/functions.utils";
+import {
+  getBeatyDate,
+  getMonthTimeObject,
+  getTotalTimeObject,
+} from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
@@ -35,7 +43,10 @@ function Helpdesk() {
   const [date2, setDate2] = useState({});
   // T O T A L   T I M E
   const [totalTime, setTotalTime] = useState({});
-
+  const [month, setMonth] = useState({
+    month: 11,
+    year: new Date().getFullYear(),
+  });
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
     if (localStorage.getItem("user")) {
@@ -67,7 +78,7 @@ function Helpdesk() {
     const callsToStore = [...chamados];
     dispatch(setCalls(callsToStore));
 
-    setTotalTime(getTotalTimeObject(chamados));
+    setTotalTime(getMonthTimeObject(chamados, month.month, month.year));
   }, [chamados]);
 
   function handleSelectChange(e) {
@@ -203,9 +214,7 @@ function Helpdesk() {
   async function handleReopenCall(chamado) {
     let openCall = { ...chamado, isClosed: false };
 
-    console.log(openCall);
     const response = await editExistingCall(openCall, chamado.id);
-    console.log(response);
   }
 
   function handleShowClosedCalls() {

@@ -197,6 +197,14 @@ export const proceduresListener = (callback, callKey) => {
   });
 };
 
+export const editHourStock = async (year, month, quantity) => {
+  try {
+    await set(ref(RTdatabase, "/hourStock/" + year + "/" + month), quantity);
+  } catch (err) {
+    console.log(err.code);
+  }
+};
+
 // USER AUTH STUFF
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
