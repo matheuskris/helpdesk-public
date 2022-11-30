@@ -97,7 +97,6 @@ export const createNewProject = async (userUid, project) => {
 
 export const projectsListener = async (userUid, callback) => {
   const userProjectsRef = ref(RTdatabase, "users/" + userUid + "/projects");
-  console.log("listener");
 
   onValue(userProjectsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
@@ -130,6 +129,16 @@ export const getCallToSeeIfItAlreadyExists = async (projectUid, id) => {
     });
 
   return doesIdReturnsAValue;
+};
+export const getProjectInfo = async (projectUid) => {
+  try {
+    const projectRef = ref(RTdatabase, "projects/" + projectUid);
+    const data = await get(projectRef).then((snapshot) => snapshot.val());
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const writeNewCall = async (projectUid, userUid, call) => {
@@ -274,16 +283,6 @@ export const editExistingTramite = async (
 
 export const callsListener = async (projectUid, callback) => {
   const callsRef = ref(RTdatabase, "/projects/" + projectUid + "/calls/");
-  console.log("callListener");
-
-  // try {
-  //   const data = await get(callsRef).then((snapshot) => snapshot.val());
-  //   console.log(data);
-  // } catch (err) {
-  //   console.log(err);
-  // }
-
-  //   projects/-NHlpVPr2epwpiUvIQZt/calls
 
   onValue(callsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
@@ -343,17 +342,48 @@ export const getUserName = async (userUid) => {
   return name;
 };
 
-export const sendInviteToToProject = async (project, userName, email) => {
+export const sendInviteToToProject = async (
+  projectUid,
+  projectName,
+  name,
+  userUid
+) => {
   try {
-    await set(ref(RTdatabase, "/users/" + uid + "/invites/" + project.uid), {
-      name: userName,
-      key: uid,
+    await set(ref(RTdatabase, "/users/" + userUid + "/invites/" + projectUid), {
+      name,
+      key: projectUid,
+      projectName,
     });
 
     return "success";
   } catch (err) {
     console.log(err);
   }
+};
+
+export const acceptInvite = async (userUid, userName, projectInfo) => {
+  try {
+    const updates = {};
+
+    updates["/projects/" + projectUid + "/users/" + userUid] = userName;
+    updates["/users/" + userUid + "/projects/" + projectInfo.key] = {
+      ...projectInfo,
+    };
+
+    const response = await update(ref(RTdatabase), updates);
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const InvitesListener = async (userUid, callback) => {
+  const userRef = ref(RTdatabase, "users/" + userUid + "/invites");
+
+  return onValue(userRef, (callSnapshot) => {
+    const data = callSnapshot.val();
+    callback(data);
+  });
 };
 
 // // OLD DATABASE

@@ -1,19 +1,37 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { selectProject } from "../store/userSlicer/user.selector";
+import { selectName, selectProject } from "../store/userSlicer/user.selector";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 export default function AsideMenu() {
   const [isMenuOpen, setMenu] = useState(false);
+  const [sendEmailInput, setSendEmailInput] = useState(false);
+  const [email, setEmail] = useState("");
+
   const project = useSelector(selectProject);
+  const name = useSelector(selectName);
+  const router = useRouter();
 
-  async function handleclick() {
-    const email = "matheuskrisgmailcom";
-
-    const response = await fetch(`/api/${email}/sendInvite`).then((response) =>
-      response.json()
-    );
+  async function handleEmail() {
+    const response = await axios.post("/api/hello", {
+      method: "POST",
+      body: {
+        type: "sendInvite",
+        projectUid: project.key,
+        name,
+        email,
+        projectName: project.name,
+      },
+    });
+    setEmail("");
+    setSendEmailInput(false);
     console.log(response);
+  }
+
+  function goToMenu() {
+    router.push("/");
   }
 
   return (
@@ -32,8 +50,30 @@ export default function AsideMenu() {
       </button>
       {isMenuOpen && (
         <div className="">
-          <h2 onClick={handleclick}>Adicionar pessoas no projeto</h2>
+          <button
+            onClick={() => {
+              setSendEmailInput(!sendEmailInput);
+            }}
+            className="bg-slate-400"
+          >
+            Adicionar colega no projeto
+          </button>
+          {sendEmailInput && (
+            <div>
+              <input
+                type="email"
+                name="email"
+                placeholder="Insira o email dela"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <button onClick={handleEmail}>Enviar</button>
+            </div>
+          )}
           <h2>Editar horas mensais de produção</h2>
+          <button onClick={goToMenu}>Voltar para o Menu</button>
         </div>
       )}
     </div>

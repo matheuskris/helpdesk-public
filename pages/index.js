@@ -6,12 +6,15 @@ import {
   signInAuthWithEmailAndPassword,
   projectsListener,
   getUserName,
+  InvitesListener,
+  getProjectInfo,
 } from "../src/utils/firebase.utils";
 import Loading from "../src/components/Loading";
 import NewProjectModal from "../src/components/newProjectModal";
+import axios from "axios";
 
 import { useSelector, useDispatch } from "react-redux";
-import { selectUser } from "../src/store/userSlicer/user.selector";
+import { selectName, selectUser } from "../src/store/userSlicer/user.selector";
 import {
   setUser,
   setCurrentProject,
@@ -138,13 +141,15 @@ function Login() {
 
 function Menu({ user }) {
   const dispatch = useDispatch();
+  const name = useSelector(selectName);
   const router = useRouter();
   const [projects, setProjects] = useState([]);
+  const [invitesBoxOn, setInvitesBox] = useState(false);
+  const [invites, setInvites] = useState([]);
   const [isModalOpen, setModal] = useState(false);
 
   useEffect(() => {
     function transformObjectToArray(object) {
-      console.log(object);
       const newArray = [];
       for (const prop in object) {
         newArray.push(object[prop]);
@@ -157,17 +162,38 @@ function Menu({ user }) {
       setProjects(projectArray);
     }
 
+    function handleInvitesFetch(invitesObject) {
+      const invitesArray = transformObjectToArray(invitesObject);
+      setInvites(invitesArray);
+    }
+
     projectsListener(user.uid, handleFetch);
+    InvitesListener(user.uid, handleInvitesFetch);
   }, []);
 
   function logout() {
     dispatch(setUser(null));
+    dispatch(setName(null));
   }
 
-  function handleSelect(project) {
-    console.log(project);
-    dispatch(setCurrentProject(project));
+  async function handleSelect(project) {
+    const projectinfo = await getProjectInfo(project.key);
+
+    dispatch(setCurrentProject(projectinfo));
     router.push("/helpdesk");
+  }
+
+  async function handleAcceptInvite(projectUid) {
+    const response = await axios.post("/api/hello", {
+      method: "POST",
+      body: {
+        type: "acceptInvite",
+        projectUid,
+        name,
+        uid: user.uid,
+      },
+    });
+    console.log(response);
   }
 
   function handleCreateProject() {
@@ -201,6 +227,26 @@ function Menu({ user }) {
                 </button>
               ))
             : "Cadastre um projeto ou entre em um para começar"}
+          <button
+            onClick={() => {
+              setInvitesBox(!invitesBoxOn);
+            }}
+          >
+            Ver Convites
+          </button>
+          {invitesBoxOn && (
+            <div>
+              {invites.map((invite) => (
+                <div key={invite.key}>
+                  <h4>{invite.projectName}</h4>
+                  <button onClick={() => handleAcceptInvite(invite.key)}>
+                    Aceitar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="flex flex-row justify-between mt-6">
             <button
               className="bg-white py-1 px-2 rounded-lg"

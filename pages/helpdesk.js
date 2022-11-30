@@ -45,7 +45,8 @@ function Helpdesk() {
   // T O T A L   T I M E
   const [totalTime, setTotalTime] = useState({});
 
-  const personsInProject = Object.values(project.users);
+  console.log(project);
+  const personsInProject = Object.values(project?.users);
 
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
@@ -190,7 +191,10 @@ function Helpdesk() {
     } else {
       dateToSend = callToClose.finished;
     }
+
     editExistingCall(
+      project.key,
+      user.uid,
       { ...callToClose, finished: dateToSend, isClosed: true },
       callToClose.id
     );
@@ -223,9 +227,7 @@ function Helpdesk() {
   async function handleReopenCall(chamado) {
     let openCall = { ...chamado, isClosed: false };
 
-    console.log(openCall);
-    const response = await editExistingCall(openCall, chamado.id);
-    console.log(response);
+    await editExistingCall(project.key, user.uid, openCall, chamado.id);
   }
 
   function handleShowClosedCalls() {
