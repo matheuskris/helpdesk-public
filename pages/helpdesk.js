@@ -9,33 +9,38 @@ import {
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
-import FollowUpModal from "../src/components/FollowUpModal";
+import AsideMenu from "../src/components/AsideMenu";
 
 import { setCalls } from "../src/store/callsSlicer/callsSlicer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "../src/components/Table";
 import { downloadTableDataInExcel } from "../src/utils/xlsx.utils";
+import { setUser } from "../src/store/userSlicer/userSlicer";
 import {
-  getBeatyDate,
-  getMonthTimeObject,
-  getTotalTimeObject,
-} from "../src/utils/functions.utils";
+  selectProject,
+  selectUser,
+} from "../src/store/userSlicer/user.selector";
+import { getBeatyDate, getMonthTimeObject } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const project = useSelector(selectProject);
+
+  const userUid = user?.uid;
   // D A T A
   const [chamados, setChamados] = useState([]);
   // M O D A I S
   const [isModalOpen, setModal] = useState(false);
-  const [isFollowUpModalOpen, setFollowUpModal] = useState(false);
-  const [followUpChamado, setFollowUpChamado] = useState({});
+
   const [isEditModalOpen, setEditModal] = useState(false);
   const [callToEdit, setCallToEdit] = useState({});
   const [isDescriptionModalOpen, setDescriptionModal] = useState(false);
   const [description, setDescription] = useState("");
   // F I L T E R
   const [filterOrderBy, setFilterOrderBy] = useState("id");
+  const [isOrderInverted, setIsInvertedOrder] = useState(false);
   const [showClosedCalls, setClosedCalls] = useState(false);
   const [selectFilter, setSelectFilter] = useState("id");
   const [searchField, setSearchField] = useState("");
@@ -43,26 +48,33 @@ function Helpdesk() {
   const [date2, setDate2] = useState({});
   // T O T A L   T I M E
   const [totalTime, setTotalTime] = useState({});
+
+  const personsInProject = Object.values(project?.users);
+
   const [month, setMonth] = useState({
     month: 11,
     year: new Date().getFullYear(),
   });
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
-    if (localStorage.getItem("user")) {
+    if (user) {
       return;
     } else {
       router.push("/");
     }
-  });
+  }, []);
+
   // Logaut logic
   function logout() {
-    localStorage.removeItem("user");
+    dispatch(setUser(null));
     router.push("/");
   }
   // fetching calls from firebase
   useEffect(() => {
     const transformObjectToArray = (object) => {
+      const newObject = Object.assign({}, object);
+      dispatch(setCalls(newObject));
+
       const newArray = [];
       for (const prop in object) {
         newArray.push(object[prop]);
@@ -70,7 +82,7 @@ function Helpdesk() {
       setChamados(newArray);
     };
 
-    callsListener(transformObjectToArray);
+    callsListener(project.key, transformObjectToArray);
   }, []);
 
   // throwing calls to redux
@@ -163,12 +175,17 @@ function Helpdesk() {
     }
   });
 
+  if (isOrderInverted) {
+    filteredCalls.reverse();
+  }
+
   // não está funcionando totalmente, resolver depois
-  function handleFilter(filterId) {
-    if (filterOrderBy === filterId) {
-      filteredCalls.reverse();
+  function handleFilter(collumName) {
+    if (filterOrderBy === collumName) {
+      setIsInvertedOrder(!isOrderInverted);
     } else {
-      setFilterOrderBy(filterId);
+      setFilterOrderBy(collumName);
+      setIsInvertedOrder(false);
     }
   }
 
@@ -181,7 +198,10 @@ function Helpdesk() {
     } else {
       dateToSend = callToClose.finished;
     }
+
     editExistingCall(
+      project.key,
+      user.uid,
       { ...callToClose, finished: dateToSend, isClosed: true },
       callToClose.id
     );
@@ -214,7 +234,7 @@ function Helpdesk() {
   async function handleReopenCall(chamado) {
     let openCall = { ...chamado, isClosed: false };
 
-    const response = await editExistingCall(openCall, chamado.id);
+    await editExistingCall(project.key, user.uid, openCall, chamado.id);
   }
 
   function handleShowClosedCalls() {
@@ -261,6 +281,7 @@ function Helpdesk() {
 
   return (
     <div className="h-screen w-full relative bg-[#FFF]">
+      <AsideMenu />
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
@@ -270,9 +291,7 @@ function Helpdesk() {
           </div>
           <div className="flex gap-4 place-self-end mr-12">
             <div className="flex items-center justify-between">
-              {selectFilter === "data" ? (
-                ""
-              ) : (
+              {selectFilter !== "data" && (
                 <h3 className="text-lg ">Escolha um filtro:</h3>
               )}
               <select
@@ -335,7 +354,7 @@ function Helpdesk() {
         </div>
 
         {/* Tabela */}
-        <div className="rounded-[30px] overflow-hidden w-[95%] mx-auto">
+        <div className="rounded-[8px] border border-black overflow-hidden w-[95%] mx-auto">
           <Table
             handleFilter={handleFilter}
             showClosedCalls={showClosedCalls}
@@ -347,33 +366,33 @@ function Helpdesk() {
             handleCloseCall={handleCloseCall}
             totalTime={totalTime}
           />
-          <div className="w-[100%] mt-4 flex items-center justify-end">
-            <button className="btnExport" onClick={handleDownload}>
-              Exportar para Excel
-            </button>
-            <Image
-              className=""
-              src="/excel.svg"
-              width={48}
-              height={48}
-              alt="logo excel"
-            />
-          </div>
+        </div>
+        <div className="w-[95%] mt-4 flex items-center justify-end mx-auto">
+          <button className="btnExport bg-black" onClick={logout}>
+            Sair
+          </button>
+          <button className="btnExport" onClick={handleDownload}>
+            Exportar para Excel
+          </button>
+          <Image src="/excel.svg" width={48} height={48} alt="logo excel" />
         </div>
 
         {/* === Configuração do Modal =====  */}
-        <CreateCallModal isModalOpen={isModalOpen} setModal={setModal} />
+        <CreateCallModal
+          userUid={userUid}
+          projectUid={project.key}
+          isModalOpen={isModalOpen}
+          setModal={setModal}
+          personsInProject={personsInProject}
+        />
         <EditCallModal
+          projectUid={project.key}
+          userUid={userUid}
           isEditModalOpen={isEditModalOpen}
           setEditModal={setEditModal}
           callToEdit={callToEdit}
           setCallToEdit={setCallToEdit}
-        />
-        <FollowUpModal
-          isFollowUpModalOpen={isFollowUpModalOpen}
-          setFollowUpModal={setFollowUpModal}
-          followUpChamado={followUpChamado}
-          setFollowUpChamado={setFollowUpChamado}
+          personsInProject={personsInProject}
         />
         <DescriptionModal
           isDescriptionModalOpen={isDescriptionModalOpen}

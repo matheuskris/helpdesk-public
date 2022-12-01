@@ -117,8 +117,9 @@ export function getMonthTimeObject(arrayOfCalls, month, year) {
 }
 
 export function getTotalTimeObject(arrayOfCalls) {
-  const totalTime = arrayOfCalls.reduce((object, call) => {
+  return arrayOfCalls.reduce((totalTime, call) => {
     let personsTotalTime = {};
+
     if (call.tramites) {
       const { tramites } = call;
       for (const tramite in tramites) {
@@ -135,17 +136,17 @@ export function getTotalTimeObject(arrayOfCalls) {
           if (!personsTotalTime[personInCharge]) {
             personsTotalTime[personInCharge] = 0;
           }
+
           personsTotalTime[personInCharge] += timeConsumed;
         }
       }
     }
     for (const prop in personsTotalTime) {
-      if (!object[prop]) {
-        object[prop] = 0;
+      if (!totalTime[prop]) {
+        totalTime[prop] = 0;
       }
-      object[prop] += personsTotalTime[prop];
+      totalTime[prop] += personsTotalTime[prop];
     }
-    return object;
+    return totalTime;
   }, {});
-  return totalTime;
 }

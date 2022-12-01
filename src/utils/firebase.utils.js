@@ -4,16 +4,9 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  writeBatch,
-  query,
-} from "firebase/firestore/lite";
+import { getFirestore } from "firebase/firestore/lite";
 
 import {
   getDatabase,
@@ -26,6 +19,7 @@ import {
   child,
   push,
 } from "firebase/database";
+import { castImmutable } from "immer";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -34,55 +28,85 @@ import {
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAYqv1f7R5WaUzGMf_BzBvyKMrVsX7hGKI",
-  authDomain: "helpdesk-6d98c.firebaseapp.com",
-  projectId: "helpdesk-6d98c",
-  storageBucket: "helpdesk-6d98c.appspot.com",
-  messagingSenderId: "703993776912",
-  appId: "1:703993776912:web:425bb51d4b589abd2d7395",
-  measurementId: "G-SFZM2BE8EL",
+  apiKey: "AIzaSyA8qF1dVd5CMZUezcGzC3o4CZdNW6VbKqU",
+  authDomain: "helpdeskmatheus-403de.firebaseapp.com",
+  projectId: "helpdeskmatheus-403de",
+  storageBucket: "helpdeskmatheus-403de.appspot.com",
+  messagingSenderId: "9535806706",
+  appId: "1:9535806706:web:6a699b4119402642f4846b",
+  measurementId: "G-LDMWYZ17T2",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
-const auth = getAuth();
 
 //=========== R E A L === T I M E === D A T A B A S E =======
 
 const RTdatabase = getDatabase(app);
-const callsRefString = "newCallsStructure";
 
-// temporary Stuff
-
-// export const duplicateDB = async () => {
-//   const callsRef = ref(RTdatabase, "newCallsStructure/");
-
-//   const data = await get(callsRef).then((snapshot) => {
-//     return snapshot.val();
-//   });
-//   console.log(data);
-//   await set(ref(RTdatabase, "newCallsStructure2/"), data);
-
-//   // for (const prop in data) {
-//   //   const newPostKey = push(child(ref(RTdatabase), "newCallsStructure/")).key;
-//   //   await set(ref(RTdatabase, "newCallsStructure/" + newPostKey), {
-//   //     ...data[prop],
-//   //     key: newPostKey,
-//   //   });
-//   // }
-
-//   // try {
-//   //   await set(ref(RTdatabase, "newCallsStructure/"), data);
-//   // } catch (error) {
-//   //   console.log(error);
-//   // }
+// const DataBaseObject = {
+//   users: {
+//     user123: {
+//       projects: {
+//         projeto123: {
+//           calls: {
+//             call123: {
+//               tramites: {},
+//             },
+//           },
+//         },
+//       },
+//       name: "matheus",
+//       key: "user123",
+//     },
+//   },
+//   projects: {
+//     projeto123: {
+//       name: "Empresa x",
+//       users: {
+//         user123: "",
+//       },
+//       calls: {},
+//       monthHourStock: {
+//         november: "160",
+//       },
+//       key: projeto123,
+//       createdBy: "user123",
+//       createdAt: 3782193729100000,
+//     },
+//   },
 // };
 
-//--------------------
+export const createNewProject = async (userUid, project) => {
+  try {
+    const newProjectKey = push(child(ref(RTdatabase), "projects")).key;
+    const updates = {};
 
-export const getCallToSeeIfItAlreadyExists = async (id) => {
-  const callsRef = ref(RTdatabase, callsRefString + "/");
+    updates["/projects/" + newProjectKey] = { ...project, key: newProjectKey };
+    updates["/users/" + userUid + "/projects/" + newProjectKey] = {
+      ...project,
+      key: newProjectKey,
+    };
+
+    await update(ref(RTdatabase), updates);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const projectsListener = async (userUid, callback) => {
+  const userProjectsRef = ref(RTdatabase, "users/" + userUid + "/projects");
+
+  onValue(userProjectsRef, (callsSnapshot) => {
+    const data = callsSnapshot.val();
+
+    callback(data);
+  });
+};
+
+export const getCallToSeeIfItAlreadyExists = async (projectUid, id) => {
+  const callsRef = ref(RTdatabase, "/projects/" + projectUid + "/calls/");
 
   const doesIdReturnsAValue = await get(callsRef)
     .then((snapshot) => {
@@ -106,17 +130,42 @@ export const getCallToSeeIfItAlreadyExists = async (id) => {
 
   return doesIdReturnsAValue;
 };
+export const getProjectInfo = async (projectUid) => {
+  try {
+    const projectRef = ref(RTdatabase, "projects/" + projectUid);
+    const data = await get(projectRef).then((snapshot) => snapshot.val());
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-export const writeNewCall = async (call) => {
-  const idIsBeeingUsed = await getCallToSeeIfItAlreadyExists(call.id);
+export const writeNewCall = async (projectUid, userUid, call) => {
+  const idIsBeeingUsed = await getCallToSeeIfItAlreadyExists(
+    projectUid,
+    call.id
+  );
   if (idIsBeeingUsed) return "já existe um chamado com esse id";
 
   try {
-    const newPostKey = push(child(ref(RTdatabase), callsRefString)).key;
-    await set(ref(RTdatabase, callsRefString + "/" + newPostKey), {
+    const newPostKey = push(
+      child(ref(RTdatabase), "/projects/" + projectUid + "/calls/")
+    ).key;
+
+    const updates = {};
+
+    updates["/projects/" + projectUid + "/calls/" + newPostKey] = {
       ...call,
       key: newPostKey,
-    });
+    };
+
+    updates[
+      "/users/" + userUid + "/projects/" + projectUid + "/calls/" + newPostKey
+    ] = { ...call, key: newPostKey };
+
+    await update(ref(RTdatabase), updates);
+
     return "success";
   } catch (error) {
     console.log(error);
@@ -124,21 +173,33 @@ export const writeNewCall = async (call) => {
   }
 };
 
-export const removeExistingCall = async (call) => {
+export const removeExistingCall = async (projectUid, userUid, call) => {
   try {
-    await remove(ref(RTdatabase, callsRefString + "/" + call.key));
+    const updates = {};
+    updates["/projects/" + projectUid + "/calls/" + call.key] = null;
+    updates[
+      "/users/" + userUid + "/projects/" + projectUid + "/calls/" + call.key
+    ] = null;
+
+    await update(ref(RTdatabase), updates);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const editExistingCall = async (call, oldId) => {
+export const editExistingCall = async (projectUid, userUid, call, oldId) => {
   if (call.id !== oldId) {
-    const idExists = await getCallToSeeIfItAlreadyExists(call.id);
+    const idExists = await getCallToSeeIfItAlreadyExists(projectUid, call.id);
     if (idExists) return "Já existe um chamado com esse ID";
   }
   try {
-    update(ref(RTdatabase, callsRefString + "/" + call.key), call);
+    const updates = {};
+    updates["/projects/" + projectUid + "/calls/" + call.key] = call;
+    updates[
+      "/users/" + userUid + "/projects/" + projectUid + "/calls/" + call.key
+    ] = call;
+
+    await update(ref(RTdatabase), updates);
     console.log("success");
     return "success";
   } catch (error) {
@@ -147,15 +208,35 @@ export const editExistingCall = async (call, oldId) => {
   }
 };
 
-export const writeNewTramite = async (callKey, tramiteInfo) => {
+export const writeNewTramite = async (
+  projectUid,
+  userUid,
+  callKey,
+  tramiteInfo
+) => {
   try {
-    await set(
-      ref(
-        RTdatabase,
-        callsRefString + "/" + callKey + "/tramites/" + tramiteInfo.id
-      ),
-      tramiteInfo
-    );
+    const updates = {};
+    updates[
+      "/projects/" +
+        projectUid +
+        "/calls/" +
+        callKey +
+        "/tramites/" +
+        tramiteInfo.id
+    ] = tramiteInfo;
+    updates[
+      "/users/" +
+        userUid +
+        "/projects/" +
+        projectUid +
+        "/calls/" +
+        callKey +
+        "/tramites/" +
+        tramiteInfo.id
+    ] = tramiteInfo;
+
+    await update(ref(RTdatabase), updates);
+
     return "success";
   } catch (error) {
     console.log(error);
@@ -163,15 +244,35 @@ export const writeNewTramite = async (callKey, tramiteInfo) => {
   }
 };
 
-export const editExistingTramite = async (callKey, tramiteInfo) => {
+export const editExistingTramite = async (
+  projectUid,
+  userUid,
+  callKey,
+  tramiteInfo
+) => {
   try {
-    await update(
-      ref(
-        RTdatabase,
-        callsRefString + "/" + callKey + "/tramites/" + tramiteInfo.id
-      ),
-      tramiteInfo
-    );
+    const updates = {};
+    updates[
+      "/projects/" +
+        projectUid +
+        "/calls/" +
+        callKey +
+        "/tramites/" +
+        tramiteInfo.id
+    ] = tramiteInfo;
+    updates[
+      "/users/" +
+        userUid +
+        "/projects/" +
+        projectUid +
+        "/calls/" +
+        callKey +
+        "/tramites/" +
+        tramiteInfo.id
+    ] = tramiteInfo;
+
+    await update(ref(RTdatabase), updates);
+
     console.log("success");
     return "success";
   } catch (error) {
@@ -180,17 +281,21 @@ export const editExistingTramite = async (callKey, tramiteInfo) => {
   }
 };
 
-const callsRef = ref(RTdatabase, callsRefString + "/");
+export const callsListener = async (projectUid, callback) => {
+  const callsRef = ref(RTdatabase, "/projects/" + projectUid + "/calls/");
 
-export const callsListener = (callback) => {
-  return onValue(callsRef, (callsSnapshot) => {
+  onValue(callsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
     callback(data);
   });
 };
 
-export const proceduresListener = (callback, callKey) => {
-  const callRef = ref(RTdatabase, "/" + callsRefString + "/" + callKey);
+export const proceduresListener = async (callback, projectUid, callKey) => {
+  const callRef = ref(
+    RTdatabase,
+    "/projects/" + projectUid + "/calls/" + callKey
+  );
+
   return onValue(callRef, (callSnapshot) => {
     const data = callSnapshot.val();
     callback(data);
@@ -206,9 +311,27 @@ export const editHourStock = async (year, month, quantity) => {
 };
 
 // USER AUTH STUFF
-export const createAuthUserWithEmailAndPassword = async (email, password) => {
+const auth = getAuth();
+
+export const createAuthUserWithEmailAndPassword = async (
+  email,
+  password,
+  userName
+) => {
   if (!email || !password) return;
-  return await createUserWithEmailAndPassword(auth, email, password);
+  const user = await createUserWithEmailAndPassword(auth, email, password).then(
+    (userCredential) => {
+      return userCredential.user;
+    }
+  );
+  console.log(user);
+  const { uid } = user;
+  try {
+    await set(ref(RTdatabase, "/users/" + uid), { name: userName, key: uid });
+  } catch (err) {
+    console.log(err);
+  }
+  return user;
 };
 
 export const signInAuthWithEmailAndPassword = async (email, password) => {
@@ -216,9 +339,62 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
   return await signInWithEmailAndPassword(auth, email, password);
 };
 
-// // FIRESTORE DATABASE
-const db = getFirestore();
+export const authListener = (callback) => {
+  onAuthStateChanged(auth, (user) => callback(user));
+};
 
+export const getUserName = async (userUid) => {
+  const name = get(ref(RTdatabase, "users/" + userUid + "/name")).then(
+    (snapshot) => snapshot.val()
+  );
+  return name;
+};
+
+export const sendInviteToToProject = async (
+  projectUid,
+  projectName,
+  name,
+  userUid
+) => {
+  try {
+    await set(ref(RTdatabase, "/users/" + userUid + "/invites/" + projectUid), {
+      name,
+      key: projectUid,
+      projectName,
+    });
+
+    return "success";
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const acceptInvite = async (userUid, userName, projectInfo) => {
+  try {
+    const updates = {};
+
+    updates["/projects/" + projectUid + "/users/" + userUid] = userName;
+    updates["/users/" + userUid + "/projects/" + projectInfo.key] = {
+      ...projectInfo,
+    };
+
+    const response = await update(ref(RTdatabase), updates);
+    console.log(response);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const InvitesListener = async (userUid, callback) => {
+  const userRef = ref(RTdatabase, "users/" + userUid + "/invites");
+
+  return onValue(userRef, (callSnapshot) => {
+    const data = callSnapshot.val();
+    callback(data);
+  });
+};
+
+// // OLD DATABASE
 // export const addObjectToCollection = async (collectionKey, objectToAdd) => {
 //   const collectionRef = collection(db, collectionKey);
 //   const batch = writeBatch(db);

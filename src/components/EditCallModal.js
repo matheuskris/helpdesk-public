@@ -10,6 +10,9 @@ function EditCallModal({
   setEditModal,
   callToEdit,
   setCallToEdit,
+  userUid,
+  projectUid,
+  personsInProject = { personsInProject },
 }) {
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [timeInput, setTimeInput] = useState({});
@@ -102,7 +105,13 @@ function EditCallModal({
         return;
       }
     }
-    const string = await editExistingCall(callToEdit, oldId);
+
+    const string = await editExistingCall(
+      projectUid,
+      userUid,
+      callToEdit,
+      oldId
+    );
     if (string === "success") {
       console.log("chamado editado com sucesso");
     } else {
@@ -220,9 +229,11 @@ function EditCallModal({
             className="p-4 outline-none inputCadastro"
           >
             <option defaultValue={true}>Responsável:</option>
-            <option value="Flávio">Flávio</option>
-            <option value="Patrícia">Patrícia</option>
-            <option value="Mônica">Mônica</option>
+            {personsInProject.map((person) => (
+              <option key={person} value={person}>
+                {person}
+              </option>
+            ))}
           </select>
           <button className=" bg-blue-600 btnCadastrar">Salvar</button>
         </form>
