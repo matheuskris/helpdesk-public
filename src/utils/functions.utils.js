@@ -77,9 +77,9 @@ export function getStringDateToTimeInput(dateString) {
 }
 
 export function getMonthTimeObject(arrayOfCalls, month, year) {
-  const firstDay = new Date(year, month, 0);
+  const firstDay = new Date(year, month, 1);
   const firstDayNumber = Date.parse(firstDay);
-  const lastDay = new Date(year, month + 1, 0);
+  const lastDay = new Date(year, month + 1, 1);
   const lastDayNumber = Date.parse(lastDay);
 
   const totalTime = arrayOfCalls.reduce((object, call) => {

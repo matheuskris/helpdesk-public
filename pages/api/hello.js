@@ -32,15 +32,28 @@ export default async function handler(req, res) {
         if (type === "sendInvite") {
           const { projectUid, name, email, projectName } = req.body.body;
 
-          const { uid } = await getAuth(app)
+          const user = await getAuth(app)
             .getUserByEmail(email)
-            .then((userRec) => userRec.toJSON());
-
-          await sendInviteToToProject(projectUid, projectName, name, uid);
-
-          res.status(200).json({
-            message: "you successfully send your invite!",
-          });
+            .then((userRec) => userRec.toJSON())
+            .catch((err) => {
+              res.status(404).json({
+                message: err.code,
+              });
+            });
+          if (user) {
+            await sendInviteToToProject(
+              projectUid,
+              projectName,
+              name,
+              user.uid
+            );
+            res
+              .status(200)
+              .json({
+                statusCode: 200,
+                message: "succesfully send your invite",
+              });
+          }
         }
         if (type === "acceptInvite") {
           const { projectUid, name, uid } = req.body.body;

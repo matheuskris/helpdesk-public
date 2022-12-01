@@ -4,10 +4,10 @@
 
 @layer components {
   .input {
-    @apply p-2 bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none;
+    @apply p-2 text-white bg-transparent border-b placeholder:text-gray-100 placeholder:text-lg outline-none;
   }
   .btnLogin {
-    @apply px-6 py-4 mt-10 text-black font-bold bg-gray-200 rounded-xl hover:bg-gray-400 transition duration-200 active:scale-95;
+    @apply px-6 py-4 mt-10 text-black font-bold bg-cyan-200 rounded-xl hover:bg-cyan-800 transition duration-200 active:scale-95;
   }
   .opcoes {
     @apply flex items-center justify-start cursor-pointer mx-6 w-[100%];
@@ -47,5 +47,8 @@
   }
   .btnExport {
     @apply text-white font-semibold text-lg px-3 py-1 bg-green-500 hover:bg-green-700 active:scale-95 transition duration-100 rounded-lg;
+  }
+  .menu-btn {
+    @apply border-b-2 hover:translate-x-2 transition-all;
   }
 }

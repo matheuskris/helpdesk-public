@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectName, selectProject } from "../store/userSlicer/user.selector";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { setUser } from "../store/userSlicer/userSlicer";
 
 export default function AsideMenu() {
   const [isMenuOpen, setMenu] = useState(false);
@@ -11,6 +12,7 @@ export default function AsideMenu() {
   const [email, setEmail] = useState("");
 
   const project = useSelector(selectProject);
+  const dispatch = useDispatch();
   const name = useSelector(selectName);
   const router = useRouter();
 
@@ -30,12 +32,22 @@ export default function AsideMenu() {
     console.log(response);
   }
 
+  // Logaut logic
+  function logout() {
+    dispatch(setUser(null));
+    router.push("/");
+  }
+
   function goToMenu() {
     router.push("/");
   }
 
   return (
-    <div className="absolute left-3 top-3 px-2 py-2 rounded-lg bg-white border border-black">
+    <div
+      className={`absolute left-3 top-3 ${
+        isMenuOpen ? "px-6 py-4" : "px-2 py-1"
+      } rounded-lg bg-white shadow-lg drop-shadow-md transition-all`}
+    >
       <button
         onClick={() => {
           setMenu(!isMenuOpen);
@@ -48,19 +60,24 @@ export default function AsideMenu() {
           alt="ícone menu"
         />
       </button>
-      {isMenuOpen && (
-        <div className="">
+      <div
+        className={`transition flex flex-col ${
+          isMenuOpen ? "w-[240px] h-[80vh]" : "h-0 w-0 overflow-hidden"
+        }`}
+      >
+        <div className="flex flex-col mt-4 text-lg gap-4 items-start">
           <button
             onClick={() => {
               setSendEmailInput(!sendEmailInput);
             }}
-            className="bg-slate-400"
+            className="menu-btn"
           >
-            Adicionar colega no projeto
+            Adicionar pessoas
           </button>
           {sendEmailInput && (
-            <div>
+            <div className="flex flex-row gap-3">
               <input
+                className="px-3 py-2 bg-transparent outline-none shadow-sm border-gray-300 border"
                 type="email"
                 name="email"
                 placeholder="Insira o email dela"
@@ -72,10 +89,17 @@ export default function AsideMenu() {
               <button onClick={handleEmail}>Enviar</button>
             </div>
           )}
-          <h2>Editar horas mensais de produção</h2>
-          <button onClick={goToMenu}>Voltar para o Menu</button>
+          <button className="menu-btn">Editar horas mensais</button>
         </div>
-      )}
+        <div className="flex flex-row justify-between w-full mt-auto">
+          <button className="btnExport bg-black" onClick={goToMenu}>
+            Menu
+          </button>
+          <button className="btnExport bg-black" onClick={logout}>
+            Sair
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

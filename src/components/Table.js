@@ -1,7 +1,6 @@
 import { getBeatyDate, getTimeStringFromMs } from "../utils/functions.utils";
 import Image from "next/image";
 import PersonsCard from "./PersonsCard";
-import Link from "next/link";
 
 function Table(props) {
   const {
@@ -15,13 +14,6 @@ function Table(props) {
     handleCloseCall,
     totalTime,
   } = props;
-
-  function showOnGoingTime(parsedDate) {
-    const currentDate = new Date();
-    const callDate = new Date(parsedDate);
-
-    return getTimeStringFromMs(currentDate - callDate);
-  }
 
   // Function time open
   function showTimeOpen(chamado) {

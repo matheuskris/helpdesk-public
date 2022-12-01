@@ -15,7 +15,7 @@ const hourStock = {
 export default function PersonsCard({ inCharge, totalTime }) {
   // const novemberParcialTime = 80;
   const month = {
-    month: 10,
+    month: 9,
     year: 2022,
   };
   const stockhours = hourStock[month.year][month.month];
