@@ -76,6 +76,46 @@ export function getStringDateToTimeInput(dateString) {
   return { hour, date };
 }
 
+export function getMonthTimeObject(arrayOfCalls, month, year) {
+  const firstDay = new Date(year, month, 0);
+  const firstDayNumber = Date.parse(firstDay);
+  const lastDay = new Date(year, month + 1, 0);
+  const lastDayNumber = Date.parse(lastDay);
+
+  const totalTime = arrayOfCalls.reduce((object, call) => {
+    let personsTotalTime = {};
+    if (call.tramites) {
+      const { tramites } = call;
+      for (const tramite in tramites) {
+        const { finished, start, inCharge } = tramites[tramite];
+        if (start > firstDayNumber && finished < lastDayNumber) {
+          const personInCharge = inCharge
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+
+          if (finished) {
+            const timeConsumed = finished - start;
+
+            if (!personsTotalTime[personInCharge]) {
+              personsTotalTime[personInCharge] = 0;
+            }
+            personsTotalTime[personInCharge] += timeConsumed;
+          }
+        }
+      }
+    }
+    for (const prop in personsTotalTime) {
+      if (!object[prop]) {
+        object[prop] = 0;
+      }
+      object[prop] += personsTotalTime[prop];
+    }
+    return object;
+  }, {});
+  return totalTime;
+}
+
 export function getTotalTimeObject(arrayOfCalls) {
   return arrayOfCalls.reduce((totalTime, call) => {
     let personsTotalTime = {};

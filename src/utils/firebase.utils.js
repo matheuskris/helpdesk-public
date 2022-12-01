@@ -302,6 +302,14 @@ export const proceduresListener = async (callback, projectUid, callKey) => {
   });
 };
 
+export const editHourStock = async (year, month, quantity) => {
+  try {
+    await set(ref(RTdatabase, "/hourStock/" + year + "/" + month), quantity);
+  } catch (err) {
+    console.log(err.code);
+  }
+};
+
 // USER AUTH STUFF
 const auth = getAuth();
 

@@ -1,7 +1,11 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { callsListener, editExistingCall } from "../src/utils/firebase.utils";
+import {
+  callsListener,
+  editExistingCall,
+  editHourStock,
+} from "../src/utils/firebase.utils";
 import CreateCallModal from "../src/components/CreateCallModal";
 import EditCallModal from "../src/components/EditCallModal";
 import DescriptionModal from "../src/components/DescriptionModal";
@@ -16,7 +20,7 @@ import {
   selectProject,
   selectUser,
 } from "../src/store/userSlicer/user.selector";
-import { getBeatyDate, getTotalTimeObject } from "../src/utils/functions.utils";
+import { getBeatyDate, getMonthTimeObject } from "../src/utils/functions.utils";
 
 function Helpdesk() {
   const router = useRouter();
@@ -45,9 +49,12 @@ function Helpdesk() {
   // T O T A L   T I M E
   const [totalTime, setTotalTime] = useState({});
 
-  console.log(project);
   const personsInProject = Object.values(project?.users);
 
+  const [month, setMonth] = useState({
+    month: 11,
+    year: new Date().getFullYear(),
+  });
   // checking if the user is authenticated if not, pushing to login page
   useEffect(() => {
     if (user) {
@@ -83,7 +90,7 @@ function Helpdesk() {
     const callsToStore = [...chamados];
     dispatch(setCalls(callsToStore));
 
-    setTotalTime(getTotalTimeObject(chamados));
+    setTotalTime(getMonthTimeObject(chamados, month.month, month.year));
   }, [chamados]);
 
   function handleSelectChange(e) {
