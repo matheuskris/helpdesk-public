@@ -5,6 +5,7 @@ import EditCallModal from "../EditCallModal";
 import DescriptionModal from "../DescriptionModal";
 import AsideMenu from "../AsideMenu";
 import Table from "../Table";
+import InviteMessageToast from "../InviteMessageToast";
 
 import { useHelpdesk } from "./useHelpDesk";
 
@@ -39,11 +40,15 @@ function Helpdesk() {
     handleShowClosedCalls,
     handleChangeDate,
     handleDownload,
+    openToast,
+    setOpenToast,
+    toastInfo,
+    setToastInfo,
   ] = useHelpdesk();
 
   return (
-    <div className="h-screen w-full relative bg-[#FFF]">
-      <AsideMenu />
+    <div className="h-screen relative w-full bg-[#FFF] overflow-hidden">
+      <AsideMenu setOpenToast={setOpenToast} setToastInfo={setToastInfo} />
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
@@ -159,6 +164,11 @@ function Helpdesk() {
           description={description}
         />
       </div>
+      <InviteMessageToast
+        open={openToast}
+        setOpen={setOpenToast}
+        info={toastInfo}
+      />
     </div>
   );
 }

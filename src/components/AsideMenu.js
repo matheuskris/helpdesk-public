@@ -6,7 +6,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { setUser } from "../store/userSlicer/userSlicer";
 
-export default function AsideMenu() {
+export default function AsideMenu({ setOpenToast, setToastInfo }) {
   const [isMenuOpen, setMenu] = useState(false);
   const [sendEmailInput, setSendEmailInput] = useState(false);
   const [email, setEmail] = useState("");
@@ -17,19 +17,39 @@ export default function AsideMenu() {
   const router = useRouter();
 
   async function handleEmail() {
-    const response = await axios.post("/api/hello", {
-      method: "POST",
-      body: {
-        type: "sendInvite",
-        projectUid: project.key,
-        name,
-        email,
-        projectName: project.name,
-      },
-    });
+    console.log("inicio");
+    if (!email || !project.key || !name || !email || !project.name) {
+      setEmail("");
+      setSendEmailInput(false);
+      return;
+    }
+    try {
+      const response = await axios.post("/api/hello", {
+        method: "POST",
+        body: {
+          type: "sendInvite",
+          projectUid: project.key,
+          name,
+          email,
+          projectName: project.name,
+        },
+      });
+      console.log(response);
+      setToastInfo({
+        status: "ok",
+        message: "seu email foi enviado com sucesso",
+      });
+    } catch (err) {
+      console.log(err);
+      setToastInfo({
+        status: "error",
+        message: "Não foi possível localizar o email inserido",
+      });
+    }
+    setOpenToast(true);
+    console.log("Fim");
     setEmail("");
     setSendEmailInput(false);
-    console.log(response);
   }
 
   // Logaut logic
@@ -62,7 +82,7 @@ export default function AsideMenu() {
       </button>
       <div
         className={`transition flex flex-col ${
-          isMenuOpen ? "w-[240px] h-[80vh]" : "h-0 w-0 overflow-hidden"
+          isMenuOpen ? "w-[320px] h-[80vh]" : "h-0 w-0 overflow-hidden"
         }`}
       >
         <div className="flex flex-col mt-4 text-lg gap-4 items-start">
@@ -86,7 +106,12 @@ export default function AsideMenu() {
                   setEmail(e.target.value);
                 }}
               />
-              <button onClick={handleEmail}>Enviar</button>
+              <button
+                className="flex justify-center items-center rounded-md font-medium text-base px-4 bg-cyan-700 text-white"
+                onClick={handleEmail}
+              >
+                Enviar
+              </button>
             </div>
           )}
           <button className="menu-btn">Editar horas mensais</button>

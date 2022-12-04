@@ -51,4 +51,7 @@
   .menu-btn {
     @apply border-b-2 hover:translate-x-2 transition-all;
   }
+  .toast-animations {
+    @apply data-toastOpen:animate-slideOpen data-toastClosed:animate-hideClose data-toastMoved:translate-x-[--radix-toast-swipe-move-x] data-toastCancel:translate-x-0 data-toastEnd:animate-swipeOutEnd;
+  }
 }

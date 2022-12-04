@@ -263,6 +263,12 @@ export function useHelpdesk() {
     downloadTableDataInExcel(objectToExport);
   }
 
+  const [openToast, setOpenToast] = useState(false);
+  const [toastInfo, setToastInfo] = useState({
+    status: "",
+    message: "",
+  });
+
   return [
     project,
     userUid,
@@ -293,5 +299,9 @@ export function useHelpdesk() {
     handleShowClosedCalls,
     handleChangeDate,
     handleDownload,
+    openToast,
+    setOpenToast,
+    toastInfo,
+    setToastInfo,
   ];
 }
