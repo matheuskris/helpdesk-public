@@ -34,7 +34,7 @@ export default function Menu({ user }) {
               ? projects.map((project) => (
                   <button
                     key={project.key}
-                    className="shadow-lg border-2 border-gray-400 py-2 rounded-lg hover:shadow-inner"
+                    className="shadow-lg border-2 w-full my-1 border-gray-400 py-2 rounded-lg hover:shadow-inner"
                     onClick={() => {
                       handleSelect(project);
                     }}

@@ -11,11 +11,11 @@ const initialState = {
   error: false,
 };
 
-export const getProjects = createAsyncThunk("getProjects", async (props) => {
-  const { userUid, callback } = props;
-  const projects = await projectsListener(userUid, callback);
-  return transformObjectToArray(projects);
-});
+// export const getProjects = createAsyncThunk("getProjects", async (props) => {
+//   const { userUid, callback } = props;
+//   const projects = await projectsListener(userUid, callback);
+//   return transformObjectToArray(projects);
+// });
 
 export const callsSlice = createSlice({
   name: "calls",
@@ -28,7 +28,7 @@ export const callsSlice = createSlice({
       state.currentProject = action.payload;
     },
     setProjects(state, action) {
-      state.currentProject = action.payload;
+      state.userProjects = action.payload;
     },
   },
   extraReducers: {
@@ -38,16 +38,16 @@ export const callsSlice = createSlice({
         ...action.payload.auth,
       };
     },
-    [getProjects.pending]: (state) => {
-      state.projectsIsLoading = true;
-    },
-    [getProjects.fulfilled]: (state) => {
-      state.projectsIsLoading = false;
-    },
-    [getProjects.rejected]: (state) => {
-      state.projectsIsLoading = false;
-      state.error = true;
-    },
+    // [getProjects.pending]: (state) => {
+    //   state.projectsIsLoading = true;
+    // },
+    // [getProjects.fulfilled]: (state) => {
+    //   state.projectsIsLoading = false;
+    // },
+    // [getProjects.rejected]: (state) => {
+    //   state.projectsIsLoading = false;
+    //   state.error = true;
+    // },
   },
 });
 

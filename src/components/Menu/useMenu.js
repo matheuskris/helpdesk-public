@@ -32,20 +32,15 @@ export function useMenu(user) {
   const [invites, setInvites] = useState([]);
   const [isModalOpen, setModal] = useState(false);
 
-  useEffect(() => {
-    function transformObjectToArray(object) {
-      const newArray = [];
-      for (const prop in object) {
-        newArray.push(object[prop]);
-      }
-      return newArray;
+  function transformObjectToArray(object) {
+    const newArray = [];
+    for (const prop in object) {
+      newArray.push(object[prop]);
     }
+    return newArray;
+  }
 
-    // function handleFetch(projectsObject) {
-    //   const projectArray = transformObjectToArray(projectsObject);
-    //   setProjects(projectArray);
-    // }
-
+  useEffect(() => {
     function handleInvitesFetch(invitesObject) {
       const invitesArray = transformObjectToArray(invitesObject);
       setInvites(invitesArray);
@@ -55,16 +50,16 @@ export function useMenu(user) {
   }, []);
 
   useEffect(() => {
-    const getProjectsProps = {
-      userUid: user.uid,
-      callback: (data) => {
-        const dataArray = transformObjectToArray(data);
-        dispatch(setProjects(dataArray));
-      },
-    };
+    async function getProjects() {
+      function handleNewProjects(newProjects) {
+        const projectsArray = transformObjectToArray(newProjects);
+        dispatch(setProjects(projectsArray));
+      }
 
-    dispatch(getProjects(getProjectsProps));
-    console.log("dispatched");
+      await projectsListener(user.uid, handleNewProjects);
+    }
+
+    getProjects();
   }, [dispatch, user]);
 
   function logout() {
@@ -95,8 +90,6 @@ export function useMenu(user) {
   function handleCreateProject() {
     setModal(true);
   }
-
-  console.log("carregando:", isProjectsLoading);
 
   return [
     projects,
