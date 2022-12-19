@@ -17,7 +17,6 @@ export default function AsideMenu({ setOpenToast, setToastInfo }) {
   const router = useRouter();
 
   async function handleEmail() {
-    console.log("inicio");
     if (!email || !project.key || !name || !email || !project.name) {
       setEmail("");
       setSendEmailInput(false);
@@ -47,7 +46,6 @@ export default function AsideMenu({ setOpenToast, setToastInfo }) {
       });
     }
     setOpenToast(true);
-    console.log("Fim");
     setEmail("");
     setSendEmailInput(false);
   }
