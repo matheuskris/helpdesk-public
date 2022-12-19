@@ -1,4 +1,4 @@
-import { applicationDefault, initializeApp, cert } from "firebase-admin/app";
+import { initializeApp, cert } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getDatabase } from "firebase-admin/database";
 import { sendInviteToToProject } from "../../src/utils/firebase.utils";

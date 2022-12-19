@@ -19,7 +19,6 @@ import {
   child,
   push,
 } from "firebase/database";
-import { castImmutable } from "immer";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -100,7 +99,6 @@ export const projectsListener = async (userUid, callback) => {
 
   onValue(userProjectsRef, (callsSnapshot) => {
     const data = callsSnapshot.val();
-
     callback(data);
   });
 };

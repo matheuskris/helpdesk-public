@@ -1,5 +1,6 @@
 import * as Popover from "@radix-ui/react-popover";
 import NewProjectModal from "../../components/newProjectModal";
+import Loading from "../Loading";
 
 import { useMenu } from "./useMenu";
 
@@ -13,12 +14,13 @@ export default function Menu({ user }) {
     handleSelect,
     handleAcceptInvite,
     handleCreateProject,
+    isProjectsLoading,
   ] = useMenu(user);
 
   return (
     // Containers
     <div className="h-screen w-[100%] flex justify-center items-center relative bg-gradient-to-r from-cyan-500 to-blue-500">
-      <div className="w-[572px] shadow-xl px-24 py-16 rounded-[33px] bg-white">
+      <div className="w-[572px] shadow-xl px-24 py-16 rounded-md bg-white">
         {/* SVG e HelpDesk */}
         <div className="flex items-baseline justify-start space-x-2">
           <p className="text-4xl">Menu</p>
@@ -26,19 +28,22 @@ export default function Menu({ user }) {
         {/* Titulo */}
         <p className="text-xl mt-4 mb-3">Selecione um de seus projetos:</p>
         <div className="flex flex-col gap-2 text-lg">
-          {projects
-            ? projects.map((project) => (
-                <button
-                  key={project.key}
-                  className="shadow-lg border-2 border-gray-400 py-2 rounded-lg hover:shadow-inner"
-                  onClick={() => {
-                    handleSelect(project);
-                  }}
-                >
-                  {project.name}
-                </button>
-              ))
-            : "Cadastre um projeto ou entre em um para começar"}
+          <div className="flex flex-col items-center">
+            {isProjectsLoading && <Loading />}
+            {projects
+              ? projects.map((project) => (
+                  <button
+                    key={project.key}
+                    className="shadow-lg border-2 border-gray-400 py-2 rounded-lg hover:shadow-inner"
+                    onClick={() => {
+                      handleSelect(project);
+                    }}
+                  >
+                    {project.name}
+                  </button>
+                ))
+              : "Cadastre um projeto ou entre em um para começar"}
+          </div>
           <div className="flex flex-row justify-between mt-6">
             <button
               className="shadow-lg py-1 px-2 rounded-lg hover:shadow-inner border-2 border-gray-400"

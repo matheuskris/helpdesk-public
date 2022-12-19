@@ -150,3 +150,11 @@ export function getTotalTimeObject(arrayOfCalls) {
     return totalTime;
   }, {});
 }
+
+export function transformObjectToArray(object) {
+  const newArray = [];
+  for (const prop in object) {
+    newArray.push(object[prop]);
+  }
+  return newArray;
+}
