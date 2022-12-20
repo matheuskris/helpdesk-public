@@ -360,7 +360,7 @@ export const sendInviteToToProject = async (
       key: projectUid,
       projectName,
     });
-
+    console.log("conseguimos enviar o convite");
     return "success";
   } catch (err) {
     console.log(err);

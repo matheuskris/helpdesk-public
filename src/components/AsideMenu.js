@@ -36,7 +36,7 @@ export default function AsideMenu({ setOpenToast, setToastInfo }) {
       console.log(response);
       setToastInfo({
         status: "ok",
-        message: "seu email foi enviado com sucesso",
+        message: "seu convite foi enviado com sucesso",
       });
     } catch (err) {
       console.log(err);
