@@ -33,12 +33,19 @@ const firebaseCertConfig = {
 };
 
 let app;
+export const appInitResponse = { init: false, erro: "no error" };
+
 if (!getApps().length) {
-  app = initializeApp({
-    credential: cert(firebaseCertConfig),
-    databaseURL: "https://helpdeskmatheus-403de-default-rtdb.firebaseio.com",
-  });
+  try {
+    app = initializeApp({
+      credential: cert(firebaseCertConfig),
+      databaseURL: "https://helpdeskmatheus-403de-default-rtdb.firebaseio.com",
+    });
+    appInitResponse.init = true;
+  } catch (err) {
+    appInitResponse.erro = err;
+    appInitResponse.init = false;
+  }
 }
-console.log("initialized");
 
 export default app;

@@ -2,7 +2,7 @@ import { getAuth } from "firebase-admin/auth";
 import { getDatabase } from "firebase-admin/database";
 import { sendInviteToToProject } from "../../src/utils/firebase.utils";
 
-import app from "../../src/utils/firebase-admin.utils";
+import app, { appInitResponse } from "../../src/utils/firebase-admin.utils";
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -25,6 +25,7 @@ export default async function handler(req, res) {
               console.log("não conseguimos encontrar o usuario");
               res.status(404).json({
                 message: err.code,
+                appInitResponse,
                 responseObject,
               });
             });
@@ -47,6 +48,7 @@ export default async function handler(req, res) {
               statusCode: 200,
               message: "succesfully send your invite",
               responseObject,
+              appInitResponse,
             });
           }
         } catch (err) {
@@ -55,6 +57,7 @@ export default async function handler(req, res) {
             statusCode: 500,
             message: "there was some error",
             responseObject,
+            appInitResponse,
           });
         }
       }
