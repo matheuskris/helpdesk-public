@@ -6,16 +6,16 @@ import { initializeApp, cert, getApps } from "firebase-admin/app";
 //     "\n"
 //   );
 
-const privateKeyId = JSON.parse(
-  process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY_ID
-);
+const privateKeyId = process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY_ID
+  ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY_ID)
+  : undefined;
 
 // const privateKey =
 //   process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY.replace(/\\n/g, "\n")
 
-const privateKey = JSON.parse(
-  process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY
-);
+const privateKey = process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY
+  ? JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY)
+  : undefined;
 
 const firebaseCertConfig = {
   type: "service_account",
@@ -33,7 +33,7 @@ const firebaseCertConfig = {
 };
 
 let app;
-export const appInitResponse = { init: false, erro: "no error" };
+const appInitResponse = { init: false, erro: "no error" };
 
 if (!getApps().length) {
   try {
@@ -48,4 +48,5 @@ if (!getApps().length) {
   }
 }
 
+export const appInit = appInitResponse;
 export default app;
