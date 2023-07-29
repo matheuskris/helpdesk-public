@@ -4,7 +4,8 @@ import {
   signInAuthWithEmailAndPassword,
   getUserName,
 } from "../../utils/firebase.utils";
-import { setUser, setName } from "../../store/userSlicer/userSlicer";
+import { setUser, setUserToken } from "../../store/userSlicer/userSlicer";
+import AuthenticationApi from "../../api/authApi";
 
 export default function useLogin() {
   const [credential, setCredential] = useState({
@@ -15,13 +16,13 @@ export default function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
-  function handleChange(event) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value, name } = event.target;
 
     setCredential({ ...credential, [name]: value });
   }
 
-  async function handleLogin(e) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!credential.email || !credential.password) {
       setlogInError("insira dados válidos");
@@ -33,15 +34,16 @@ export default function useLogin() {
     }
     setIsLoading(true);
     try {
-      const userCredential = await signInAuthWithEmailAndPassword(
+      const userToken = await AuthenticationApi.signIn(
         credential.email,
         credential.password
       );
-      const { user } = userCredential;
-      const userName = await getUserName(user.uid);
-      dispatch(setUser(user));
-      dispatch(setName(userName));
-    } catch (error) {
+      localStorage.setItem('jhi-authenticationToken', userToken.data);
+
+      const user = await AuthenticationApi.getMe();
+      dispatch(setUser(user.data));
+      dispatch(setUserToken(userToken.data));
+    } catch (error : any) {
       switch (error.code) {
         case "auth/wrong-password":
           setlogInError("Senha ou email incorretos");
@@ -66,5 +68,5 @@ export default function useLogin() {
       password: "",
     });
   }
-  return [credential, logInError, isLoading, handleChange, handleLogin];
+  return [credential, logInError, isLoading, handleChange, handleLogin] as const;
 }

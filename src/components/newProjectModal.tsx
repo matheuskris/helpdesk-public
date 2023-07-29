@@ -1,16 +1,24 @@
 import { useState, useEffect } from "react";
-import { createNewProject } from "../utils/firebase.utils";
 
 import Modal from "react-modal";
+import { User } from "../models/User";
+import projectApi from "../api/projectApi";
 import { useSelector } from "react-redux";
-import { selectName } from "../store/userSlicer/user.selector";
+import { selectUser } from "../store/userSlicer/user.selector";
+
 Modal.setAppElement("#__next");
 
-export default function NewProjectModal({ isModalOpen, setModal, user }) {
+interface NewProjectModalProps {
+  isModalOpen: boolean;
+  setModal: (is: boolean) => void;
+}
+
+export default function NewProjectModal({ isModalOpen, setModal} : NewProjectModalProps) {
   const [projName, setProjName] = useState("");
   const [isRegisterFull, setIsRegisterFull] = useState(true);
   const [error, setError] = useState("");
-  const userName = useSelector(selectName);
+  // const { name: username } = useSelector(selectUser) ?? { name: "" };
+
   const customStyle = {
     content: {
       top: "50%",
@@ -26,30 +34,15 @@ export default function NewProjectModal({ isModalOpen, setModal, user }) {
   function handleCloseModal() {
     setModal(false);
   }
-  async function handleRegister(e) {
+
+  async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!projName) {
       setIsRegisterFull(false);
       return;
     }
-    const newDate = new Date();
-    const sendDate = Date.parse(newDate);
-
-    const userUid = user.uid;
-    const projectObject = {
-      name: projName,
-      users: {
-        [userUid]: userName,
-      },
-      calls: {},
-      monthHourStock: {
-        november: "160",
-      },
-      createdBy: userUid,
-      createdAt: sendDate,
-    };
-    console.log(userUid, projectObject);
-    await createNewProject(userUid, projectObject);
+    
+    await projectApi.createNewProject(projName)
     handleCloseModal();
     setProjName("");
   }

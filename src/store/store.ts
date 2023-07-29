@@ -1,8 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage";
-import { persistReducer, persistStore } from "redux-persist";
+import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, persistReducer, persistStore } from "redux-persist";
 import thunk from "redux-thunk";
-import logger from "redux-logger";
 
 import callsReducer from "./callsSlicer/callsSlicer";
 import userReducer from "./userSlicer/userSlicer";
@@ -18,12 +17,21 @@ const rootReducer = combineReducers({
   userState: userReducer,
 });
 
+export type RootState = ReturnType<typeof rootReducer>;
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
-  middleware: [thunk],
+  middleware: (getDefaultMiddleware) =>
+  getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    },
+  }),
 });
+
+export type AppDispatch = typeof store.dispatch;
 
 export const persistor = persistStore(store);

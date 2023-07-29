@@ -1,10 +1,10 @@
 import * as Popover from "@radix-ui/react-popover";
-import NewProjectModal from "../../components/newProjectModal";
+import NewProjectModal from "../newProjectModal";
 import Loading from "../Loading";
 
 import { useMenu } from "./useMenu";
 
-export default function Menu({ user }) {
+export default function Menu() {
   const [
     projects,
     invites,
@@ -12,10 +12,10 @@ export default function Menu({ user }) {
     setModal,
     logout,
     handleSelect,
-    handleAcceptInvite,
+    // handleAcceptInvite,
     handleCreateProject,
     isProjectsLoading,
-  ] = useMenu(user);
+  ] = useMenu();
 
   return (
     // Containers
@@ -33,10 +33,10 @@ export default function Menu({ user }) {
             {projects
               ? projects.map((project) => (
                   <button
-                    key={project.key}
+                    key={project.id}
                     className="shadow-lg border-2 w-full my-1 border-gray-400 py-2 rounded-lg hover:shadow-inner"
                     onClick={() => {
-                      handleSelect(project);
+                      handleSelect(project.id);
                     }}
                   >
                     {project.name}
@@ -51,7 +51,7 @@ export default function Menu({ user }) {
             >
               Criar novo projeto
             </button>
-            <Popover.Root>
+            {/* <Popover.Root>
               <Popover.Trigger asChild>
                 <button className="border-2 border-gray-400 py-1 px-2 rounded-lg shadow-lg hover:shadow-inner ">
                   Ver Convites
@@ -84,7 +84,7 @@ export default function Menu({ user }) {
                   <Popover.Arrow className="fill-white" />
                 </Popover.Content>
               </Popover.Portal>
-            </Popover.Root>
+            </Popover.Root> */}
           </div>
           <button
             className="border-2 border-gray-400 py-1 px-2 rounded-lg shadow-lg hover:shadow-inner"
@@ -97,7 +97,6 @@ export default function Menu({ user }) {
       <NewProjectModal
         isModalOpen={isModalOpen}
         setModal={setModal}
-        user={user}
       />
     </div>
   );

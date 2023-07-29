@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 
-import { setUser, setName } from "../../store/userSlicer/userSlicer";
-import { createAuthUserWithEmailAndPassword } from "../../utils/firebase.utils";
+import { setUser, setUserToken } from "../../store/userSlicer/userSlicer";
+import AuthenticationApi from "../../api/authApi";
 
 const initialState = {
   email: "",
@@ -19,14 +19,14 @@ export function useSignUp() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  function handleChange(event) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
     const { name } = event.target;
 
     setFormFields({ ...formFields, [name]: value });
   }
 
-  async function handleSignUp(e) {
+  async function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (formFields.password !== formFields.confirmPassword) {
@@ -38,27 +38,29 @@ export function useSignUp() {
       return;
     }
     if (!formFields.email || !formFields.password || !formFields.username) {
-      setlogInError("insira dados válidos");
+      setSignUpError("insira dados válidos");
       setFormFields(initialState);
       return;
     }
     setLoading(true);
 
     try {
-      const user = await createAuthUserWithEmailAndPassword(
+      const userTokenResult = await AuthenticationApi.signup(
+        formFields.username,
         formFields.email,
         formFields.password,
-        formFields.username
       );
 
-      dispatch(setUser(user));
-      dispatch(setName(formFields.username));
+      const result = await AuthenticationApi.getMe();
+
+      dispatch(setUser(result.data));
+      dispatch(setUserToken(userTokenResult.data));
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
     }
     router.push("/");
     setLoading(false);
     setFormFields(initialState);
   }
-  return [formFields, signUpError, isLoading, handleChange, handleSignUp];
+  return [formFields, signUpError, isLoading, handleChange, handleSignUp] as const;
 }

@@ -15,7 +15,7 @@
     "@radix-ui/react-toast": "^1.1.2",
     "@reduxjs/toolkit": "^1.8.6",
     "autoprefixer": "^10.4.12",
-    "axios": "^1.2.0",
+    "axios": "^1.4.0",
     "firebase": "^9.12.1",
     "firebase-admin": "^11.3.0",
     "next": "13.0.0",
@@ -28,11 +28,14 @@
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
-    "tailwindcss": "^3.2.1",
+    "tailwindcss": "^3.3.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/next": "^9.0.0",
+    "@types/react": "^18.2.17",
     "eslint": "8.26.0",
-    "eslint-config-next": "13.0.0"
+    "eslint-config-next": "13.0.0",
+    "typescript": "^5.1.6"
   }
 }

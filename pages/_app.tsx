@@ -5,6 +5,8 @@ import Router from "next/router";
 import { store, persistor } from "../src/store/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { AppProps } from "next/app";
+// import 'tailwindcss/tailwind.css';
 
 const progress = new ProgressBar({
   size: 4,
@@ -17,7 +19,7 @@ Router.events.on("routeChangeStart", progress.start);
 Router.events.on("routeChangeComplete", progress.finish);
 Router.events.on("routeChangeError", progress.finish);
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <Head>

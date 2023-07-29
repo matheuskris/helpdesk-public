@@ -12,7 +12,7 @@ import { useHelpdesk } from "./useHelpDesk";
 function Helpdesk() {
   const [
     project,
-    userUid,
+    // userUid,
     isModalOpen,
     setModal,
     isEditModalOpen,
@@ -28,9 +28,8 @@ function Helpdesk() {
     filteredCalls,
     totalTime,
     personsInProject,
-    handleSelectChange,
-    handleSearchField,
-    handleFilter,
+    // handleSelectChange,
+    // handleSearchField,
     handleCloseCall,
     checkDescription,
     handleOpenModal,
@@ -38,8 +37,6 @@ function Helpdesk() {
     handleShowTramites,
     handleReopenCall,
     handleShowClosedCalls,
-    handleChangeDate,
-    handleDownload,
     openToast,
     setOpenToast,
     toastInfo,
@@ -47,12 +44,15 @@ function Helpdesk() {
   ] = useHelpdesk();
 
   return (
-    <div className="h-screen relative w-full bg-[#FFF] overflow-hidden">
-      <AsideMenu setOpenToast={setOpenToast} setToastInfo={setToastInfo} />
+    <div className="min-h-screen relative w-full bg-[#FFF] overflow-hidden">
+      <AsideMenu 
+        setOpenToast={setOpenToast} 
+        setToastInfo={setToastInfo} 
+      />
       {/* Content */}
       <div className=" px-6 ">
         {/* Titulo tabela e botão  */}
-        <div className="flex flex-row justify-between items-center pt-[20px] mb-4">
+        <div className="flex flex-row justify-between items-center pt-5 mb-4">
           <div className="pl-10 flex">
             <h1 className="text-3xl font-semibold mb-2">Painel de Controle</h1>
           </div>
@@ -63,7 +63,7 @@ function Helpdesk() {
               )}
               <select
                 className="rounded-lg p-2 border text-sm outline-gray-400"
-                onChange={handleSelectChange}
+                // onChange={handleSelectChange}
               >
                 <option value="id">Id</option>
                 <option value="client">Cliente</option>
@@ -78,14 +78,14 @@ function Helpdesk() {
                     type="date"
                     name="date1"
                     value={dateInput.date1}
-                    onChange={handleChangeDate}
+                    // onChange={handleChangeDate}
                     className="p-2 rounded-lg border text-sm outline-gray-400 mx-3"
                   />
                   <input
                     type="date"
                     name="date2"
                     value={dateInput.date2}
-                    onChange={handleChangeDate}
+                    // onChange={handleChangeDate}
                     className="p-2 rounded-lg border text-sm outline-gray-400"
                   />
                 </>
@@ -93,7 +93,7 @@ function Helpdesk() {
                 <input
                   type="text"
                   name="searchField"
-                  onChange={handleSearchField}
+                  // onChange={handleSearchField}
                   className="p-2 rounded-lg border text-base w-[30%] outline-gray-400"
                 />
               )}
@@ -123,7 +123,7 @@ function Helpdesk() {
         {/* Tabela */}
         <div className="rounded-[8px] shadow-2xl overflow-hidden w-[95%] mx-auto">
           <Table
-            handleFilter={handleFilter}
+            // handleFilter={handleFilter}
             showClosedCalls={showClosedCalls}
             filteredCalls={filteredCalls}
             checkDescription={checkDescription}
@@ -135,14 +135,17 @@ function Helpdesk() {
           />
         </div>
         <div className="w-[95%] mt-4 flex gap-4 items-center justify-end mx-auto">
-          <button className="btnExport" onClick={handleDownload}>
+          <button 
+            className="btnExport" 
+            // onClick={handleDownload}
+          >
             Exportar para Excel
           </button>
           <Image src="/excel.svg" width={48} height={48} alt="logo excel" />
         </div>
 
         {/* === Configuração do Modal =====  */}
-        <CreateCallModal
+        {/* <CreateCallModal
           userUid={userUid}
           projectUid={project.key}
           isModalOpen={isModalOpen}
@@ -162,13 +165,13 @@ function Helpdesk() {
           isDescriptionModalOpen={isDescriptionModalOpen}
           setDescriptionModal={setDescriptionModal}
           description={description}
-        />
+        /> */}
       </div>
-      <InviteMessageToast
+      {/* <InviteMessageToast
         open={openToast}
         setOpen={setOpenToast}
         info={toastInfo}
-      />
+      /> */}
     </div>
   );
 }

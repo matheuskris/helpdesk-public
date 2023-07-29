@@ -7,5 +7,5 @@ import { selectUser } from "../src/store/userSlicer/user.selector";
 export default function Checking() {
   const user = useSelector(selectUser);
 
-  return <>{user ? <Menu user={user} /> : <Login user={user} />}</>;
+  return <>{user ? <Menu /> : <Login />}</>;
 }

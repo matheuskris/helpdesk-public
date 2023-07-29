@@ -1,4 +1,4 @@
-export function getTimeStringFromMs(timeInMs) {
+export function getTimeStringFromMs(timeInMs: number) {
   const timeInSecs = timeInMs / 1000;
   if (timeInSecs < 60) {
     return `${timeInSecs.toFixed(0)} seg`;
@@ -13,11 +13,11 @@ export function getTimeStringFromMs(timeInMs) {
     return `${timeInHours.toFixed(0)}hr ${minPassHour.toFixed(0)} min`;
   }
   const days = timeInHours / 24;
-  const text = days.toFixed(0) > 1 ? " dias" : " dia";
+  const text = Number(days.toFixed(0)) > 1 ? " dias" : " dia";
   return days.toFixed(0) + text;
 }
 
-export function getTimeInHoursFromMs(timeInMs) {
+export function getTimeInHoursFromMs(timeInMs: number) {
   const timeInSecs = timeInMs / 1000;
   if (timeInSecs < 60) {
     return `${timeInSecs.toFixed(0)} seg`;
@@ -30,7 +30,7 @@ export function getTimeInHoursFromMs(timeInMs) {
   return `${timeInHours.toFixed(0)}`;
 }
 
-export function getBeatyDate(dateInMs) {
+export function getBeatyDate(dateInMs: number) {
   const date = new Date(dateInMs);
 
   if (!date.getDate()) {
@@ -51,7 +51,7 @@ export function getBeatyDate(dateInMs) {
     ${hour}:${minute}`;
 }
 
-export function getStringDateToTimeInput(dateString) {
+export function getStringDateToTimeInput(dateString: string) {
   const newDateObject = new Date(dateString);
 
   const minutes =
@@ -76,7 +76,7 @@ export function getStringDateToTimeInput(dateString) {
   return { hour, date };
 }
 
-export function getMonthTimeObject(arrayOfCalls, month, year) {
+export function getMonthTimeObject(arrayOfCalls, month: number, year: number) {
   const firstDay = new Date(year, month, 1);
   const firstDayNumber = Date.parse(firstDay);
   const lastDay = new Date(year, month + 1, 1);

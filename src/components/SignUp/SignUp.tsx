@@ -13,7 +13,7 @@ export default function SignUp() {
         <p className="text-white text-xl mt-12">Cadastro</p>
 
         {/* Formulário */}
-        <form className="flex flex-col space-y-10 mt-8" action="">
+        <form className="flex flex-col space-y-10 mt-8" onSubmit={handleSignUp}>
           <input
             className="input"
             placeholder="Insira seu email"
@@ -53,7 +53,7 @@ export default function SignUp() {
           )}
           <button
             disabled={isLoading}
-            onClick={handleSignUp}
+            type="submit"
             className="btnLogin"
           >
             {isLoading ? <Loading /> : "Cadastrar"}

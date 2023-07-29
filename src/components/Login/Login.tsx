@@ -15,7 +15,7 @@ export default function Login() {
           <p className="text-lg text-white">Help Desk</p>
         </div>
         <p className="text-white text-xl mt-12">Faça login na sua conta</p>
-        <form className="flex flex-col space-y-10 mt-8" action="">
+        <form className="flex flex-col space-y-10 mt-8" onSubmit={handleLogin}>
           <input
             className="input"
             placeholder="Usuário"
@@ -35,7 +35,7 @@ export default function Login() {
           {logInError && <p className="text-red-600 font-bold">{logInError}</p>}
           <button
             disabled={isLoading}
-            onClick={handleLogin}
+            type="submit"
             className="btnLogin"
           >
             {isLoading ? <Loading /> : "Login"}

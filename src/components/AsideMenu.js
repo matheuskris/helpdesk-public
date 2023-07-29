@@ -1,10 +1,20 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectName, selectProject } from "../store/userSlicer/user.selector";
+import { selectUser, selectProject } from "../store/userSlicer/user.selector";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { setUser } from "../store/userSlicer/userSlicer";
+
+// interface AsideMenuProps {
+//   setOpenToast: React.Dispatch<React.SetStateAction<boolean>>;
+//   setToastInfo: React.Dispatch<
+//     React.SetStateAction<{
+//       status: string;
+//       message: string;
+//     }>
+//   >;
+// }
 
 export default function AsideMenu({ setOpenToast, setToastInfo }) {
   const [isMenuOpen, setMenu] = useState(false);
@@ -13,42 +23,42 @@ export default function AsideMenu({ setOpenToast, setToastInfo }) {
 
   const project = useSelector(selectProject);
   const dispatch = useDispatch();
-  const name = useSelector(selectName);
+  const { name } = useSelector(selectUser) ?? { name: "" };
   const router = useRouter();
 
-  async function handleEmail() {
-    if (!email || !project.key || !name || !email || !project.name) {
-      setEmail("");
-      setSendEmailInput(false);
-      return;
-    }
-    try {
-      const response = await axios.post("/api/hello", {
-        method: "POST",
-        body: {
-          type: "sendInvite",
-          projectUid: project.key,
-          name,
-          email,
-          projectName: project.name,
-        },
-      });
-      console.log(response);
-      setToastInfo({
-        status: "ok",
-        message: "seu convite foi enviado com sucesso",
-      });
-    } catch (err) {
-      console.log(err);
-      setToastInfo({
-        status: "error",
-        message: "Não foi possível localizar o email inserido",
-      });
-    }
-    setOpenToast(true);
-    setEmail("");
-    setSendEmailInput(false);
-  }
+  // async function handleEmail() {
+  //   if (!email || !project.key || !name || !email || !project.name) {
+  //     setEmail("");
+  //     setSendEmailInput(false);
+  //     return;
+  //   }
+  //   try {
+  //     const response = await axios.post("/api/hello", {
+  //       method: "POST",
+  //       body: {
+  //         type: "sendInvite",
+  //         projectUid: project.key,
+  //         name,
+  //         email,
+  //         projectName: project.name,
+  //       },
+  //     });
+  //     console.log(response);
+  //     setToastInfo({
+  //       status: "ok",
+  //       message: "seu convite foi enviado com sucesso",
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //     setToastInfo({
+  //       status: "error",
+  //       message: "Não foi possível localizar o email inserido",
+  //     });
+  //   }
+  //   setOpenToast(true);
+  //   setEmail("");
+  //   setSendEmailInput(false);
+  // }
 
   // Logaut logic
   function logout() {
@@ -106,7 +116,7 @@ export default function AsideMenu({ setOpenToast, setToastInfo }) {
               />
               <button
                 className="flex justify-center items-center rounded-md font-medium text-base px-4 bg-cyan-700 text-white"
-                onClick={handleEmail}
+                // onClick={handleEmail}
               >
                 Enviar
               </button>
